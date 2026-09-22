@@ -10,3 +10,5 @@
 * Marcos Vidal Castillo
 * Pablo Villaplana Rodríguez
 * Alessio Vecchio
+
+## Parámetros
