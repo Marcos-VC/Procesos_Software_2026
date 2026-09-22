@@ -1,4 +1,4 @@
-# Procesos_Software_2026
+# Práctica 1 — Desarrollo del Sprint 1
 
 ## Integrantes
 
