@@ -9,4 +9,4 @@
 * Rubén Torres Rivero
 * Marcos Vidal Castillo
 * Pablo Villaplana Rodríguez
-* Alessio 
+* Alessio Vecchio
