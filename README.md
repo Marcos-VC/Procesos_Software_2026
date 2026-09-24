@@ -43,22 +43,6 @@ Cuando termine el arranque, estarán disponibles:
 - Frontend: http://localhost:5173
 - API: http://localhost:3000/api/health
 
-## Inicialización desde cero
-
-Los comandos equivalentes para crear esta estructura en un repositorio vacío son:
-
-```powershell
-mkdir backend, frontend, mocks
-cd backend
-npm init -y
-npm install express cors
-cd ..
-npm create vite@latest frontend -- --template react
-cd frontend
-npm install
-cd ..
-```
-
 La estructura principal es:
 
 ```text
