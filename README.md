@@ -5,7 +5,7 @@
 * Paula Sánchez Garduño
 * Emiliano Sánchez Moreno
 * David Sebastián Sticea Covaciu
-* Raul Tejada Merinero
+* Raúl Tejada Merinero
 * Rubén Torres Rivero
 * Marcos Vidal Castillo
 * Pablo Villaplana Rodríguez
