@@ -1,0 +1,10 @@
+[
+  {
+    "userId": "user-001",
+    "weight": 75.5,
+    "caloricGoal": 2200,
+    "medicalRestrictions": {
+      "allergies": ["gluten", "cacahuetes"]
+    }
+  }
+]

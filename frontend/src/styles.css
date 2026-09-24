@@ -1,0 +1,194 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #19352f;
+  background: #f3f0e7;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+.shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 85% 8%, #d6e7c4 0, transparent 28rem), #f3f0e7;
+}
+.hero,
+.catalogue,
+.profile-strip {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+.hero {
+  padding-top: 78px;
+  padding-bottom: 62px;
+}
+.eyebrow {
+  margin: 0 0 14px;
+  color: #c65d3b;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", sans-serif;
+}
+h1 {
+  max-width: 680px;
+  margin: 0;
+  font-size: clamp(3.4rem, 8vw, 7.5rem);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+.lead {
+  max-width: 520px;
+  margin: 28px 0 0;
+  color: #53635d;
+  font-size: 1.15rem;
+  line-height: 1.55;
+}
+.profile-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  padding-top: 0;
+  padding-bottom: 68px;
+}
+.profile-strip div {
+  display: grid;
+  gap: 8px;
+  padding: 20px;
+  background: #dce9d2;
+}
+.profile-strip span {
+  color: #60756b;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.profile-strip strong {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+.catalogue {
+  padding-bottom: 80px;
+}
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+h2 {
+  margin: 0;
+  font-size: 2.4rem;
+}
+input {
+  width: 230px;
+  border: 1px solid #aebbb0;
+  border-radius: 0;
+  padding: 13px 14px;
+  color: #19352f;
+  background: transparent;
+  font: inherit;
+}
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.food-card {
+  min-height: 220px;
+  padding: 20px;
+  border: 1px solid #c9d3c4;
+  background: rgba(255, 255, 255, 0.45);
+}
+.food-topline,
+.macros {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.food-id,
+.kcal {
+  color: #718078;
+  font-size: 0.72rem;
+}
+.kcal {
+  color: #c65d3b;
+  font-weight: 700;
+}
+h3 {
+  margin: 38px 0 28px;
+  font-size: 1.35rem;
+}
+.macros {
+  align-items: end;
+  color: #718078;
+  font-size: 0.72rem;
+}
+.macros span {
+  display: grid;
+  gap: 4px;
+}
+.macros b {
+  color: #19352f;
+  font-size: 0.9rem;
+}
+.allergen {
+  margin: 22px 0 0;
+  color: #c65d3b;
+  font-size: 0.8rem;
+}
+.error {
+  color: #a9372c;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+@media (max-width: 800px) {
+  .profile-strip,
+  .food-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+  input {
+    width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .hero,
+  .catalogue,
+  .profile-strip {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .hero {
+    padding-top: 50px;
+  }
+  h1 {
+    font-size: 3.5rem;
+  }
+  .profile-strip,
+  .food-grid {
+    grid-template-columns: 1fr;
+  }
+}

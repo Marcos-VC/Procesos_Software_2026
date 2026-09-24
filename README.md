@@ -1,16 +1,16 @@
 # Healthy Life - Módulo E6: Gestor Nutricional y Catálogo de Alimentos
 
-Asignatura Procesos Software
+Proyecto académico de la asignatura **Procesos de Software** · 3.º Grado en Ingeniería del Software · Universidad Rey Juan Carlos
 
 ## Equipo 6 (E6)
 
+- Marcos Vidal Castillo (Scrum Master - SM)
+- Pablo Villaplana Rodríguez (Product Owner - PO)
 - Paula Sánchez Garduño
 - Emiliano Sánchez Moreno
 - David Sebastián Sticea Covaciu
 - Raúl Tejada Merinero
 - Rubén Torres Rivero
-- Marcos Vidal Castillo
-- Pablo Villaplana Rodríguez
 - Alessio Vecchio
 
 ## Descripción del Módulo
@@ -26,23 +26,61 @@ Nuestro módulo se encarga de:
 
 ## Enlaces de Interés
 
-- **Tablero Miro (Product Discovery & User Story Map):** [AÑADIR ENLACE AQUÍ]
-- **Tablero Jira (Sprint Backlog):** [AÑADIR ENLACE AQUÍ]
+- **Tablero Miro (Product Discovery & User Story Map):** [Healthy Life en Miro](https://miro.com/welcomeonboard/eC8vdlVYNEhXNmY2MkMwTEhFS2JGZ3lQZHptSWE1YzRXb1JzUlNoKzhkSHZ1SThwQkRJUVpyOXU0eTRQQVdoSUErNXZCM25LcW9wclJuZmZOZjFNb3RBVFhWSDVOTklMREU0R0R6TkUzMTg3cU5taXF2YkJDa3NBM0lMeWJreUNzVXVvMm53MW9OWFg5bkJoVXZxdFhRPT0hdjE=?share_link_id=302909706404)
+- **Tablero Jira (Sprint Backlog):** [Healthy Life en Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary?atlOrigin=eyJpIjoiODQ2NjYwOTg5MmE3NDNkZmFhOGUzMjgzYjU3ZGIwNTkiLCJwIjoiaiJ9)
 - **Documentación API / Mocks:** En la carpeta `/mocks` de este repositorio.
 
 ## Despliegue y Ejecución (Docker)
 
 El proyecto está preparado para ejecutarse mediante contenedores Docker, tal y como exige la rúbrica del Sprint 1.
 
-Para levantar el entorno de desarrollo, ejecuta:
+Para levantar el entorno completo, ejecuta desde la raíz del repositorio:
 
     docker-compose up --build
 
+Cuando termine el arranque, estarán disponibles:
+
+- Frontend: http://localhost:5173
+- API: http://localhost:3000/api/health
+
+## Inicialización desde cero
+
+Los comandos equivalentes para crear esta estructura en un repositorio vacío son:
+
+```powershell
+mkdir backend, frontend, mocks
+cd backend
+npm init -y
+npm install express cors
+cd ..
+npm create vite@latest frontend -- --template react
+cd frontend
+npm install
+cd ..
+```
+
+La estructura principal es:
+
+```text
+backend/
+    src/server.js
+    Dockerfile
+    package.json
+frontend/
+    src/App.jsx
+    src/main.jsx
+    src/styles.css
+    Dockerfile
+    nginx.conf
+mocks/mock_usuarios.json
+docker-compose.yml
+```
+
 ## Stack Tecnológico
 
-- **Backend:** [AÑADIR LENGUAJE/FRAMEWORK Ej. Java Spring Boot, Node.js...]
-- **Frontend:** [AÑADIR FRAMEWORK Ej. React, Angular, Vue...]
-- **Base de Datos:** [AÑADIR BD Ej. PostgreSQL, MongoDB...]
+- **Backend:** Node.js con Express
+- **Frontend:** React con Vite
+- **Base de Datos:** JSON / Mocks (Sprint 1) - _Por definir para Sprints posteriores_
 - **Despliegue:** Docker
 
 ## Estado del Sprint 1 (MVP)

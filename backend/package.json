@@ -1,0 +1,16 @@
+{
+  "name": "healthy-life-e6-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API del subsistema E6 de Healthy Life",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
