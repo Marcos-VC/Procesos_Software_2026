@@ -1,0 +1,168 @@
+[
+  {
+    "id": "9017b44e-1d3f-4414-95d9-bac5d28790fc",
+    "name": "Arroz integral",
+    "calories": 111,
+    "protein": 2.6,
+    "carbohydrates": 23,
+    "fat": 0.9,
+    "allergens": []
+  },
+  {
+    "id": "05756545-04f4-4f3f-8254-6e5d678edc93",
+    "name": "Pechuga de pollo",
+    "calories": 165,
+    "protein": 31,
+    "carbohydrates": 0,
+    "fat": 3.6,
+    "allergens": []
+  },
+  {
+    "id": "c01f1034-e911-4698-a0c9-4681eaa8ae1f",
+    "name": "Pan de trigo",
+    "calories": 265,
+    "protein": 9,
+    "carbohydrates": 49,
+    "fat": 3.2,
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": "ead02bd8-7592-459e-8eb8-1da57223ead1",
+    "name": "Crema de cacahuete",
+    "calories": 588,
+    "protein": 25,
+    "carbohydrates": 20,
+    "fat": 50,
+    "allergens": [
+      "cacahuetes"
+    ]
+  },
+  {
+    "id": "f43b6b37-ce69-4662-8eaf-32d66cd3ae4b",
+    "name": "Almendras",
+    "calories": 579,
+    "protein": 21,
+    "carbohydrates": 22,
+    "fat": 50,
+    "allergens": [
+      "frutos_secos"
+    ]
+  },
+  {
+    "id": "0cd129de-62f0-4873-b771-37a6117c8db5",
+    "name": "Yogur natural",
+    "calories": 61,
+    "protein": 3.5,
+    "carbohydrates": 4.7,
+    "fat": 3.3,
+    "allergens": [
+      "lactosa"
+    ]
+  },
+  {
+    "id": "431bed40-5f1d-43f3-b349-bf53b8067852",
+    "name": "Huevo cocido",
+    "calories": 155,
+    "protein": 13,
+    "carbohydrates": 1.1,
+    "fat": 11,
+    "allergens": [
+      "huevo"
+    ]
+  },
+  {
+    "id": "1688136e-53eb-4edd-9753-4774dc6560db",
+    "name": "Salmón",
+    "calories": 208,
+    "protein": 20,
+    "carbohydrates": 0,
+    "fat": 13,
+    "allergens": [
+      "pescado"
+    ]
+  },
+  {
+    "id": "8a073a7e-ecf1-4082-8680-9e1fab12fd1e",
+    "name": "Gambas cocidas",
+    "calories": 99,
+    "protein": 24,
+    "carbohydrates": 0.2,
+    "fat": 0.3,
+    "allergens": [
+      "marisco"
+    ]
+  },
+  {
+    "id": "f0d3dea6-336a-4c16-b272-7ebe87334f01",
+    "name": "Tofu",
+    "calories": 76,
+    "protein": 8,
+    "carbohydrates": 1.9,
+    "fat": 4.8,
+    "allergens": [
+      "soja"
+    ]
+  },
+  {
+    "id": "473f9794-a0f6-4c90-9483-e08a53d9490b",
+    "name": "Leche entera",
+    "calories": 61,
+    "protein": 3.2,
+    "carbohydrates": 4.8,
+    "fat": 3.3,
+    "allergens": [
+      "lactosa"
+    ]
+  },
+  {
+    "id": "fe009d2f-7376-4c4c-8a37-63eda0732c41",
+    "name": "Copos de avena",
+    "calories": 389,
+    "protein": 16.9,
+    "carbohydrates": 66,
+    "fat": 6.9,
+    "allergens": [
+      "gluten"
+    ]
+  },
+  {
+    "id": "7a4a233b-f218-4b40-a58b-ba115d41fd20",
+    "name": "Tahini",
+    "calories": 595,
+    "protein": 17,
+    "carbohydrates": 21,
+    "fat": 54,
+    "allergens": [
+      "sesamo"
+    ]
+  },
+  {
+    "id": "d9ac1aab-7651-4acf-9d8f-9287036e5f43",
+    "name": "Manzana",
+    "calories": 52,
+    "protein": 0.3,
+    "carbohydrates": 14,
+    "fat": 0.2,
+    "allergens": []
+  },
+  {
+    "id": "82e32c22-6f25-4118-8123-15d1bedf90ca",
+    "name": "Lentejas cocidas",
+    "calories": 116,
+    "protein": 9,
+    "carbohydrates": 20,
+    "fat": 0.4,
+    "allergens": []
+  },
+  {
+    "id": "23e2c6b2-39b0-4e90-bf67-302ae274fc83",
+    "name": "Plátano",
+    "calories": 89,
+    "protein": 1.1,
+    "carbohydrates": 23,
+    "fat": 0.3,
+    "allergens": []
+  }
+]

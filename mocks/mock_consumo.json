@@ -1,0 +1,16 @@
+[
+  {
+    "userId": "5d37a69d-97c8-4280-afb7-2dc90467d688",
+    "consumedToday": [
+      { "foodId": "9017b44e-1d3f-4414-95d9-bac5d28790fc", "grams": 200 },
+      { "foodId": "05756545-04f4-4f3f-8254-6e5d678edc93", "grams": 150 }
+    ]
+  },
+  {
+    "userId": "0fd1a9e2-a45a-4bfb-b953-d65297a1b555",
+    "consumedToday": [
+      { "foodId": "9017b44e-1d3f-4414-95d9-bac5d28790fc", "grams": 250 },
+      { "foodId": "f43b6b37-ce69-4662-8eaf-32d66cd3ae4b", "grams": 30 }
+    ]
+  }
+]

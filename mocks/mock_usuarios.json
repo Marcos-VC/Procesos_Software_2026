@@ -1,6 +1,6 @@
 [
   {
-    "userId": "user-001",
+    "userId": "5d37a69d-97c8-4280-afb7-2dc90467d688",
     "weight": 75.5,
     "caloricGoal": 2200,
     "medicalRestrictions": {
@@ -9,7 +9,7 @@
     }
   },
   {
-    "userId": "user-002",
+    "userId": "0fd1a9e2-a45a-4bfb-b953-d65297a1b555",
     "weight": 62.0,
     "caloricGoal": 1800,
     "medicalRestrictions": {
@@ -18,7 +18,7 @@
     }
   },
   {
-    "userId": "user-003",
+    "userId": "fc4bbed3-2a05-4338-b729-96c9fa3e9821",
     "weight": 90.0,
     "caloricGoal": 2500,
     "medicalRestrictions": {
