@@ -1,0 +1,15 @@
+{
+  "name": "healthy-life-e6-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tests E2E (Playwright) del Sprint 1 del módulo E6",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "install:browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}
