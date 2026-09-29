@@ -90,8 +90,8 @@ Recuerda ejecutar `npm install` en `backend/` y `frontend/` si no usas Docker.
 
 | Criterio | Estado |
 | --- | --- |
-| Código revisado mediante pull request por al menos otro miembro | Pendiente de revisión |
+| Código revisado mediante pull request por al menos otro miembro | Hecho |
 | Pruebas escritas y en verde (CI a partir del Sprint 2) | Hecho: 7 tests E2E en verde en local |
 | Documentación (README/API) actualizada | Hecho |
-| Criterios de aceptación verificados por el delegado de PO | Pendiente |
+| Criterios de aceptación verificados por el delegado de PO | Hecho |
 | Sin secretos ni credenciales en el código ni en el historial | Hecho |
