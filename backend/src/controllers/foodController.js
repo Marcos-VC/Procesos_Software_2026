@@ -1,4 +1,5 @@
 import { readJson } from "../store/jsonStore.js";
+import { getAllergenCatalog } from "../services/userService.js";
 import { normalizeText } from "../utils/text.js";
 
 // GET /api/foods?search=
@@ -10,4 +11,9 @@ export async function listFoods(request, response) {
     : foods;
 
   return response.json(matches);
+}
+
+// GET /api/allergens: catálogo de alérgenos (id, nombre, icono y explicación).
+export async function listAllergens(_request, response) {
+  response.json(await getAllergenCatalog());
 }

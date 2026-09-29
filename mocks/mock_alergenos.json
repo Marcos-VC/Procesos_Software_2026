@@ -1,0 +1,56 @@
+[
+  {
+    "id": "gluten",
+    "name": "Gluten",
+    "icon": "🌾",
+    "description": "Alergia o intolerancia al gluten (celiaquía o sensibilidad al gluten): presente en trigo, cebada, centeno y avena."
+  },
+  {
+    "id": "cacahuetes",
+    "name": "Cacahuetes",
+    "icon": "🥜",
+    "description": "Alergia a los cacahuetes: una de las alergias alimentarias más frecuentes y potencialmente graves."
+  },
+  {
+    "id": "frutos_secos",
+    "name": "Frutos secos",
+    "icon": "🌰",
+    "description": "Alergia a los frutos secos de cáscara: almendras, nueces, avellanas, anacardos, pistachos..."
+  },
+  {
+    "id": "lactosa",
+    "name": "Lactosa",
+    "icon": "🥛",
+    "description": "Intolerancia a la lactosa: dificultad para digerir el azúcar de la leche y sus derivados."
+  },
+  {
+    "id": "huevo",
+    "name": "Huevo",
+    "icon": "🥚",
+    "description": "Alergia al huevo: reacción a las proteínas de la clara o de la yema."
+  },
+  {
+    "id": "pescado",
+    "name": "Pescado",
+    "icon": "🐟",
+    "description": "Alergia al pescado: reacción a las proteínas presentes en pescados y derivados."
+  },
+  {
+    "id": "marisco",
+    "name": "Marisco",
+    "icon": "🦐",
+    "description": "Alergia a crustáceos y moluscos: gambas, langostinos, cangrejo, mejillones..."
+  },
+  {
+    "id": "soja",
+    "name": "Soja",
+    "icon": "🫘",
+    "description": "Alergia a la soja: presente en tofu, bebidas de soja, salsa de soja y muchos productos procesados."
+  },
+  {
+    "id": "sesamo",
+    "name": "Sésamo",
+    "icon": "🌱",
+    "description": "Alergia a las semillas de sésamo y a sus derivados, como el aceite de sésamo o el tahini."
+  }
+]
