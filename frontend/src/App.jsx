@@ -16,15 +16,21 @@ function ProfileStat({ label, value }) {
 function App() {
   const [user, setUser] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [allergens, setAllergens] = useState([]);
   const [foods, setFoods] = useState(null);
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    Promise.all([api.getProfile(demoUserId), api.getSummary(demoUserId)])
-      .then(([userData, summaryData]) => {
+    Promise.all([
+      api.getProfile(demoUserId),
+      api.getSummary(demoUserId),
+      api.getAllergens(),
+    ])
+      .then(([userData, summaryData, allergenData]) => {
         setUser(userData);
         setSummary(summaryData);
+        setAllergens(allergenData);
       })
       .catch(() => setError("No se pudo conectar con el backend."));
   }, []);
@@ -41,6 +47,10 @@ function App() {
       ignore = true;
     };
   }, [query]);
+
+  const allergenCatalog = Object.fromEntries(
+    allergens.map((allergen) => [allergen.id, allergen]),
+  );
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_85%_8%,#d6e7c4_0,transparent_28rem)] pb-20">
@@ -88,7 +98,7 @@ function App() {
         <SectionHeading eyebrow="CATÁLOGO" title="Alimentos disponibles">
           <SearchBar onSearch={setQuery} />
         </SectionHeading>
-        <FoodList foods={foods} />
+        <FoodList foods={foods} allergenCatalog={allergenCatalog} />
       </section>
     </main>
   );

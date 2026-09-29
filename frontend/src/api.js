@@ -15,6 +15,7 @@ async function request(path, options) {
 export const api = {
   getFoods: (search) =>
     request(`/api/foods?${new URLSearchParams({ search }).toString()}`),
+  getAllergens: () => request("/api/allergens"),
   getProfile: (userId) => request(`/api/users/${userId}/nutritional-profile`),
   getSummary: (userId) => request(`/api/nutrition/${userId}/daily-summary`),
 };
