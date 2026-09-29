@@ -29,4 +29,6 @@ export const api = {
   updateProfile: (userId, changes) =>
     sendJson("PUT", `/api/users/${userId}/nutritional-profile`, changes),
   getSummary: (userId) => request(`/api/nutrition/${userId}/daily-summary`),
+  getMenu: (userId) => request(`/api/menus/${userId}`),
+  saveMenu: (userId, days) => sendJson("PUT", `/api/menus/${userId}`, { days }),
 };

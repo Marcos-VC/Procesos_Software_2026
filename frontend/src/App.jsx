@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, demoUserId } from "./api.js";
 import FoodList from "./components/FoodList.jsx";
+import MenuBuilder from "./components/MenuBuilder.jsx";
 import ProfileEditor from "./components/ProfileEditor.jsx";
 import SearchBar from "./components/SearchBar.jsx";
 import SectionHeading from "./components/SectionHeading.jsx";
@@ -8,6 +9,7 @@ import SectionHeading from "./components/SectionHeading.jsx";
 const TABS = [
   ["catalogo", "Catálogo"],
   ["perfil", "Perfil"],
+  ["menu", "Menú"],
 ];
 
 function ProfileStat({ label, value }) {
@@ -142,6 +144,13 @@ function App() {
                 onSaved={handleProfileSaved}
               />
             )}
+          </>
+        )}
+
+        {tab === "menu" && (
+          <>
+            <SectionHeading eyebrow="MENÚ" title="Diseñador de menús" />
+            <MenuBuilder userId={demoUserId} />
           </>
         )}
       </section>
