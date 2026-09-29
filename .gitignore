@@ -6,3 +6,7 @@ backend/dist/
 frontend/dist/
 coverage/
 .DS_Store
+
+# Claude Code
+.claude/
+CLAUDE.local.md
