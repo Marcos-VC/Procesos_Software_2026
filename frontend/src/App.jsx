@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { api, demoUserId } from "./api.js";
 import FoodList from "./components/FoodList.jsx";
+import MenuBuilder from "./components/MenuBuilder.jsx";
+import ProfileEditor from "./components/ProfileEditor.jsx";
 import SearchBar from "./components/SearchBar.jsx";
 import SectionHeading from "./components/SectionHeading.jsx";
+
+const TABS = [
+  ["catalogo", "Catálogo"],
+  ["perfil", "Perfil"],
+  ["menu", "Menú"],
+];
 
 function ProfileStat({ label, value }) {
   return (
@@ -14,17 +22,26 @@ function ProfileStat({ label, value }) {
 }
 
 function App() {
+  const [tab, setTab] = useState("catalogo");
   const [user, setUser] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [allergens, setAllergens] = useState([]);
   const [foods, setFoods] = useState(null);
   const [query, setQuery] = useState("");
+  // Se incrementa al guardar el perfil para recargar el catálogo con los bloqueos nuevos.
+  const [profileVersion, setProfileVersion] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    Promise.all([api.getProfile(demoUserId), api.getSummary(demoUserId)])
-      .then(([userData, summaryData]) => {
+    Promise.all([
+      api.getProfile(demoUserId),
+      api.getSummary(demoUserId),
+      api.getAllergens(),
+    ])
+      .then(([userData, summaryData, allergenData]) => {
         setUser(userData);
         setSummary(summaryData);
+        setAllergens(allergenData);
       })
       .catch(() => setError("No se pudo conectar con el backend."));
   }, []);
@@ -32,7 +49,7 @@ function App() {
   useEffect(() => {
     let ignore = false;
     api
-      .getFoods(query)
+      .getFoods(query, demoUserId)
       .then((data) => {
         if (!ignore) setFoods(data);
       })
@@ -40,7 +57,16 @@ function App() {
     return () => {
       ignore = true;
     };
-  }, [query]);
+  }, [query, profileVersion]);
+
+  const allergenCatalog = Object.fromEntries(
+    allergens.map((allergen) => [allergen.id, allergen]),
+  );
+
+  const handleProfileSaved = (updatedUser) => {
+    setUser(updatedUser);
+    setProfileVersion((version) => version + 1);
+  };
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_85%_8%,#d6e7c4_0,transparent_28rem)] pb-20">
@@ -82,13 +108,51 @@ function App() {
         />
       </section>
 
+      <nav className="page flex flex-wrap gap-2 pb-8" aria-label="Secciones">
+        {TABS.map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className={tab === id ? "btn" : "btn btn-outline"}
+            aria-current={tab === id ? "page" : undefined}
+            onClick={() => setTab(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+
       <section className="page">
         {error && <p className="mb-4 text-danger">{error}</p>}
 
-        <SectionHeading eyebrow="CATÁLOGO" title="Alimentos disponibles">
-          <SearchBar onSearch={setQuery} />
-        </SectionHeading>
-        <FoodList foods={foods} />
+        {tab === "catalogo" && (
+          <>
+            <SectionHeading eyebrow="CATÁLOGO" title="Alimentos disponibles">
+              <SearchBar onSearch={setQuery} />
+            </SectionHeading>
+            <FoodList foods={foods} allergenCatalog={allergenCatalog} />
+          </>
+        )}
+
+        {tab === "perfil" && (
+          <>
+            <SectionHeading eyebrow="PERFIL" title="Perfil nutricional" />
+            {user && allergens.length > 0 && (
+              <ProfileEditor
+                user={user}
+                allergens={allergens}
+                onSaved={handleProfileSaved}
+              />
+            )}
+          </>
+        )}
+
+        {tab === "menu" && (
+          <>
+            <SectionHeading eyebrow="MENÚ" title="Diseñador de menús" />
+            <MenuBuilder userId={demoUserId} />
+          </>
+        )}
       </section>
     </main>
   );

@@ -34,9 +34,10 @@ Nuestro módulo se encarga de:
 
 ## Stack Tecnológico
 
-- **Frontend:** React.js con Vite (componentes funcionales de interfaz).
+- **Frontend:** React.js con Vite (componentes funcionales de interfaz) y **TailwindCSS** para los estilos.
 - **Backend:** Node.js con Express (lógica de negocio y API REST).
 - **Base de datos:** MongoDB (colecciones de alimentos y menús). _Nota: en el Sprint 1 se utilizan JSON/Mocks; la base de datos definitiva se concretará en Sprints posteriores._
+- **Tests E2E:** Playwright (carpeta `e2e/`).
 - **Control de versiones y despliegue:** Git, GitHub y Docker.
 - **Seguridad:** tokens JWT (JSON Web Tokens) en las cabeceras HTTP para la sesión del usuario.
 
@@ -61,18 +62,48 @@ Cuando termine el arranque, estarán disponibles:
 
 ```text
 backend/
-    src/server.js
+    src/server.js          # arranque (listen)
+    src/app.js             # Express: middlewares, rutas y errores
+    src/routes/            # food, user, nutrition, menu
+    src/controllers/       # lógica de cada endpoint
+    src/services/          # reglas de negocio (usuarios, menús)
+    src/store/jsonStore.js # lectura/escritura de los mocks JSON
     Dockerfile
     package.json
 frontend/
     src/App.jsx
+    src/api.js
+    src/components/        # SearchBar, FoodList, FoodItem, ProfileEditor, MenuBuilder...
     src/main.jsx
-    src/styles.css
+    src/styles.css         # Tailwind + tokens de diseño
+    vite.config.js
     Dockerfile
     nginx.conf
-mocks/mock_usuarios.json
+e2e/                       # tests Playwright (una spec por historia de usuario)
+mocks/
+    mock_usuarios.json
+    mock_alimentos.json
+    mock_alergenos.json
+    mock_consumo.json
+    mock_menus.json
 docker-compose.yml
 ```
+
+El backend escribe en los ficheros de `mocks/` (perfil y menús), por eso `docker-compose.yml` monta esa carpeta como volumen.
+
+### Desarrollo local y tests E2E
+
+```bash
+cd backend && npm install && npm run dev    # API en :3000
+cd frontend && npm install && npm run dev   # Front en :5173
+
+cd e2e && npm install && npm run install:browsers   # solo la primera vez
+cd e2e && npm test
+```
+
+Los tests arrancan su propio backend (:3100) sobre una copia temporal de `mocks/` y el frontend (:5174), así que no modifican los datos del repositorio ni necesitan Docker.
+
+> **Sobre la batería de tests:** se ha creado para facilitar la **validación de los criterios de aceptación** (Dado/Cuando/Entonces) de cada Historia de Usuario. Hay una spec por historia en `e2e/tests` y cada test está nombrado con su criterio (por ejemplo, `HU 1.1 › AC2`), con los pasos comentados con las mismas palabras "Dado / Cuando / Entonces" de la historia. Así, comprobar que una historia cumple lo acordado con el PO es ejecutar `npm test` y ver qué criterios pasan o fallan.
 
 ---
 
@@ -127,6 +158,16 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 expone e
   }
   ```
 
+### Endpoints internos de E6 (Sprint 1)
+
+| Método | Ruta                                      | Descripción                                                                                                                                     |
+| ------ | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/foods?search=&userId=`              | Catálogo. Con `userId` marca `blocked`/`blockedBy` según las alergias del perfil                                                                |
+| GET    | `/api/allergens`                          | Catálogo de alérgenos (id, nombre, icono y explicación)                                                                                         |
+| PUT    | `/api/users/{userId}/nutritional-profile` | Actualiza alergias, objetivo calórico, etc. (escribe en `mock_usuarios.json`)                                                                   |
+| GET    | `/api/menus/{userId}`                     | Menú del usuario (vacío si aún no tiene)                                                                                                        |
+| PUT    | `/api/menus/{userId}`                     | Guarda el menú `{ days: { lunes: { desayuno: [foodId], comida: [], cena: [] }, ... } }`. Rechaza con 422 los alimentos bloqueados por el perfil |
+
 ---
 
 ## Estándares de Desarrollo Interno (leer antes de hacer push)
@@ -143,11 +184,24 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 expone e
 
 ---
 
-## 🏁 Estado del Sprint 1 (MVP)
+## Estado del Sprint 1 (MVP)
 
 En este primer Sprint se han implementado las siguientes funcionalidades principales (Historias de Usuario):
 
 - **[HU 1.1]** Búsqueda de alimentos y macros.
 - **[HU 1.2]** Visualización de iconos de alérgenos en el catálogo.
-- **[HU 2.1]** Configuración del objetivo calórico del usuario.
-- **[HU 3.1]** Creación básica de menú.
+- **[HU 2.1]** Configuración del perfil nutricional: alergias/intolerancias y objetivo calórico.
+- **[HU 3.1]** Creación básica de menú (Desayuno, Comida y Cena por día).
+
+Los criterios de aceptación de las cuatro historias están cubiertos por los tests E2E de la carpeta `e2e/tests`.
+
+### Historias de Usuario del Sprint 1
+
+| Jira                                                               | Historia                                 | Puntos | Qué permite                                          |
+| ------------------------------------------------------------------ | ---------------------------------------- | ------ | ---------------------------------------------------- |
+| [SCRUM-21](https://procesossoftware.atlassian.net/browse/SCRUM-21) | HU 1.1 Buscar un alimento                | 3      | Buscar en el catálogo y ver calorías y macros        |
+| [SCRUM-27](https://procesossoftware.atlassian.net/browse/SCRUM-27) | HU 1.2 Ver iconos de alérgenos           | 2      | Ver iconos de alérgenos y su explicación             |
+| [SCRUM-17](https://procesossoftware.atlassian.net/browse/SCRUM-17) | HU 2.1 Indicar alérgenos e intolerancias | 3      | Configurar el perfil y bloquear alimentos prohibidos |
+| [SCRUM-34](https://procesossoftware.atlassian.net/browse/SCRUM-34) | HU 3.1 Creación de menús                 | 5      | Diseñar el menú con Desayuno, Comida y Cena          |
+
+> **Más información:** criterios de aceptación, endpoints, componentes, orden de los PR, cómo revisar y probar cada rama y estado de la Definition of Done en [docs/sprint1-readme.md](docs/sprint1-readme.md).

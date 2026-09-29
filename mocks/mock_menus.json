@@ -1,0 +1,43 @@
+[
+  {
+    "id": "e7a8492f-9cf9-42e0-8f32-8e50cdc7b437",
+    "userId": "5d37a69d-97c8-4280-afb7-2dc90467d688",
+    "days": {
+      "lunes": {
+        "desayuno": [],
+        "comida": [],
+        "cena": []
+      },
+      "martes": {
+        "desayuno": [],
+        "comida": [],
+        "cena": []
+      },
+      "miercoles": {
+        "desayuno": [],
+        "comida": [],
+        "cena": []
+      },
+      "jueves": {
+        "desayuno": [],
+        "comida": [],
+        "cena": []
+      },
+      "viernes": {
+        "desayuno": [],
+        "comida": [],
+        "cena": []
+      },
+      "sabado": {
+        "desayuno": [],
+        "comida": [],
+        "cena": []
+      },
+      "domingo": {
+        "desayuno": [],
+        "comida": [],
+        "cena": []
+      }
+    }
+  }
+]
