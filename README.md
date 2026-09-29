@@ -2,7 +2,7 @@
 
 Proyecto académico de la asignatura **Procesos de Software** · 3.º Grado en Ingeniería del Software · Universidad Rey Juan Carlos
 
-## 👥 Equipo 6 (E6)
+## Equipo 6 (E6)
 
 - **Marcos Vidal Castillo** (Scrum Master - SM)
 - **Pablo Villaplana Rodríguez** (Product Owner - PO)
@@ -13,7 +13,7 @@ Proyecto académico de la asignatura **Procesos de Software** · 3.º Grado en I
 - Rubén Torres Rivero
 - Alessio Vecchio
 
-## 🎯 Descripción del Módulo
+## Descripción del Módulo
 
 Este repositorio contiene el código correspondiente al Subsistema **E6** de la aplicación global "Healthy Life".
 
@@ -24,7 +24,7 @@ Nuestro módulo se encarga de:
 - Aplicar reglas de bloqueo automático de ingredientes prohibidos según el perfil médico/alergias del usuario.
 - Generar listas de la compra automatizadas.
 
-## 🔗 Enlaces de Interés
+## Enlaces de Interés
 
 - **Tablero Miro (Product Discovery & User Story Map):** [Healthy Life en Miro](https://miro.com/welcomeonboard/eC8vdlVYNEhXNmY2MkMwTEhFS2JGZ3lQZHptSWE1YzRXb1JzUlNoKzhkSHZ1SThwQkRJUVpyOXU0eTRQQVdoSUErNXZCM25LcW9wclJuZmZOZjFNb3RBVFhWSDVOTklMREU0R0R6TkUzMTg3cU5taXF2YkJDa3NBM0lMeWJreUNzVXVvMm53MW9OWFg5bkJoVXZxdFhRPT0hdjE=?share_link_id=302909706404)
 - **Tablero Jira (Sprint Backlog):** [Healthy Life en Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary?atlOrigin=eyJpIjoiODQ2NjYwOTg5MmE3NDNkZmFhOGUzMjgzYjU3ZGIwNTkiLCJwIjoiaiJ9)
@@ -32,7 +32,7 @@ Nuestro módulo se encarga de:
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 - **Frontend:** React.js con Vite (componentes funcionales de interfaz).
 - **Backend:** Node.js con Express (lógica de negocio y API REST).
@@ -42,7 +42,7 @@ Nuestro módulo se encarga de:
 
 ---
 
-## 🚀 Despliegue y Ejecución (Docker)
+## Despliegue y Ejecución (Docker)
 
 El proyecto está preparado para ejecutarse mediante contenedores Docker, tal y como exige la rúbrica del Sprint 1.
 
@@ -76,13 +76,13 @@ docker-compose.yml
 
 ---
 
-## 🔌 Arquitectura de Integración y Contratos (API REST)
+## Arquitectura de Integración y Contratos (API REST)
 
 El acuerdo de interfaces no es solo interno: es la negociación con los otros equipos de la clase (por ejemplo, con el equipo **E1**, que hace los usuarios, o el **E2**, que hace las gráficas). Sirve para decidir cómo se van a comunicar los servidores en el futuro para que nadie programe a ciegas.
 
 El Módulo E6 se comunica con el resto del ecosistema Healthy Life mediante una arquitectura orientada a microservicios simulada vía **API REST**, utilizando **JSON** como formato de intercambio de datos.
 
-### ➡️ Dependencias entrantes (lo que E6 necesita leer)
+### Dependencias entrantes (lo que E6 necesita leer)
 
 **Perfil nutricional y alergias — dependencia de E1 (Gestión de Usuarios)**
 
@@ -105,7 +105,7 @@ Para la validación estricta de restricciones médicas y el cálculo de menús, 
 
 - **Estado Sprint 1:** aislado y resuelto mediante simulación local. Para evitar bloqueos, la respuesta de este endpoint está mockeada en [`/mocks/mock_usuarios.json`](mocks/mock_usuarios.json).
 
-### ⬅️ Servicios expuestos (lo que E6 ofrece al resto)
+### Servicios expuestos (lo que E6 ofrece al resto)
 
 **Telemetría nutricional — consumido por E2 (Seguimiento de Hábitos) y E5 (Entrenamiento)**
 
@@ -129,7 +129,7 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 expone e
 
 ---
 
-## ⚠️ Estándares de Desarrollo Interno (leer antes de hacer push)
+## Estándares de Desarrollo Interno (leer antes de hacer push)
 
 1. **Tipado de IDs:** utilizar siempre formato **UUID v4** (ej. `"f47ac10b-58cc-4372-a567-0e02b2c3d479"`) para todos los identificadores (usuarios, alimentos, menús). Evita colisiones entre módulos.
 2. **Tratamiento de alérgenos:** el motor de reglas compara strings en **español, minúsculas, sin tildes ni espacios** (ej. `"gluten"`, `"frutos_secos"`).
