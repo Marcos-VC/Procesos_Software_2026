@@ -7,6 +7,9 @@ services:
       - "3000:3000"
     environment:
       PORT: 3000
+    volumes:
+      # Los mocks JSON se escriben desde la API (perfil, menús): se montan para que persistan.
+      - ./mocks:/mocks
 
   frontend:
     build:
