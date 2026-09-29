@@ -59,7 +59,48 @@ frontend/
 mocks/mock_usuarios.json
 docker-compose.yml
 ```
+El acuerdo de interfaces no es solo entre vosotros, es la negociación con los otros equipos de la clase (por ejemplo, con el equipo E1 que hace los usuarios o el E2 que hace las gráficas). Sirve para decidir cómo se van a hablar vuestros servidores en el futuro para que nadie programe a ciegas.
 
+Copia este bloque completo. Pégalo en un post-it grande o cuadro de texto en vuestro tablero de Miro, y usadlo también como el documento inicial para vuestro README.md en GitHub.
+🛠️ Stack Tecnológico y Contrato de Interfaces (Módulo E6)
+1. Entorno Tecnológico (Stack Base)
+
+    Frontend: React.js (Componentes funcionales de interfaz).
+
+    Backend: Node.js con Express (Lógica de negocio y endpoints).
+
+    Base de Datos: MongoDB (Colecciones de alimentos y menús).
+
+    Control de Versiones y Despliegue: Git, GitHub y Docker.
+
+2. Formato y Estándares de Comunicación
+
+    Estilo arquitectónico: API REST.
+
+    Formato de intercambio de datos: JSON (JavaScript Object Notation).
+
+    Seguridad: Paso de Tokens JWT (JSON Web Tokens) en las cabeceras HTTP para la sesión del usuario.
+
+3. Interoperabilidad (Contrato con otros grupos)
+
+➡️ DEPENDENCIAS ENTRANTES (Lo que el Módulo E6 necesita leer):
+
+    Dependencia de: Módulo E1 (Gestión de Usuarios).
+
+    Endpoint pactado: GET /api/users/{userId}/nutritional-profile
+
+    Carga útil (Payload) acordada: userId, weight, caloricGoal, medicalRestrictions (array de alérgenos).
+
+    Estado Sprint 1: Aislado y resuelto mediante simulación local (mock_usuarios.json).
+
+⬅️ SERVICIOS EXPUESTOS (Lo que el Módulo E6 ofrece al resto):
+
+    Consumido por: Módulo E2 (Seguimiento de Hábitos) y E5 (Entrenamiento).
+
+    Endpoint expuesto: GET /api/nutrition/{userId}/daily-summary
+
+    Carga útil (Payload) a entregar: Calorías totales consumidas en el día actual y desglose de macronutrientes listos para ser graficados.
+    
 ## Stack Tecnológico
 
 - **Backend:** Node.js con Express
