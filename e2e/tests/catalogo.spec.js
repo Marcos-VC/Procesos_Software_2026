@@ -41,3 +41,54 @@ test.describe("HU 1.1 Buscar alimentos y ver macros", () => {
     await expect(page.locator("article")).toHaveCount(0);
   });
 });
+
+// HU 1.2 - Ver iconos de alérgenos
+test.describe("HU 1.2 Ver iconos de alérgenos", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Pan de trigo" })).toBeVisible();
+  });
+
+  test("AC1: un alimento con alérgenos muestra sus iconos de forma visible", async ({
+    page,
+  }) => {
+    // Dado que el usuario está viendo la lista del catálogo
+    const pan = page.locator("article", {
+      has: page.getByRole("heading", { name: "Pan de trigo" }),
+    });
+
+    // Cuando el alimento contiene alérgenos comunes
+    // Entonces se muestran sus iconos descriptivos
+    const icon = pan.getByRole("button", { name: "Alérgeno: Gluten" });
+    await expect(icon).toBeVisible();
+    await expect(icon).toHaveText("🌾");
+
+    // Y un alimento sin alérgenos no muestra iconos
+    const arroz = page.locator("article", {
+      has: page.getByRole("heading", { name: "Arroz integral" }),
+    });
+    await expect(arroz.getByRole("button", { name: /Alérgeno/ })).toHaveCount(0);
+  });
+
+  test("AC2: al pulsar el icono se despliega el texto con el nombre de la alergia", async ({
+    page,
+  }) => {
+    const pan = page.locator("article", {
+      has: page.getByRole("heading", { name: "Pan de trigo" }),
+    });
+    await expect(pan.getByRole("tooltip")).toHaveCount(0);
+
+    // Dado que el usuario pulsa sobre el icono de un alérgeno
+    await pan.getByRole("button", { name: "Alérgeno: Gluten" }).click();
+
+    // Entonces la app despliega un texto explicativo con el nombre de la alergia
+    const tooltip = pan.getByRole("tooltip");
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toContainText("Gluten");
+    await expect(tooltip).toContainText("intolerancia");
+
+    // Y al volver a pulsar se oculta
+    await pan.getByRole("button", { name: "Alérgeno: Gluten" }).click();
+    await expect(tooltip).toHaveCount(0);
+  });
+});
