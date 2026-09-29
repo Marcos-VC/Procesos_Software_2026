@@ -12,10 +12,21 @@ async function request(path, options) {
   return body;
 }
 
+const sendJson = (method, path, payload) =>
+  request(path, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
 export const api = {
-  getFoods: (search) =>
-    request(`/api/foods?${new URLSearchParams({ search }).toString()}`),
+  getFoods: (search, userId) =>
+    request(
+      `/api/foods?${new URLSearchParams({ search, userId }).toString()}`,
+    ),
   getAllergens: () => request("/api/allergens"),
   getProfile: (userId) => request(`/api/users/${userId}/nutritional-profile`),
+  updateProfile: (userId, changes) =>
+    sendJson("PUT", `/api/users/${userId}/nutritional-profile`, changes),
   getSummary: (userId) => request(`/api/nutrition/${userId}/daily-summary`),
 };

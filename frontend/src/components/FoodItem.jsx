@@ -7,7 +7,11 @@ function FoodItem({ food, allergenCatalog }) {
   const openInfo = allergenCatalog[openAllergen];
 
   return (
-    <article className="min-h-56 border border-line bg-white/45 p-5">
+    <article
+      className={`min-h-56 border bg-white/45 p-5 ${
+        food.blocked ? "border-accent opacity-60" : "border-line"
+      }`}
+    >
       <div className="flex justify-between gap-2 text-xs">
         <span className="text-muted">{food.id.slice(0, 8)}</span>
         <span className="font-bold text-accent">{food.calories} kcal</span>
@@ -60,6 +64,11 @@ function FoodItem({ food, allergenCatalog }) {
         </p>
       )}
 
+      {food.blocked && (
+        <p className="mt-5 text-[0.8rem] font-bold text-danger">
+          Bloqueado por tu perfil: {food.blockedBy.join(", ")}
+        </p>
+      )}
     </article>
   );
 }
