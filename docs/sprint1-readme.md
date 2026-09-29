@@ -68,7 +68,7 @@ Cada rama contiene sus propios tests E2E y pasa la batería completa hasta ese p
 
 1. Otro miembro del equipo revisa el PR y lo aprueba.
 2. El delegado de Product Owner valida los criterios de aceptación de la historia.
-3. Se acepta con **"Create a merge commit"** (no "Squash"), para que los PR siguientes, que parten de la rama anterior, no generen conflictos. Al borrar la rama tras aceptar, GitHub apunta automáticamente el siguiente PR a `main`.
+3. Se acepta con **"Create a merge commit"** (no "Squash"), para que los PR siguientes, que parten de la rama anterior, no generen conflictos. El repositorio no borra las ramas al aceptar un PR, por lo que GitHub **no** redirige el siguiente PR a `main`: tras aceptar cada PR hay que cambiar la base del siguiente a `main` (botón "Edit" junto al título del PR) o borrar a mano la rama ya aceptada. Si no, el PR se acepta contra la rama anterior y su contenido no llega a `main` (así ocurrió en el Sprint 1 y se resolvió con el PR #6).
 
 ## Cómo revisar y probar un PR
 
