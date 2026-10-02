@@ -34,9 +34,9 @@ Nuestro módulo se encarga de:
 
 ## Stack Tecnológico
 
-- **Frontend:** React.js con Vite (componentes funcionales de interfaz) y **TailwindCSS** para los estilos.
+- **Frontend:** **React + TypeScript + Vite** (componentes funcionales con tipado estricto) y **TailwindCSS** para los estilos. La interfaz implementa la **Identidad Visual de la URJC con una UI moderna**: rojo corporativo como color `primary` y gris oscuro como `secondary`, tarjetas redondeadas con sombras suaves y transiciones fluidas.
 - **Backend:** Node.js con Express (lógica de negocio y API REST).
-- **Base de datos:** MongoDB (colecciones de alimentos y menús). _Nota: en el Sprint 1 se utilizan JSON/Mocks; la base de datos definitiva se concretará en Sprints posteriores._
+- **Datos:** en el Sprint 1 se mantienen los ficheros **JSON** de la carpeta `mocks/`. **Datos (más adelante):** **SQLite**, por su persistencia real en archivo y sin necesidad de administrar servidores complejos. La infraestructura (conexión y tablas de usuarios, alimentos y menús) ya está preparada en `backend/src/store/sqliteStore.js`, pero **sin uso activo**: la migración real se hará en el Sprint 2.
 - **Tests E2E:** Playwright (carpeta `e2e/`).
 - **Control de versiones y despliegue:** Git, GitHub y Docker.
 - **Seguridad:** tokens JWT (JSON Web Tokens) en las cabeceras HTTP para la sesión del usuario.
@@ -67,15 +67,18 @@ backend/
     src/routes/            # food, user, nutrition, menu
     src/controllers/       # lógica de cada endpoint
     src/services/          # reglas de negocio (usuarios, menús)
-    src/store/jsonStore.js # lectura/escritura de los mocks JSON
+    src/store/jsonStore.js # lectura/escritura de los mocks JSON (en uso)
+    src/store/sqliteStore.js # SQLite: conexión y tablas (preparado, sin uso en el Sprint 1)
     Dockerfile
     package.json
 frontend/
-    src/App.jsx
-    src/api.js
+    src/App.tsx
+    src/api.ts
+    src/types/index.ts     # interfaces del dominio (Food, UserProfile, Menu...)
     src/components/        # SearchBar, FoodList, FoodItem, ProfileEditor, MenuBuilder...
-    src/main.jsx
-    src/styles.css         # Tailwind + tokens de diseño
+    src/main.tsx
+    src/styles.css         # Tailwind + paleta URJC (primary / secondary)
+    tsconfig.json
     vite.config.js
     Dockerfile
     nginx.conf
