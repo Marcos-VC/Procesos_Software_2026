@@ -17,9 +17,12 @@ const TABS: [Tab, string][] = [
 
 function ProfileStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid gap-2 bg-sage p-5">
-      <span className="text-xs tracking-wider text-muted uppercase">{label}</span>
-      <strong className="font-display text-lg break-words">{value}</strong>
+    <div className="card relative grid gap-2 overflow-hidden p-5 pl-6">
+      <span className="absolute inset-y-0 left-0 w-1.5 bg-primary" aria-hidden="true" />
+      <span className="text-xs font-semibold tracking-wider text-muted uppercase">
+        {label}
+      </span>
+      <strong className="font-display text-xl break-words text-secondary">{value}</strong>
     </div>
   );
 }
@@ -72,22 +75,29 @@ function App() {
   };
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_85%_8%,#d6e7c4_0,transparent_28rem)] pb-20">
-      <header className="page pt-12 pb-16 sm:pt-20">
-        <p className="mb-3.5 text-xs font-bold tracking-widest text-accent">
-          HEALTHY LIFE / E6
-        </p>
-        <h1 className="max-w-3xl text-[clamp(3.4rem,8vw,7.5rem)] leading-[0.9] font-bold">
-          Come con criterio.
-        </h1>
-        <p className="mt-7 max-w-lg text-lg leading-relaxed text-muted">
-          Catálogo de alimentos y decisiones nutricionales adaptadas a cada
-          persona.
-        </p>
+    <main className="min-h-screen pb-24">
+      <header className="relative overflow-hidden bg-linear-to-br from-secondary via-secondary to-secondary-soft text-white">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-primary" aria-hidden="true" />
+        <div
+          className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-primary/30 blur-3xl"
+          aria-hidden="true"
+        />
+        <div className="page relative pt-16 pb-36 sm:pt-24">
+          <p className="mb-6 inline-flex rounded-full bg-primary px-4 py-1.5 text-xs font-bold tracking-widest text-white shadow-lg shadow-primary/30">
+            HEALTHY LIFE / E6
+          </p>
+          <h1 className="max-w-3xl text-5xl leading-[0.95] font-bold sm:text-7xl lg:text-8xl">
+            Come con <span className="text-primary-light">criterio.</span>
+          </h1>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/75">
+            Catálogo de alimentos y decisiones nutricionales adaptadas a cada
+            persona.
+          </p>
+        </div>
       </header>
 
       <section
-        className="page grid grid-cols-1 gap-px pb-12 sm:grid-cols-2 lg:grid-cols-5"
+        className="page relative z-10 -mt-20 grid grid-cols-1 gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-5"
         aria-label="Perfil nutricional"
       >
         <ProfileStat
@@ -111,22 +121,32 @@ function App() {
         />
       </section>
 
-      <nav className="page flex flex-wrap gap-2 pb-8" aria-label="Secciones">
-        {TABS.map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            className={tab === id ? "btn" : "btn btn-outline"}
-            aria-current={tab === id ? "page" : undefined}
-            onClick={() => setTab(id)}
-          >
-            {label}
-          </button>
-        ))}
+      <nav className="page pb-10" aria-label="Secciones">
+        <div className="inline-flex flex-wrap gap-1 rounded-full bg-white p-1.5 shadow-lg ring-1 ring-black/5">
+          {TABS.map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={`cursor-pointer rounded-full px-6 py-2.5 text-sm font-semibold transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                tab === id
+                  ? "bg-primary text-white shadow-md shadow-primary/30"
+                  : "text-secondary hover:bg-primary-soft"
+              }`}
+              aria-current={tab === id ? "page" : undefined}
+              onClick={() => setTab(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </nav>
 
       <section className="page">
-        {error && <p className="mb-4 text-danger">{error}</p>}
+        {error && (
+          <p className="mb-6 rounded-xl bg-primary-soft px-4 py-3 text-primary-dark">
+            {error}
+          </p>
+        )}
 
         {tab === "catalogo" && (
           <>

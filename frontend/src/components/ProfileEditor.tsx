@@ -47,8 +47,11 @@ function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
   };
 
   return (
-    <form className="grid max-w-lg justify-items-start gap-5" onSubmit={handleSubmit}>
-      <label className="grid w-full gap-2 text-sm text-muted">
+    <form
+      className="card grid max-w-xl justify-items-start gap-6 p-6 sm:p-8"
+      onSubmit={handleSubmit}
+    >
+      <label className="grid w-full gap-2 text-sm font-medium text-secondary">
         <span>Objetivo calórico diario (kcal)</span>
         <input
           className="input"
@@ -60,17 +63,17 @@ function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
         />
       </label>
 
-      <details className="w-full border border-outline bg-white/45">
-        <summary className="cursor-pointer px-3.5 py-3">
+      <details className="w-full rounded-xl border border-line bg-surface/60 transition open:bg-white open:shadow-md">
+        <summary className="cursor-pointer rounded-xl px-4 py-3 font-medium select-none hover:bg-primary-soft">
           Alergias e intolerancias ({selected.length} seleccionadas)
         </summary>
-        <ul className="grid grid-cols-2 gap-2.5 px-3.5 pt-1.5 pb-4">
+        <ul className="grid grid-cols-1 gap-1 px-3 pt-1 pb-3 sm:grid-cols-2">
           {allergens.map((allergen) => (
             <li key={allergen.id}>
-              <label className="flex cursor-pointer items-center gap-2">
+              <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-primary-soft">
                 <input
                   type="checkbox"
-                  className="size-4 accent-ink"
+                  className="size-4 accent-primary"
                   checked={selected.includes(allergen.id)}
                   onChange={() => toggleAllergen(allergen.id)}
                 />
@@ -86,7 +89,11 @@ function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
       </button>
       {status && (
         <p
-          className={status.type === "ok" ? "font-bold text-ok" : "text-danger"}
+          className={
+            status.type === "ok"
+              ? "rounded-xl bg-ok-soft px-4 py-2.5 font-semibold text-ok"
+              : "rounded-xl bg-primary-soft px-4 py-2.5 text-primary-dark"
+          }
           role={status.type === "ok" ? "status" : "alert"}
         >
           {status.text}

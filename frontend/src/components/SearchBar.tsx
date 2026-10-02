@@ -15,14 +15,14 @@ function SearchBar({ onSearch }: SearchBarProps) {
 
   return (
     <form
-      className="flex w-full gap-2 md:w-auto"
+      className="flex w-full gap-3 md:w-auto"
       onSubmit={handleSubmit}
       role="search"
     >
       <label className="flex-1">
         <span className="sr-only">Buscar alimento</span>
         <input
-          className="input md:w-56"
+          className="input md:w-72"
           value={term}
           onChange={(event) => setTerm(event.target.value)}
           placeholder="Buscar alimento"

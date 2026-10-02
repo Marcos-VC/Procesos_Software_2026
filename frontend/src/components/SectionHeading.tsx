@@ -9,12 +9,13 @@ interface SectionHeadingProps {
 
 function SectionHeading({ eyebrow, title, children }: SectionHeadingProps) {
   return (
-    <div className="mb-6 flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
+    <div className="mb-8 flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
       <div>
-        <p className="mb-3.5 text-xs font-bold tracking-widest text-accent">
+        <p className="mb-2 flex items-center gap-2 text-xs font-bold tracking-widest text-primary">
+          <span className="h-0.5 w-6 rounded-full bg-primary" aria-hidden="true" />
           {eyebrow}
         </p>
-        <h2 className="text-4xl font-bold">{title}</h2>
+        <h2 className="text-3xl font-bold text-secondary sm:text-4xl">{title}</h2>
       </div>
       {children}
     </div>

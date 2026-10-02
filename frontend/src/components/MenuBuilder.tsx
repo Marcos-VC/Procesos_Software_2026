@@ -52,11 +52,11 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
 
   if (!days) {
     return status ? (
-      <p className="text-danger" role="alert">
+      <p className="rounded-xl bg-primary-soft px-4 py-3 text-primary-dark" role="alert">
         {status.text}
       </p>
     ) : (
-      <p className="text-muted">Cargando menú...</p>
+      <p className="card p-8 text-center text-muted">Cargando menú...</p>
     );
   }
 
@@ -94,9 +94,9 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
   );
 
   return (
-    <div className="grid gap-7">
-      <div className="grid max-w-2xl gap-5 sm:grid-cols-2">
-        <label className="grid gap-2 text-sm text-muted">
+    <div className="grid gap-6">
+      <div className="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8">
+        <label className="grid gap-2 text-sm font-medium text-secondary">
           <span>Día</span>
           <select
             className="input"
@@ -110,7 +110,7 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
             ))}
           </select>
         </label>
-        <label className="grid gap-2 text-sm text-muted">
+        <label className="grid gap-2 text-sm font-medium text-secondary">
           <span>Alimento</span>
           <select
             className="input"
@@ -127,27 +127,30 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
         </label>
       </div>
 
-      <div className="grid gap-3.5 md:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-3">
         {MEALS.map(([meal, label]) => (
           <section
-            className="grid content-start justify-items-start gap-3.5 border border-line bg-white/45 p-5"
+            className="card grid content-start justify-items-start gap-4 border-t-4 border-t-primary p-6"
             key={meal}
             aria-label={label}
           >
-            <h3 className="text-[1.35rem] font-bold">{label}</h3>
-            <button type="button" className="btn" onClick={() => addFood(meal)}>
+            <h3 className="text-xl font-bold text-secondary">{label}</h3>
+            <button type="button" className="btn w-full" onClick={() => addFood(meal)}>
               Añadir a {label}
             </button>
+            {days[day][meal].length === 0 && (
+              <p className="text-sm text-muted">Sin alimentos todavía</p>
+            )}
             <ul className="grid w-full gap-2">
               {days[day][meal].map((id, index) => (
                 <li
                   key={`${id}-${index}`}
-                  className="flex items-center justify-between gap-2"
+                  className="flex items-center justify-between gap-2 rounded-xl bg-surface px-4 py-2.5"
                 >
-                  <span>{foodsById.get(id)?.name ?? id}</span>
+                  <span className="font-medium">{foodsById.get(id)?.name ?? id}</span>
                   <button
                     type="button"
-                    className="cursor-pointer text-[0.8rem] text-danger underline hover:text-danger/70"
+                    className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-primary-dark transition hover:bg-primary-soft"
                     aria-label={`Quitar ${foodsById.get(id)?.name ?? id} de ${label}`}
                     onClick={() => removeFood(meal, index)}
                   >
@@ -160,9 +163,9 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
         ))}
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <p>
-          Total del día: <b>{Math.round(dayCalories)} kcal</b>
+      <div className="card flex flex-wrap items-center justify-between gap-4 p-6">
+        <p className="text-lg">
+          Total del día: <b className="text-primary-dark">{Math.round(dayCalories)} kcal</b>
         </p>
         <button type="button" className="btn" onClick={saveMenu}>
           Guardar menú
@@ -170,7 +173,11 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
       </div>
       {status && (
         <p
-          className={status.type === "ok" ? "font-bold text-ok" : "text-danger"}
+          className={
+            status.type === "ok"
+              ? "rounded-xl bg-ok-soft px-4 py-2.5 font-semibold text-ok"
+              : "rounded-xl bg-primary-soft px-4 py-2.5 text-primary-dark"
+          }
           role={status.type === "ok" ? "status" : "alert"}
         >
           {status.text}
