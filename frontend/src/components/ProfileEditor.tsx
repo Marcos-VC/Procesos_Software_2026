@@ -1,14 +1,26 @@
-import { useState } from "react";
-import { api } from "../api.js";
+import { useState, type FormEvent } from "react";
+import { api } from "../api";
+import type { Allergen, UserProfile } from "../types";
 
 // Edición del perfil nutricional: objetivo calórico y alergias/intolerancias
 // (listado desplegable con casillas). Guarda en el backend con PUT.
-function ProfileEditor({ user, allergens, onSaved }) {
+interface ProfileEditorProps {
+  user: UserProfile;
+  allergens: Allergen[];
+  onSaved: (user: UserProfile) => void;
+}
+
+interface Status {
+  type: "ok" | "error";
+  text: string;
+}
+
+function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
   const [selected, setSelected] = useState(user.medicalRestrictions.allergies);
   const [caloricGoal, setCaloricGoal] = useState(String(user.caloricGoal));
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState<Status | null>(null);
 
-  const toggleAllergen = (allergenId) => {
+  const toggleAllergen = (allergenId: string) => {
     setSelected((current) =>
       current.includes(allergenId)
         ? current.filter((item) => item !== allergenId)
@@ -16,7 +28,7 @@ function ProfileEditor({ user, allergens, onSaved }) {
     );
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus(null);
     try {
@@ -27,7 +39,10 @@ function ProfileEditor({ user, allergens, onSaved }) {
       onSaved(updated);
       setStatus({ type: "ok", text: "Perfil guardado correctamente" });
     } catch (error) {
-      setStatus({ type: "error", text: error.message });
+      setStatus({
+        type: "error",
+        text: error instanceof Error ? error.message : "No se pudo guardar el perfil",
+      });
     }
   };
 

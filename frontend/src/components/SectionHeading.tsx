@@ -1,5 +1,13 @@
+import type { ReactNode } from "react";
+
 // Cabecera de sección: etiqueta, título y, opcionalmente, una acción a la derecha.
-function SectionHeading({ eyebrow, title, children }) {
+interface SectionHeadingProps {
+  eyebrow: string;
+  title: string;
+  children?: ReactNode;
+}
+
+function SectionHeading({ eyebrow, title, children }: SectionHeadingProps) {
   return (
     <div className="mb-6 flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
       <div>

@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 // Buscador del catálogo: la búsqueda se lanza al pulsar "Buscar" (o Enter).
-function SearchBar({ onSearch }) {
+interface SearchBarProps {
+  onSearch: (term: string) => void;
+}
+
+function SearchBar({ onSearch }: SearchBarProps) {
   const [term, setTerm] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSearch(term.trim());
   };

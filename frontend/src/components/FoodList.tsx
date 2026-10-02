@@ -1,7 +1,14 @@
-import FoodItem from "./FoodItem.jsx";
+import type { Allergen, CatalogFood } from "../types";
+import FoodItem from "./FoodItem";
 
 // Lista de alimentos del catálogo. `foods === null` significa "cargando".
-function FoodList({ foods, allergenCatalog }) {
+interface FoodListProps {
+  /** `null` mientras se cargan. */
+  foods: CatalogFood[] | null;
+  allergenCatalog?: Record<string, Allergen | undefined>;
+}
+
+function FoodList({ foods, allergenCatalog = {} }: FoodListProps) {
   if (foods === null) {
     return <p className="text-muted">Cargando alimentos...</p>;
   }

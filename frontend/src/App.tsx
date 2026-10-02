@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
-import { api, demoUserId } from "./api.js";
-import FoodList from "./components/FoodList.jsx";
-import MenuBuilder from "./components/MenuBuilder.jsx";
-import ProfileEditor from "./components/ProfileEditor.jsx";
-import SearchBar from "./components/SearchBar.jsx";
-import SectionHeading from "./components/SectionHeading.jsx";
+import { api, demoUserId } from "./api";
+import FoodList from "./components/FoodList";
+import MenuBuilder from "./components/MenuBuilder";
+import ProfileEditor from "./components/ProfileEditor";
+import SearchBar from "./components/SearchBar";
+import SectionHeading from "./components/SectionHeading";
+import type { Allergen, CatalogFood, DailySummary, UserProfile } from "./types";
 
-const TABS = [
+type Tab = "catalogo" | "perfil" | "menu";
+
+const TABS: [Tab, string][] = [
   ["catalogo", "Catálogo"],
   ["perfil", "Perfil"],
   ["menu", "Menú"],
 ];
 
-function ProfileStat({ label, value }) {
+function ProfileStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid gap-2 bg-sage p-5">
       <span className="text-xs tracking-wider text-muted uppercase">{label}</span>
@@ -22,11 +25,11 @@ function ProfileStat({ label, value }) {
 }
 
 function App() {
-  const [tab, setTab] = useState("catalogo");
-  const [user, setUser] = useState(null);
-  const [summary, setSummary] = useState(null);
-  const [allergens, setAllergens] = useState([]);
-  const [foods, setFoods] = useState(null);
+  const [tab, setTab] = useState<Tab>("catalogo");
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [summary, setSummary] = useState<DailySummary | null>(null);
+  const [allergens, setAllergens] = useState<Allergen[]>([]);
+  const [foods, setFoods] = useState<CatalogFood[] | null>(null);
   const [query, setQuery] = useState("");
   // Se incrementa al guardar el perfil para recargar el catálogo con los bloqueos nuevos.
   const [profileVersion, setProfileVersion] = useState(0);
@@ -63,7 +66,7 @@ function App() {
     allergens.map((allergen) => [allergen.id, allergen]),
   );
 
-  const handleProfileSaved = (updatedUser) => {
+  const handleProfileSaved = (updatedUser: UserProfile) => {
     setUser(updatedUser);
     setProfileVersion((version) => version + 1);
   };

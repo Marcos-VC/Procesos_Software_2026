@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { api } from "../api.js";
+import { api } from "../api";
+import type { CatalogFood, DayKey, MealKey, WeekDays } from "../types";
 
-const DAYS = [
+const DAYS: [DayKey, string][] = [
   ["lunes", "Lunes"],
   ["martes", "Martes"],
   ["miercoles", "Miércoles"],
@@ -10,7 +11,7 @@ const DAYS = [
   ["sabado", "Sábado"],
   ["domingo", "Domingo"],
 ];
-const MEALS = [
+const MEALS: [MealKey, string][] = [
   ["desayuno", "Desayuno"],
   ["comida", "Comida"],
   ["cena", "Cena"],
@@ -18,12 +19,24 @@ const MEALS = [
 
 // Diseñador de menús: elige un día, un alimento del catálogo y asígnalo a
 // Desayuno, Comida o Cena. "Guardar menú" persiste la estructura en el backend.
-function MenuBuilder({ userId }) {
-  const [foods, setFoods] = useState([]);
-  const [days, setDays] = useState(null);
-  const [day, setDay] = useState(DAYS[0][0]);
+interface MenuBuilderProps {
+  userId: string;
+}
+
+interface Status {
+  type: "ok" | "error";
+  text: string;
+}
+
+const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Error inesperado";
+
+function MenuBuilder({ userId }: MenuBuilderProps) {
+  const [foods, setFoods] = useState<CatalogFood[]>([]);
+  const [days, setDays] = useState<WeekDays | null>(null);
+  const [day, setDay] = useState<DayKey>(DAYS[0][0]);
   const [foodId, setFoodId] = useState("");
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState<Status | null>(null);
 
   useEffect(() => {
     Promise.all([api.getFoods("", userId), api.getMenu(userId)])
@@ -32,7 +45,9 @@ function MenuBuilder({ userId }) {
         setDays(menu.days);
         setFoodId(foodData.find((food) => !food.blocked)?.id ?? "");
       })
-      .catch((error) => setStatus({ type: "error", text: error.message }));
+      .catch((error: unknown) =>
+        setStatus({ type: "error", text: errorMessage(error) }),
+      );
   }, [userId]);
 
   if (!days) {
@@ -47,7 +62,7 @@ function MenuBuilder({ userId }) {
 
   const foodsById = new Map(foods.map((food) => [food.id, food]));
 
-  const addFood = (meal) => {
+  const addFood = (meal: MealKey) => {
     if (!foodId) return;
     setStatus(null);
     setDays({
@@ -56,7 +71,7 @@ function MenuBuilder({ userId }) {
     });
   };
 
-  const removeFood = (meal, index) => {
+  const removeFood = (meal: MealKey, index: number) => {
     setStatus(null);
     setDays({
       ...days,
@@ -69,7 +84,7 @@ function MenuBuilder({ userId }) {
       await api.saveMenu(userId, days);
       setStatus({ type: "ok", text: "Menú guardado correctamente" });
     } catch (error) {
-      setStatus({ type: "error", text: error.message });
+      setStatus({ type: "error", text: errorMessage(error) });
     }
   };
 
@@ -86,7 +101,7 @@ function MenuBuilder({ userId }) {
           <select
             className="input"
             value={day}
-            onChange={(event) => setDay(event.target.value)}
+            onChange={(event) => setDay(event.target.value as DayKey)}
           >
             {DAYS.map(([value, label]) => (
               <option key={value} value={value}>
@@ -105,7 +120,7 @@ function MenuBuilder({ userId }) {
             {foods.map((food) => (
               <option key={food.id} value={food.id} disabled={food.blocked}>
                 {food.name}
-                {food.blocked ? ` (bloqueado: ${food.blockedBy.join(", ")})` : ""}
+                {food.blocked ? ` (bloqueado: ${food.blockedBy?.join(", ")})` : ""}
               </option>
             ))}
           </select>

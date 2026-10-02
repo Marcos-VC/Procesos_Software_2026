@@ -1,10 +1,16 @@
 import { useState } from "react";
+import type { Allergen, CatalogFood } from "../types";
 
 // Ficha de un alimento. Cada alérgeno se muestra como icono; al pulsarlo se
 // despliega el nombre de la alergia o intolerancia y su explicación.
-function FoodItem({ food, allergenCatalog }) {
-  const [openAllergen, setOpenAllergen] = useState(null);
-  const openInfo = allergenCatalog[openAllergen];
+interface FoodItemProps {
+  food: CatalogFood;
+  allergenCatalog?: Record<string, Allergen | undefined>;
+}
+
+function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
+  const [openAllergen, setOpenAllergen] = useState<string | null>(null);
+  const openInfo = openAllergen ? allergenCatalog[openAllergen] : undefined;
 
   return (
     <article
@@ -66,7 +72,7 @@ function FoodItem({ food, allergenCatalog }) {
 
       {food.blocked && (
         <p className="mt-5 text-[0.8rem] font-bold text-danger">
-          Bloqueado por tu perfil: {food.blockedBy.join(", ")}
+          Bloqueado por tu perfil: {food.blockedBy?.join(", ")}
         </p>
       )}
     </article>
