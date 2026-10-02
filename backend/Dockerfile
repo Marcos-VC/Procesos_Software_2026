@@ -1,7 +1,8 @@
 FROM node:22-alpine
 
 WORKDIR /app
-COPY backend/package*.json ./
+# .npmrc desactiva los scripts de instalación (ver el comentario dentro del fichero).
+COPY backend/package.json backend/package-lock.json backend/.npmrc ./
 RUN npm install
 
 COPY backend/src ./src

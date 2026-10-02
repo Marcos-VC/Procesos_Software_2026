@@ -13,3 +13,9 @@ test-results/
 .claude/
 CLAUDE.local.md
 CLAUDE.md
+
+# SQLite (Sprint 2)
+backend/data/
+*.db
+*.db-wal
+*.db-shm
