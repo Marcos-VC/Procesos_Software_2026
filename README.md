@@ -1,4 +1,4 @@
-# Healthy Life - Módulo E6: Gestor Nutricional y Catálogo de Alimentos
+# HexaHealth - Módulo E6: Gestor Nutricional y Catálogo de Alimentos
 
 Proyecto académico de la asignatura **Procesos de Software** · 3.º Grado en Ingeniería del Software · Universidad Rey Juan Carlos
 
