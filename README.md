@@ -45,7 +45,7 @@ Nuestro módulo se encarga de:
 
 ## Despliegue y Ejecución (Docker)
 
-El proyecto está preparado para ejecutarse mediante contenedores Docker, tal y como exige la rúbrica del Sprint 1.
+El proyecto está preparado para ejecutarse mediante contenedores Docker.
 
 Para levantar el entorno completo, ejecuta desde la raíz del repositorio:
 
@@ -66,7 +66,7 @@ backend/
     src/app.js             # Express: middlewares, rutas y errores
     src/routes/            # food, user, nutrition, menu
     src/controllers/       # lógica de cada endpoint
-    src/services/          # reglas de negocio (usuarios, menús)
+    src/services/          # reglas de negocio (usuarios, alimentos, menús, nutrición)
     src/store/jsonStore.js # lectura/escritura de los mocks JSON (en uso)
     src/store/sqliteStore.js # SQLite: conexión y tablas (preparado, sin uso en el Sprint 1)
     Dockerfile
