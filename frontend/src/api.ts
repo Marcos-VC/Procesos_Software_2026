@@ -1,6 +1,6 @@
 import type {
   Allergen,
-  CatalogFood,
+  Food,
   DailySummary,
   Menu,
   ProfileChanges,
@@ -39,12 +39,8 @@ const sendJson = <T>(method: "PUT" | "POST", path: string, payload: unknown) =>
   });
 
 export const api = {
-  getFoods: (search: string, userId?: string) =>
-    request<CatalogFood[]>(
-      `/api/foods?${new URLSearchParams(
-        userId ? { search, userId } : { search },
-      ).toString()}`,
-    ),
+  getFoods: (search: string) =>
+    request<Food[]>(`/api/foods?${new URLSearchParams({ search }).toString()}`),
   getAllergens: () => request<Allergen[]>("/api/allergens"),
   getProfile: (userId: string) =>
     request<UserProfile>(`/api/users/${userId}/nutritional-profile`),

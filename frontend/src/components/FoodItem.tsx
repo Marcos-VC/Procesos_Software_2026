@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type { Allergen, CatalogFood } from "../types";
+import type { Allergen, Food } from "../types";
 
 // Ficha de un alimento. Cada alérgeno se muestra como icono; al pulsarlo se
 // despliega el nombre de la alergia o intolerancia y su explicación.
 interface FoodItemProps {
-  food: CatalogFood;
+  food: Food;
   allergenCatalog?: Record<string, Allergen | undefined>;
 }
 
@@ -13,13 +13,8 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
   const openInfo = openAllergen ? allergenCatalog[openAllergen] : undefined;
 
   return (
-    <article
-      className={`card card-hover flex flex-col p-6 ${
-        food.blocked ? "ring-1 ring-warning/40" : ""
-      }`}
-    >
-      {/* Si el alimento está bloqueado se atenúa su contenido, pero no el aviso. */}
-      <div className={food.blocked ? "opacity-55" : undefined}>
+    <article className="card card-hover flex flex-col p-6">
+      <div>
         <div className="flex items-center justify-between gap-2">
           <span className="font-mono text-xs text-muted">{food.id.slice(0, 8)}</span>
           <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary-dark">
@@ -63,7 +58,6 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
             })}
           </ul>
         )}
-
       </div>
 
       {openAllergen && (
@@ -76,11 +70,6 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
         </p>
       )}
 
-      {food.blocked && (
-        <p className="mt-4 rounded-xl bg-warning-soft px-4 py-2.5 text-sm font-semibold text-warning">
-          Bloqueado por tu perfil: {food.blockedBy?.join(", ")}
-        </p>
-      )}
     </article>
   );
 }

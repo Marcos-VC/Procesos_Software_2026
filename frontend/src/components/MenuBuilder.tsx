@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import type { CatalogFood, DayKey, MealKey, WeekDays } from "../types";
+import type { Food, DayKey, MealKey, WeekDays } from "../types";
 
 const DAYS: [DayKey, string][] = [
   ["lunes", "Lunes"],
@@ -32,18 +32,18 @@ const errorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Error inesperado";
 
 function MenuBuilder({ userId }: MenuBuilderProps) {
-  const [foods, setFoods] = useState<CatalogFood[]>([]);
+  const [foods, setFoods] = useState<Food[]>([]);
   const [days, setDays] = useState<WeekDays | null>(null);
   const [day, setDay] = useState<DayKey>(DAYS[0][0]);
   const [foodId, setFoodId] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
 
   useEffect(() => {
-    Promise.all([api.getFoods("", userId), api.getMenu(userId)])
+    Promise.all([api.getFoods(""), api.getMenu(userId)])
       .then(([foodData, menu]) => {
         setFoods(foodData);
         setDays(menu.days);
-        setFoodId(foodData.find((food) => !food.blocked)?.id ?? "");
+        setFoodId(foodData[0]?.id ?? "");
       })
       .catch((error: unknown) =>
         setStatus({ type: "error", text: errorMessage(error) }),
@@ -88,11 +88,6 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
     }
   };
 
-  const dayCalories = MEALS.flatMap(([meal]) => days[day][meal]).reduce(
-    (total, id) => total + (foodsById.get(id)?.calories ?? 0),
-    0,
-  );
-
   return (
     <div className="grid gap-6">
       <div className="card grid gap-5 p-6 sm:grid-cols-2 sm:p-8">
@@ -118,9 +113,8 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
             onChange={(event) => setFoodId(event.target.value)}
           >
             {foods.map((food) => (
-              <option key={food.id} value={food.id} disabled={food.blocked}>
+              <option key={food.id} value={food.id}>
                 {food.name}
-                {food.blocked ? ` (bloqueado: ${food.blockedBy?.join(", ")})` : ""}
               </option>
             ))}
           </select>
@@ -163,10 +157,7 @@ function MenuBuilder({ userId }: MenuBuilderProps) {
         ))}
       </div>
 
-      <div className="card flex flex-wrap items-center justify-between gap-4 p-6">
-        <p className="text-lg">
-          Total del día: <b className="text-primary-dark">{Math.round(dayCalories)} kcal</b>
-        </p>
+      <div className="card flex justify-end p-6">
         <button type="button" className="btn" onClick={saveMenu}>
           Guardar menú
         </button>

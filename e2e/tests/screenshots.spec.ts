@@ -23,17 +23,15 @@ test("capturas de las pestañas Catálogo, Perfil y Menú", async ({ page }) => 
   await expect(page.getByRole("heading", { name: "Pan de trigo" })).toBeVisible();
   await page.screenshot({ path: capture("catalogo"), fullPage: true });
 
-  // Perfil: objetivo calórico y alergias rellenados y guardados.
+  // Perfil: objetivo calórico rellenado y guardado.
   await page.getByRole("button", { name: "Perfil" }).click();
   await expect(page.getByRole("heading", { name: "Perfil nutricional" })).toBeVisible();
   await page.getByLabel("Objetivo calórico diario (kcal)").fill("2100");
-  await page.getByText(/Alergias e intolerancias/).click();
-  await page.getByRole("checkbox", { name: /Huevo/ }).check();
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByText("Perfil guardado correctamente")).toBeVisible();
   await page.screenshot({ path: capture("perfil"), fullPage: true });
 
-  // Menú: alimentos permitidos por el perfil en Desayuno, Comida y Cena.
+  // Menú: alimentos asignados a Desayuno, Comida y Cena.
   await page.getByRole("button", { name: "Menú" }).click();
   await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();
   await page.getByLabel("Día").selectOption("lunes");
