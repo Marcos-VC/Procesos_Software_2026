@@ -101,7 +101,8 @@ cd backend && npm install && npm run dev    # API en :3000
 cd frontend && npm install && npm run dev   # Front en :5173
 
 cd e2e && npm install && npm run install:browsers   # solo la primera vez
-cd e2e && npm test
+cd e2e && npm test                            # batería E2E
+cd e2e && npm run screenshots                 # regenera docs/assets/*.png
 ```
 
 Los tests arrancan su propio backend (:3100) sobre una copia temporal de `mocks/` y el frontend (:5174), así que no modifican los datos del repositorio ni necesitan Docker.
@@ -197,6 +198,22 @@ En este primer Sprint se han implementado las siguientes funcionalidades princip
 - **[HU 3.1]** Creación básica de menú (Desayuno, Comida y Cena por día).
 
 Los criterios de aceptación de las cuatro historias están cubiertos por los tests E2E de la carpeta `e2e/tests`.
+
+### Aspecto final de la interfaz
+
+Interfaz con la identidad visual de la URJC (rojo corporativo y gris oscuro). Las capturas se generan con `cd e2e && npm run screenshots` (ver `e2e/tests/screenshots.spec.ts`).
+
+**Catálogo** — búsqueda, macros, iconos de alérgenos y alimentos bloqueados por el perfil:
+
+![Pestaña Catálogo](docs/assets/catalogo.png)
+
+**Perfil** — objetivo calórico y alergias e intolerancias:
+
+![Pestaña Perfil](docs/assets/perfil.png)
+
+**Menú** — diseñador de menús con Desayuno, Comida y Cena:
+
+![Pestaña Menú](docs/assets/menu.png)
 
 ### Historias de Usuario del Sprint 1
 

@@ -5,6 +5,8 @@ const webPort = 5174;
 
 export default defineConfig({
   testDir: "./tests",
+  // Las capturas del README se generan aparte: npm run screenshots.
+  testIgnore: "**/screenshots.spec.ts",
   // Los tests comparten el estado del backend (mocks JSON): se ejecutan en serie.
   fullyParallel: false,
   workers: 1,
