@@ -5,7 +5,7 @@ import MenuBuilder from "./components/MenuBuilder";
 import ProfileEditor from "./components/ProfileEditor";
 import SearchBar from "./components/SearchBar";
 import SectionHeading from "./components/SectionHeading";
-import type { Allergen, CatalogFood, DailySummary, UserProfile } from "./types";
+import type { Allergen, DailySummary, Food, UserProfile } from "./types";
 
 type Tab = "catalogo" | "perfil" | "menu";
 
@@ -32,10 +32,8 @@ function App() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [summary, setSummary] = useState<DailySummary | null>(null);
   const [allergens, setAllergens] = useState<Allergen[]>([]);
-  const [foods, setFoods] = useState<CatalogFood[] | null>(null);
+  const [foods, setFoods] = useState<Food[] | null>(null);
   const [query, setQuery] = useState("");
-  // Se incrementa al guardar el perfil para recargar el catálogo con los bloqueos nuevos.
-  const [profileVersion, setProfileVersion] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -55,7 +53,7 @@ function App() {
   useEffect(() => {
     let ignore = false;
     api
-      .getFoods(query, demoUserId)
+      .getFoods(query)
       .then((data) => {
         if (!ignore) setFoods(data);
       })
@@ -63,16 +61,11 @@ function App() {
     return () => {
       ignore = true;
     };
-  }, [query, profileVersion]);
+  }, [query]);
 
   const allergenCatalog = Object.fromEntries(
     allergens.map((allergen) => [allergen.id, allergen]),
   );
-
-  const handleProfileSaved = (updatedUser: UserProfile) => {
-    setUser(updatedUser);
-    setProfileVersion((version) => version + 1);
-  };
 
   return (
     <main className="min-h-screen pb-24">
@@ -97,7 +90,7 @@ function App() {
       </header>
 
       <section
-        className="page relative z-10 -mt-20 grid grid-cols-1 gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-5"
+        className="page relative z-10 -mt-20 grid grid-cols-1 gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-4"
         aria-label="Perfil nutricional"
       >
         <ProfileStat
@@ -112,12 +105,6 @@ function App() {
         <ProfileStat
           label="Consumido hoy"
           value={summary ? `${summary.totalCaloriesConsumed} kcal` : "..."}
-        />
-        <ProfileStat
-          label="Evitar"
-          value={
-            user ? user.medicalRestrictions.allergies.join(", ") || "Nada" : "..."
-          }
         />
       </section>
 
@@ -160,13 +147,7 @@ function App() {
         {tab === "perfil" && (
           <>
             <SectionHeading eyebrow="PERFIL" title="Perfil nutricional" />
-            {user && allergens.length > 0 && (
-              <ProfileEditor
-                user={user}
-                allergens={allergens}
-                onSaved={handleProfileSaved}
-              />
-            )}
+            {user && <ProfileEditor user={user} onSaved={setUser} />}
           </>
         )}
 

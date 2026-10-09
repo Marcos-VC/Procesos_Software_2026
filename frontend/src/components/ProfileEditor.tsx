@@ -1,12 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../api";
-import type { Allergen, UserProfile } from "../types";
+import type { UserProfile } from "../types";
 
-// Edición del perfil nutricional: objetivo calórico y alergias/intolerancias
-// (listado desplegable con casillas). Guarda en el backend con PUT.
+// Edición del perfil nutricional: objetivo calórico diario. Guarda en el backend con PUT.
 interface ProfileEditorProps {
   user: UserProfile;
-  allergens: Allergen[];
   onSaved: (user: UserProfile) => void;
 }
 
@@ -15,18 +13,9 @@ interface Status {
   text: string;
 }
 
-function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
-  const [selected, setSelected] = useState(user.medicalRestrictions.allergies);
+function ProfileEditor({ user, onSaved }: ProfileEditorProps) {
   const [caloricGoal, setCaloricGoal] = useState(String(user.caloricGoal));
   const [status, setStatus] = useState<Status | null>(null);
-
-  const toggleAllergen = (allergenId: string) => {
-    setSelected((current) =>
-      current.includes(allergenId)
-        ? current.filter((item) => item !== allergenId)
-        : [...current, allergenId],
-    );
-  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,7 +23,6 @@ function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
     try {
       const updated = await api.updateProfile(user.userId, {
         caloricGoal: Number(caloricGoal),
-        medicalRestrictions: { allergies: selected },
       });
       onSaved(updated);
       setStatus({ type: "ok", text: "Perfil guardado correctamente" });
@@ -62,27 +50,6 @@ function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
           onChange={(event) => setCaloricGoal(event.target.value)}
         />
       </label>
-
-      <details className="w-full rounded-xl border border-line bg-surface/60 transition open:bg-white open:shadow-md">
-        <summary className="cursor-pointer rounded-xl px-4 py-3 font-medium select-none hover:bg-primary-soft">
-          Alergias e intolerancias ({selected.length} seleccionadas)
-        </summary>
-        <ul className="grid grid-cols-1 gap-1 px-3 pt-1 pb-3 sm:grid-cols-2">
-          {allergens.map((allergen) => (
-            <li key={allergen.id}>
-              <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-primary-soft">
-                <input
-                  type="checkbox"
-                  className="size-4 accent-primary"
-                  checked={selected.includes(allergen.id)}
-                  onChange={() => toggleAllergen(allergen.id)}
-                />
-                <span aria-hidden="true">{allergen.icon}</span> {allergen.name}
-              </label>
-            </li>
-          ))}
-        </ul>
-      </details>
 
       <button type="submit" className="btn">
         Guardar cambios

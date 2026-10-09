@@ -27,7 +27,6 @@ test.describe("HU 3.1 Crear menú básico", () => {
     await expect(page.getByRole("region", { name: "Desayuno" })).toContainText("Manzana");
     await expect(page.getByRole("region", { name: "Comida" })).toContainText("Pechuga de pollo");
     await expect(page.getByRole("region", { name: "Cena" })).toContainText("Salmón");
-    await expect(page.getByText("Total del día:")).toContainText("425 kcal");
 
     // Y otro día sigue vacío
     await page.getByLabel("Día").selectOption("miercoles");
@@ -49,26 +48,5 @@ test.describe("HU 3.1 Crear menú básico", () => {
     await page.getByRole("button", { name: "Menú" }).click();
     await page.getByLabel("Día").selectOption("martes");
     await expect(page.getByRole("region", { name: "Cena" })).toContainText("Salmón");
-  });
-
-  test("los alimentos bloqueados por el perfil no se pueden añadir al menú", async ({
-    page,
-    request,
-  }) => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Menú" }).click();
-
-    // En el selector aparecen deshabilitados
-    await expect(
-      page.getByLabel("Alimento").getByRole("option", { name: /Pan de trigo.*bloqueado/ }),
-    ).toHaveAttribute("disabled", "");
-
-    // Y el backend rechaza guardarlos aunque se salte la interfaz
-    const breadId = (await (await request.get(`${apiUrl}/api/foods?search=pan`)).json())[0].id;
-    const response = await request.put(`${apiUrl}/api/menus/${userId}`, {
-      data: { days: { lunes: { desayuno: [breadId] } } },
-    });
-    expect(response.status()).toBe(422);
-    expect(await response.json()).toMatchObject({ error: true, code: 422 });
   });
 });

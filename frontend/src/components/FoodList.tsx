@@ -1,10 +1,10 @@
-import type { Allergen, CatalogFood } from "../types";
+import type { Allergen, Food } from "../types";
 import FoodItem from "./FoodItem";
 
 // Lista de alimentos del catálogo. `foods === null` significa "cargando".
 interface FoodListProps {
   /** `null` mientras se cargan. */
-  foods: CatalogFood[] | null;
+  foods: Food[] | null;
   allergenCatalog?: Record<string, Allergen | undefined>;
 }
 

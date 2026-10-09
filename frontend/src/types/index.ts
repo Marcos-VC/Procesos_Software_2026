@@ -24,12 +24,6 @@ export interface Food {
   allergens: AllergenId[];
 }
 
-/** Alimento tal y como lo devuelve GET /api/foods?userId=: con el bloqueo según el perfil. */
-export interface CatalogFood extends Food {
-  blocked?: boolean;
-  blockedBy?: AllergenId[];
-}
-
 export interface MedicalRestrictions {
   allergies: AllergenId[];
   dietType: string;
@@ -46,9 +40,7 @@ export interface UserProfile {
 
 /** Cambios admitidos por PUT /api/users/:userId/nutritional-profile (parciales). */
 export interface ProfileChanges {
-  weight?: number;
   caloricGoal?: number;
-  medicalRestrictions?: Partial<MedicalRestrictions>;
 }
 
 /** Resumen del día (contrato con E2/E5). */
