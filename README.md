@@ -39,7 +39,7 @@ Nuestro módulo se encarga de:
 - **Datos:** en el Sprint 1 se mantienen los ficheros **JSON** de la carpeta `mocks/`. **Datos (más adelante):** **SQLite**, por su persistencia real en archivo y sin necesidad de administrar servidores complejos. La infraestructura (conexión y tablas de usuarios, alimentos y menús) ya está preparada en `backend/src/store/sqliteStore.js`, pero **sin uso activo**: la migración real se hará en el Sprint 2.
 - **Tests E2E:** Playwright (carpeta `e2e/`).
 - **Control de versiones y despliegue:** Git, GitHub y Docker.
-- **Seguridad:** tokens JWT (JSON Web Tokens) en las cabeceras HTTP para la sesión del usuario.
+- **Seguridad:** tokens JWT (JSON Web Tokens) en las cabeceras HTTP para la sesión del usuario. **Pendiente (Sprint 2):** en el Sprint 1 no hay autenticación y el frontend usa un usuario de demo.
 
 ---
 
@@ -65,7 +65,7 @@ backend/
     src/server.js          # arranque (listen)
     src/app.js             # Express: middlewares, rutas y errores
     src/routes/            # food, user, nutrition, menu
-    src/controllers/       # lógica de cada endpoint
+    src/controllers/       # reciben la petición, llaman al servicio y responden
     src/services/          # reglas de negocio (usuarios, alimentos, menús, nutrición)
     src/store/jsonStore.js # lectura/escritura de los mocks JSON (en uso)
     src/store/sqliteStore.js # SQLite: conexión y tablas (preparado, sin uso en el Sprint 1)
