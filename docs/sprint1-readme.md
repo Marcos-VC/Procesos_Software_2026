@@ -8,7 +8,7 @@ Documentación detallada del incremento entregado en el Sprint 1. Para la visió
 | --- | --- | --- | --- | --- |
 | [SCRUM-21](https://procesossoftware.atlassian.net/browse/SCRUM-21) | HU 1.1 Buscar un alimento | 3 | `feature/SCRUM-21-buscar-alimentos` | `e2e/tests/catalogo.spec.js` |
 | [SCRUM-27](https://procesossoftware.atlassian.net/browse/SCRUM-27) | HU 1.2 Ver iconos de ingredientes (alérgenos) | 2 | `feature/SCRUM-27-iconos-alergenos` | `e2e/tests/catalogo.spec.js` |
-| [SCRUM-17](https://procesossoftware.atlassian.net/browse/SCRUM-17) | HU 2.1 Indicar alérgenos e intolerancias | 3 | `feature/SCRUM-17-perfil-alergias` | `e2e/tests/perfil.spec.js` |
+| [SCRUM-17](https://procesossoftware.atlassian.net/browse/SCRUM-17) | HU 2.1 Fijar objetivo calórico diario | 3 | `feature/SCRUM-17-perfil-alergias` | `e2e/tests/perfil.spec.js` |
 | [SCRUM-34](https://procesossoftware.atlassian.net/browse/SCRUM-34) | HU 3.1 Creación de menús | 5 | `feature/SCRUM-34-crear-menu` | `e2e/tests/menu.spec.js` |
 
 ## Historias de Usuario
@@ -31,22 +31,21 @@ Cada alimento del catálogo muestra un icono por cada alérgeno que contiene.
 - **Backend:** `GET /api/allergens` devuelve el catálogo de alérgenos (`id`, `name`, `icon`, `description`) desde `mocks/mock_alergenos.json`.
 - **Frontend:** `FoodItem` (botones con icono y tooltip accesible).
 
-### HU 2.1 · Indicar alérgenos e intolerancias (SCRUM-17)
+### HU 2.1 · Fijar objetivo calórico diario (SCRUM-17)
 
-El usuario configura su perfil nutricional: qué alergias o intolerancias tiene y su objetivo calórico diario. Esas preferencias activan el **bloqueo automático** de ingredientes prohibidos.
+El usuario fija su objetivo calórico diario en su perfil nutricional.
 
-- **AC1:** dado que el usuario está en la pantalla de edición de su perfil, cuando selecciona una o varias alergias del listado desplegable y guarda los cambios, entonces la app actualiza sus preferencias en el sistema (se guardan en `mocks/mock_usuarios.json`).
-- **Efecto en el resto de la app:** en el catálogo los alimentos con alérgenos del perfil se atenúan y muestran "Bloqueado por tu perfil", y en el menú no se pueden añadir.
-- **Backend:** `PUT /api/users/{userId}/nutritional-profile` (valida que las alergias existan en el catálogo y las normaliza) y `GET /api/foods?userId=` (marca `blocked` y `blockedBy`).
+- **AC1:** dado que el usuario está en la pantalla de edición de su perfil, cuando indica su objetivo calórico diario y guarda los cambios, entonces la app actualiza el objetivo en el sistema (se guarda en `mocks/mock_usuarios.json`) y persiste tras recargar.
+- **Backend:** `PUT /api/users/{userId}/nutritional-profile` (valida que `caloricGoal` sea un entero entre 500 y 10000).
 - **Frontend:** `ProfileEditor` (pestaña "Perfil").
 
 ### HU 3.1 · Creación de menús (SCRUM-34)
 
 El usuario diseña su menú semanal asignando alimentos del catálogo a Desayuno, Comida o Cena de cada día.
 
-- **AC1:** dado que el usuario está en el diseñador de menús, cuando selecciona alimentos del catálogo y los asigna a Desayuno, Comida o Cena, entonces la app los añade a la estructura de ese día. Además muestra las calorías totales del día y permite quitar elementos.
+- **AC1:** dado que el usuario está en el diseñador de menús, cuando selecciona alimentos del catálogo y los asigna a Desayuno, Comida o Cena, entonces la app los añade a la estructura de ese día. Permite además quitar elementos.
 - **Guardado:** "Guardar menú" persiste el menú (con un UUID v4) en `mocks/mock_menus.json`; sobrevive a una recarga.
-- **Reglas:** el backend rechaza con 422 los alimentos bloqueados por el perfil y con 400 los días, secciones o alimentos desconocidos.
+- **Reglas:** el backend rechaza con 400 los días, secciones o alimentos desconocidos.
 - **Backend:** `GET` y `PUT /api/menus/{userId}`.
 - **Frontend:** `MenuBuilder` (pestaña "Menú").
 
@@ -91,7 +90,7 @@ Recuerda ejecutar `npm install` en `backend/` y `frontend/` si no usas Docker.
 | Criterio | Estado |
 | --- | --- |
 | Código revisado mediante pull request por al menos otro miembro | Hecho |
-| Pruebas escritas y en verde (CI a partir del Sprint 2) | Hecho: 7 tests E2E en verde en local |
+| Pruebas escritas y en verde (CI a partir del Sprint 2) | Hecho: 6 tests E2E en verde en local |
 | Documentación (README/API) actualizada | Hecho |
 | Criterios de aceptación verificados por el delegado de PO | Hecho |
 | Sin secretos ni credenciales en el código ni en el historial | Hecho |

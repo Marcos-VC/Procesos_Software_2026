@@ -166,11 +166,11 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 expone e
 
 | Método | Ruta                                      | Descripción                                                                                                                                     |
 | ------ | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET    | `/api/foods?search=&userId=`              | Catálogo. Con `userId` marca `blocked`/`blockedBy` según las alergias del perfil                                                                |
+| GET    | `/api/foods?search=`                      | Catálogo de alimentos, con búsqueda por nombre (sin distinguir mayúsculas ni tildes)                                                            |
 | GET    | `/api/allergens`                          | Catálogo de alérgenos (id, nombre, icono y explicación)                                                                                         |
-| PUT    | `/api/users/{userId}/nutritional-profile` | Actualiza alergias, objetivo calórico, etc. (escribe en `mock_usuarios.json`)                                                                   |
+| PUT    | `/api/users/{userId}/nutritional-profile` | Actualiza el objetivo calórico diario (`caloricGoal`) (escribe en `mock_usuarios.json`)                                                         |
 | GET    | `/api/menus/{userId}`                     | Menú del usuario (vacío si aún no tiene)                                                                                                        |
-| PUT    | `/api/menus/{userId}`                     | Guarda el menú `{ days: { lunes: { desayuno: [foodId], comida: [], cena: [] }, ... } }`. Rechaza con 422 los alimentos bloqueados por el perfil |
+| PUT    | `/api/menus/{userId}`                     | Guarda el menú `{ days: { lunes: { desayuno: [foodId], comida: [], cena: [] }, ... } }`                                                        |
 
 ---
 
@@ -194,7 +194,7 @@ En este primer Sprint se han implementado las siguientes funcionalidades princip
 
 - **[HU 1.1]** Búsqueda de alimentos y macros.
 - **[HU 1.2]** Visualización de iconos de alérgenos en el catálogo.
-- **[HU 2.1]** Configuración del perfil nutricional: alergias/intolerancias y objetivo calórico.
+- **[HU 2.1]** Fijar el objetivo calórico diario en el perfil nutricional.
 - **[HU 3.1]** Creación básica de menú (Desayuno, Comida y Cena por día).
 
 Los criterios de aceptación de las cuatro historias están cubiertos por los tests E2E de la carpeta `e2e/tests`.
@@ -203,11 +203,11 @@ Los criterios de aceptación de las cuatro historias están cubiertos por los te
 
 Interfaz con la identidad visual de la URJC (rojo corporativo y gris oscuro). Las capturas se generan con `cd e2e && npm run screenshots` (ver `e2e/tests/screenshots.spec.ts`).
 
-**Catálogo** — búsqueda, macros, iconos de alérgenos y alimentos bloqueados por el perfil:
+**Catálogo** — búsqueda por nombre, macros e iconos de alérgenos:
 
 ![Pestaña Catálogo](docs/assets/catalogo.png)
 
-**Perfil** — objetivo calórico y alergias e intolerancias:
+**Perfil** — objetivo calórico diario:
 
 ![Pestaña Perfil](docs/assets/perfil.png)
 
@@ -221,7 +221,7 @@ Interfaz con la identidad visual de la URJC (rojo corporativo y gris oscuro). La
 | ------------------------------------------------------------------ | ---------------------------------------- | ------ | ---------------------------------------------------- |
 | [SCRUM-21](https://procesossoftware.atlassian.net/browse/SCRUM-21) | HU 1.1 Buscar un alimento                | 3      | Buscar en el catálogo y ver calorías y macros        |
 | [SCRUM-27](https://procesossoftware.atlassian.net/browse/SCRUM-27) | HU 1.2 Ver iconos de alérgenos           | 2      | Ver iconos de alérgenos y su explicación             |
-| [SCRUM-17](https://procesossoftware.atlassian.net/browse/SCRUM-17) | HU 2.1 Indicar alérgenos e intolerancias | 3      | Configurar el perfil y bloquear alimentos prohibidos |
+| [SCRUM-17](https://procesossoftware.atlassian.net/browse/SCRUM-17) | HU 2.1 Fijar objetivo calórico diario   | 3      | Configurar el objetivo calórico en el perfil         |
 | [SCRUM-34](https://procesossoftware.atlassian.net/browse/SCRUM-34) | HU 3.1 Creación de menús                 | 5      | Diseñar el menú con Desayuno, Comida y Cena          |
 
 > **Más información:** criterios de aceptación, endpoints, componentes, orden de los PR, cómo revisar y probar cada rama y estado de la Definition of Done en [docs/sprint1-readme.md](docs/sprint1-readme.md).

@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { HttpError } from "../errors.js";
 import { readJson, updateJson } from "../store/jsonStore.js";
-import { normalizeAllergen } from "../utils/text.js";
 import { findUser } from "./userService.js";
 
 const MENUS_FILE = "mock_menus.json";
@@ -21,16 +20,15 @@ export async function getMenu(userId) {
 /**
  * Valida la estructura { dia: { desayuno: [foodId], comida: [...], cena: [...] } }
  * y devuelve una copia completa (todos los días y comidas presentes).
- * Rechaza alimentos inexistentes y alimentos con alérgenos prohibidos por el perfil.
+ * Rechaza alimentos inexistentes.
  */
-async function parseDays(days, user) {
+async function parseDays(days) {
   if (typeof days !== "object" || days === null || Array.isArray(days)) {
     throw new HttpError(400, "days debe ser un objeto con los días de la semana");
   }
 
   const foods = await readJson("mock_alimentos.json");
   const foodsById = new Map(foods.map((food) => [food.id, food]));
-  const forbidden = new Set(user.medicalRestrictions.allergies.map(normalizeAllergen));
 
   const unknownDay = Object.keys(days).find((day) => !DAYS.includes(day));
   if (unknownDay) {
@@ -58,13 +56,6 @@ async function parseDays(days, user) {
         if (!food) {
           throw new HttpError(400, `Alimento no encontrado: ${foodId}`);
         }
-        const blockedBy = food.allergens.filter((allergen) => forbidden.has(allergen));
-        if (blockedBy.length > 0) {
-          throw new HttpError(
-            422,
-            `"${food.name}" está bloqueado por tu perfil (${blockedBy.join(", ")})`,
-          );
-        }
         result[day][meal].push(foodId);
       }
     }
@@ -74,8 +65,8 @@ async function parseDays(days, user) {
 
 // Crea o reemplaza el menú del usuario (un menú por usuario en el Sprint 1).
 export async function saveMenu(userId, days) {
-  const user = await findUser(userId);
-  const validDays = await parseDays(days, user);
+  await findUser(userId);
+  const validDays = await parseDays(days);
 
   return updateJson(MENUS_FILE, (menus) => {
     let menu = menus.find((item) => item.userId === userId);
