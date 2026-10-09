@@ -80,7 +80,7 @@ cd e2e && npm install && npm run install:browsers  # solo la primera vez
 npm test
 
 # Opción 2: ver la app
-docker-compose up --build                          # http://localhost:5173
+docker compose up --build                          # http://localhost:5173
 ```
 
 Recuerda ejecutar `npm install` en `backend/` y `frontend/` si no usas Docker.

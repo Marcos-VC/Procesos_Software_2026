@@ -50,7 +50,7 @@ El proyecto está preparado para ejecutarse mediante contenedores Docker.
 Para levantar el entorno completo, ejecuta desde la raíz del repositorio:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 Cuando termine el arranque, estarán disponibles:
