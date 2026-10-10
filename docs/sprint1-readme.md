@@ -41,9 +41,9 @@ El usuario fija su objetivo calórico diario en su perfil nutricional.
 
 ### HU 3.1 · Creación de menús (SCRUM-34)
 
-El usuario diseña su menú semanal asignando alimentos del catálogo a Desayuno, Comida o Cena de cada día.
+El usuario diseña su menú semanal asignando alimentos del catálogo a Desayuno, Comida o Cena de cada día. Se elige el día arriba (cada día muestra sus calorías) y, en cada comida, se pulsa **"Añadir alimento"**, se busca en el catálogo y con un clic queda añadido.
 
-- **AC1:** dado que el usuario está en el diseñador de menús, cuando selecciona alimentos del catálogo y los asigna a Desayuno, Comida o Cena, entonces la app los añade a la estructura de ese día. Permite además quitar elementos.
+- **AC1:** dado que el usuario está en el diseñador de menús, cuando selecciona alimentos del catálogo y los asigna a Desayuno, Comida o Cena, entonces la app los añade a la estructura de ese día. Permite además quitar elementos y compara las calorías del día con el objetivo del perfil.
 - **Guardado:** "Guardar menú" persiste el menú (con un UUID v4) en `mocks/mock_menus.json`; sobrevive a una recarga.
 - **Reglas:** el backend rechaza con 400 los días, secciones o alimentos desconocidos.
 - **Backend:** `GET` y `PUT /api/menus/{userId}`.
