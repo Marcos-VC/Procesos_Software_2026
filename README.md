@@ -58,6 +58,8 @@ Cuando termine el arranque, estarán disponibles:
 - **Frontend:** http://localhost:5173
 - **API:** http://localhost:3000/api/health
 
+Para detenerlo, `docker compose down` (lo que se haya guardado en `mocks/` se conserva).
+
 ### Estructura principal
 
 ```text
@@ -82,7 +84,7 @@ frontend/
     vite.config.js
     Dockerfile
     nginx.conf
-e2e/                       # tests Playwright (una spec por historia de usuario)
+e2e/                       # tests Playwright (3 ficheros, 6 tests, uno por criterio de aceptación)
 mocks/
     mock_usuarios.json
     mock_alimentos.json
@@ -96,18 +98,25 @@ El backend escribe en los ficheros de `mocks/` (perfil y menús), por eso `docke
 
 ### Desarrollo local y tests E2E
 
+Requisitos: **Node.js 22 o superior** (lo exige `better-sqlite3`) y **Docker** para el despliegue.
+
 ```bash
 cd backend && npm install && npm run dev    # API en :3000
 cd frontend && npm install && npm run dev   # Front en :5173
+cd frontend && npm run typecheck            # comprobación de tipos (TypeScript)
+cd frontend && npm run build                # tipos + compilación de producción
 
 cd e2e && npm install && npm run install:browsers   # solo la primera vez
-cd e2e && npm test                            # batería E2E
+cd e2e && npm test                            # batería E2E (6 tests)
+cd e2e && npx playwright test tests/menu.spec.js   # un solo fichero
+cd e2e && npm run test:ui                     # interfaz visual de Playwright
+cd e2e && npx playwright show-report          # informe HTML de la última ejecución
 cd e2e && npm run screenshots                 # regenera docs/assets/*.png
 ```
 
 Los tests arrancan su propio backend (:3100) sobre una copia temporal de `mocks/` y el frontend (:5174), así que no modifican los datos del repositorio ni necesitan Docker.
 
-> **Sobre la batería de tests:** se ha creado para facilitar la **validación de los criterios de aceptación** (Dado/Cuando/Entonces) de cada Historia de Usuario. Hay una spec por historia en `e2e/tests` y cada test está nombrado con su criterio (por ejemplo, `HU 1.1 › AC2`), con los pasos comentados con las mismas palabras "Dado / Cuando / Entonces" de la historia. Así, comprobar que una historia cumple lo acordado con el PO es ejecutar `npm test` y ver qué criterios pasan o fallan. Qué hace y qué comprueba cada test, uno a uno, está explicado en [docs/sprint1-readme.md](docs/sprint1-readme.md#tests-e2e-qué-comprueba-cada-uno).
+> **Sobre la batería de tests:** se ha creado para facilitar la **validación de los criterios de aceptación** (Dado/Cuando/Entonces) de cada Historia de Usuario. Hay 6 tests repartidos en 3 ficheros de `e2e/tests` y cada test está nombrado con su criterio (por ejemplo, `HU 1.1 › AC2`), con los pasos comentados con las mismas palabras "Dado / Cuando / Entonces" de la historia. Así, comprobar que una historia cumple lo acordado con el PO es ejecutar `npm test` y ver qué criterios pasan o fallan. Qué hace y qué comprueba cada test, uno a uno, está explicado en [docs/sprint1-readme.md](docs/sprint1-readme.md#tests-e2e-qué-comprueba-cada-uno).
 
 ---
 
