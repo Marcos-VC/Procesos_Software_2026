@@ -154,7 +154,7 @@ function App() {
         {tab === "menu" && (
           <>
             <SectionHeading eyebrow="MENÚ" title="Diseñador de menús" />
-            <MenuBuilder userId={demoUserId} />
+            <MenuBuilder userId={demoUserId} caloricGoal={user?.caloricGoal} />
           </>
         )}
       </section>
