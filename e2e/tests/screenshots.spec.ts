@@ -31,20 +31,33 @@ test("capturas de las pestañas Catálogo, Perfil y Menú", async ({ page }) => 
   await expect(page.getByText("Perfil guardado correctamente")).toBeVisible();
   await page.screenshot({ path: capture("perfil"), fullPage: true });
 
-  // Menú: alimentos asignados a Desayuno, Comida y Cena.
+  // Menú: varios alimentos en cada comida del lunes y otro día con contenido para que
+  // la semana se vea de un vistazo; el selector de alimentos queda abierto en la cena.
   await page.getByRole("button", { name: "Menú" }).click();
   await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();
-  await page.getByLabel("Día").selectOption("lunes");
-  for (const [food, meal] of [
-    ["Manzana", "Desayuno"],
-    ["Pechuga de pollo", "Comida"],
-    ["Salmón", "Cena"],
+  const addFood = async (meal: string, food: string) => {
+    const region = page.getByRole("region", { name: meal });
+    await region.getByRole("button", { name: "Añadir alimento" }).click();
+    await region.getByRole("button", { name: food }).click();
+    await expect(region).toContainText(food);
+  };
+  for (const [meal, food] of [
+    ["Desayuno", "Copos de avena"],
+    ["Desayuno", "Plátano"],
+    ["Comida", "Pechuga de pollo"],
+    ["Comida", "Arroz integral"],
+    ["Cena", "Salmón"],
   ]) {
-    await page.getByLabel("Alimento").selectOption({ label: food });
-    await page.getByRole("button", { name: `Añadir a ${meal}` }).click();
-    await expect(page.getByRole("region", { name: meal })).toContainText(food);
+    await addFood(meal, food);
   }
+  await page.getByRole("button", { name: "Miércoles" }).click();
+  await addFood("Comida", "Lentejas cocidas");
+  await page.getByRole("button", { name: "Lunes" }).click();
   await page.getByRole("button", { name: "Guardar menú" }).click();
   await expect(page.getByRole("status")).toBeVisible();
+  await page
+    .getByRole("region", { name: "Cena" })
+    .getByRole("button", { name: "Añadir alimento" })
+    .click();
   await page.screenshot({ path: capture("menu"), fullPage: true });
 });

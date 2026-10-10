@@ -6,10 +6,10 @@ Documentación detallada del incremento entregado en el Sprint 1. Para la visió
 
 | Jira | Historia | Puntos | Rama | Test E2E |
 | --- | --- | --- | --- | --- |
-| [SCRUM-21](https://procesossoftware.atlassian.net/browse/SCRUM-21) | HU 1.1 Buscar un alimento | 3 | `feature/SCRUM-21-buscar-alimentos` | `e2e/tests/catalogo.spec.js` |
-| [SCRUM-27](https://procesossoftware.atlassian.net/browse/SCRUM-27) | HU 1.2 Ver iconos de ingredientes (alérgenos) | 2 | `feature/SCRUM-27-iconos-alergenos` | `e2e/tests/catalogo.spec.js` |
-| [SCRUM-17](https://procesossoftware.atlassian.net/browse/SCRUM-17) | HU 2.1 Fijar objetivo calórico diario | 3 | `feature/SCRUM-17-perfil-alergias` | `e2e/tests/perfil.spec.js` |
-| [SCRUM-34](https://procesossoftware.atlassian.net/browse/SCRUM-34) | HU 3.1 Creación de menús | 5 | `feature/SCRUM-34-crear-menu` | `e2e/tests/menu.spec.js` |
+| [SCRUM-21](https://procesossoftware.atlassian.net/browse/SCRUM-21) | HU 1.1 Buscar un alimento | 3 | `feature/SCRUM-21-buscar-alimentos` | [Tests 1 y 2](#tests-e2e-qué-comprueba-cada-uno) (`catalogo.spec.js`) |
+| [SCRUM-27](https://procesossoftware.atlassian.net/browse/SCRUM-27) | HU 1.2 Ver iconos de ingredientes (alérgenos) | 2 | `feature/SCRUM-27-iconos-alergenos` | [Tests 3 y 4](#tests-e2e-qué-comprueba-cada-uno) (`catalogo.spec.js`) |
+| [SCRUM-17](https://procesossoftware.atlassian.net/browse/SCRUM-17) | HU 2.1 Fijar objetivo calórico diario | 3 | `feature/SCRUM-17-perfil-alergias` | [Test 5](#tests-e2e-qué-comprueba-cada-uno) (`perfil.spec.js`) |
+| [SCRUM-34](https://procesossoftware.atlassian.net/browse/SCRUM-34) | HU 3.1 Creación de menús | 5 | `feature/SCRUM-34-crear-menu` | [Test 6](#tests-e2e-qué-comprueba-cada-uno) (`menu.spec.js`) |
 
 ## Historias de Usuario
 
@@ -41,13 +41,51 @@ El usuario fija su objetivo calórico diario en su perfil nutricional.
 
 ### HU 3.1 · Creación de menús (SCRUM-34)
 
-El usuario diseña su menú semanal asignando alimentos del catálogo a Desayuno, Comida o Cena de cada día.
+El usuario diseña su menú semanal asignando alimentos del catálogo a Desayuno, Comida o Cena de cada día. Se elige el día arriba (cada día muestra sus calorías) y, en cada comida, se pulsa **"Añadir alimento"**, se busca en el catálogo y con un clic queda añadido.
 
-- **AC1:** dado que el usuario está en el diseñador de menús, cuando selecciona alimentos del catálogo y los asigna a Desayuno, Comida o Cena, entonces la app los añade a la estructura de ese día. Permite además quitar elementos.
+- **AC1:** dado que el usuario está en el diseñador de menús, cuando selecciona alimentos del catálogo y los asigna a Desayuno, Comida o Cena, entonces la app los añade a la estructura de ese día. Permite además quitar elementos y compara las calorías del día con el objetivo del perfil.
 - **Guardado:** "Guardar menú" persiste el menú (con un UUID v4) en `mocks/mock_menus.json`; sobrevive a una recarga.
 - **Reglas:** el backend rechaza con 400 los días, secciones o alimentos desconocidos.
 - **Backend:** `GET` y `PUT /api/menus/{userId}`.
 - **Frontend:** `MenuBuilder` (pestaña "Menú").
+
+## Tests E2E: qué comprueba cada uno
+
+Los tests E2E (de extremo a extremo, con Playwright) abren la aplicación en un navegador real, hacen lo que haría una persona (escribir, pulsar, elegir) y comprueban lo que se ve en pantalla y lo que se guarda en el sistema. Cada test verifica **un criterio de aceptación** y su nombre empieza por el criterio (`AC1`, `AC2`). Hay **6 tests en 3 ficheros** de `e2e/tests/`:
+
+| Fichero | Historias que cubre | Tests |
+| --- | --- | --- |
+| `catalogo.spec.js` | HU 1.1 (buscar) y HU 1.2 (iconos de alérgenos) | 1, 2, 3 y 4 |
+| `perfil.spec.js` | HU 2.1 (objetivo calórico) | 5 |
+| `menu.spec.js` | HU 3.1 (menús) | 6 |
+
+| Nº | Historia · criterio | Qué hace el test | Qué comprueba |
+| --- | --- | --- | --- |
+| 1 | HU 1.1 · AC1 | En el catálogo escribe `arroz` en el buscador y pulsa "Buscar". | Aparece **una sola** tarjeta, "Arroz integral", con sus `111 kcal` y sus macros (proteína, carbohidratos y grasas). "Pan de trigo" ya no aparece. |
+| 2 | HU 1.1 · AC2 | Busca `zzzxxx`, algo que no existe. | Se muestra el mensaje **"No se encontraron alimentos"** y no hay ninguna tarjeta. |
+| 3 | HU 1.2 · AC1 | Mira la tarjeta de "Pan de trigo" y la de "Arroz integral". | "Pan de trigo" muestra visible el icono 🌾 del alérgeno **Gluten**; "Arroz integral", que no tiene alérgenos, no muestra ningún icono. |
+| 4 | HU 1.2 · AC2 | Pulsa el icono del gluten en "Pan de trigo". | Antes de pulsar no hay texto; al pulsar se despliega una explicación con el nombre **"Gluten"** y la palabra "intolerancia"; al pulsar otra vez **desaparece**. |
+| 5 | HU 2.1 · AC1 | En "Perfil" escribe `2000` en el objetivo calórico diario y pulsa "Guardar cambios". | Sale **"Perfil guardado correctamente"**; la tarjeta superior muestra `2000 kcal`; la API devuelve `caloricGoal = 2000` (se guardó de verdad); y tras **recargar** la página el campo sigue en 2000. Al terminar restaura el valor original. |
+| 6 | HU 3.1 · AC1 | En "Menú" elige el martes y añade Manzana al Desayuno, Pechuga de pollo a la Comida y Salmón a la Cena (con "Añadir alimento"). | Cada alimento aparece **en su comida**; el botón del martes muestra `425 kcal` (52 + 165 + 208); el miércoles sigue **vacío**; al pulsar "Guardar menú" sale "Menú guardado correctamente"; la API devuelve un menú con **id UUID v4** y un alimento en cada comida del martes; y tras **recargar** la Cena del martes sigue teniendo Salmón. |
+
+**Detalles comunes a todos los tests**
+
+- Los tests 1 a 4 empiezan abriendo la aplicación y esperando a que cargue el catálogo (la tarjeta "Pan de trigo").
+- Usan el usuario de demo `5d37a69d-…` del mock de usuarios.
+- Trabajan sobre **una copia temporal** de `mocks/`, con su propio backend (`:3100`) y frontend (`:5174`): no modifican los datos del repositorio ni hace falta arrancar nada antes.
+- En el código, los pasos están comentados con las mismas palabras que el criterio: **Dado / Cuando / Entonces**.
+
+**Cómo ejecutarlos y verlos**
+
+```bash
+cd e2e
+npm test                       # los 6 tests; al final muestra qué criterios pasan o fallan
+npm run test:ui                # interfaz visual: se ve cada test paso a paso
+npx playwright test --headed   # abre el navegador para ver cómo se ejecutan
+npx playwright show-report     # informe HTML de la última ejecución
+```
+
+Además existe `e2e/tests/screenshots.spec.ts`, que **no** es un test de criterios y no forma parte de `npm test`: genera las capturas de `docs/assets/` que usa el README (`npm run screenshots`).
 
 ## Flujo de ramas y Pull Requests
 
