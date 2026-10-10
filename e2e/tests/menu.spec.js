@@ -13,25 +13,31 @@ test.describe("HU 3.1 Crear menú básico", () => {
     await page.goto("/");
     await page.getByRole("button", { name: "Menú" }).click();
     await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();
-    await page.getByLabel("Día").selectOption("martes");
+    await page.getByRole("button", { name: "Martes" }).click();
 
-    // Cuando selecciona alimentos del catálogo y los asigna a las secciones
-    await page.getByLabel("Alimento").selectOption({ label: "Manzana" });
-    await page.getByRole("button", { name: "Añadir a Desayuno" }).click();
-    await page.getByLabel("Alimento").selectOption({ label: "Pechuga de pollo" });
-    await page.getByRole("button", { name: "Añadir a Comida" }).click();
-    await page.getByLabel("Alimento").selectOption({ label: "Salmón" });
-    await page.getByRole("button", { name: "Añadir a Cena" }).click();
+    // Cuando añade alimentos del catálogo a Desayuno, Comida y Cena
+    for (const [meal, food] of [
+      ["Desayuno", "Manzana"],
+      ["Comida", "Pechuga de pollo"],
+      ["Cena", "Salmón"],
+    ]) {
+      const region = page.getByRole("region", { name: meal });
+      await region.getByRole("button", { name: "Añadir alimento" }).click();
+      await region.getByRole("button", { name: food }).click();
+    }
 
     // Entonces la app añade los alimentos a la estructura de ese día
     await expect(page.getByRole("region", { name: "Desayuno" })).toContainText("Manzana");
     await expect(page.getByRole("region", { name: "Comida" })).toContainText("Pechuga de pollo");
     await expect(page.getByRole("region", { name: "Cena" })).toContainText("Salmón");
 
+    // Y el día muestra sus calorías (52 + 165 + 208)
+    await expect(page.getByRole("button", { name: "Martes" })).toContainText("425 kcal");
+
     // Y otro día sigue vacío
-    await page.getByLabel("Día").selectOption("miercoles");
+    await page.getByRole("button", { name: "Miércoles" }).click();
     await expect(page.getByRole("region", { name: "Desayuno" }).getByRole("listitem")).toHaveCount(0);
-    await page.getByLabel("Día").selectOption("martes");
+    await page.getByRole("button", { name: "Martes" }).click();
 
     // Y la estructura se guarda en el sistema
     await page.getByRole("button", { name: "Guardar menú" }).click();
@@ -46,7 +52,7 @@ test.describe("HU 3.1 Crear menú básico", () => {
     // Y persiste tras recargar
     await page.reload();
     await page.getByRole("button", { name: "Menú" }).click();
-    await page.getByLabel("Día").selectOption("martes");
+    await page.getByRole("button", { name: "Martes" }).click();
     await expect(page.getByRole("region", { name: "Cena" })).toContainText("Salmón");
   });
 });
