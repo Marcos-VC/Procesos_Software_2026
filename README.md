@@ -153,7 +153,7 @@ Para la validación estricta de restricciones médicas y el cálculo de menús, 
 
 **Telemetría nutricional — consumido por E2 (Seguimiento de Hábitos) y E5 (Entrenamiento)**
 
-Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta el consumo calórico en tiempo real: calorías totales consumidas en el día actual y desglose de macronutrientes listos para ser graficados.
+Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta el consumo calórico en tiempo real: calorías totales consumidas en el día actual y desglose de macronutrientes listos para ser graficados
 
 - **Endpoint expuesto:** `GET /api/nutrition/{userId}/daily-summary`
 - **Respuesta proporcionada:**
