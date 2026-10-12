@@ -234,3 +234,4 @@ Interfaz con la identidad visual de la URJC (rojo corporativo y gris oscuro). La
 | [SCRUM-34](https://procesossoftware.atlassian.net/browse/SCRUM-34) | HU 3.1 Creación de menús                 | 5      | Diseñar el menú con Desayuno, Comida y Cena          |
 
 > **Más información:** criterios de aceptación, endpoints, componentes, orden de los PR, cómo revisar y probar cada rama y estado de la Definition of Done en [docs/sprint1-readme.md](docs/sprint1-readme.md).
+
