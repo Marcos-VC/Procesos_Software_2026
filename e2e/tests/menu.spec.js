@@ -9,7 +9,10 @@ test.describe("HU 3.1 Crear menú básico", () => {
     page,
     request,
   }) => {
-    // Dado que el usuario se encuentra en el diseñador de menús
+    // Dado un menú vacío (los tests comparten backend; así no dependen de ejecuciones previas)
+    await request.put(`${apiUrl}/api/menus/${userId}`, { data: { days: {} } });
+
+    // Y que el usuario se encuentra en el diseñador de menús
     await page.goto("/");
     await page.getByRole("button", { name: "Menú" }).click();
     await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();

@@ -8,6 +8,7 @@
     "test": "playwright test",
     "screenshots": "playwright test -c playwright.screenshots.config.js",
     "test:ui": "playwright test --ui",
+    "test:slow": "SLOWMO=700 playwright test --headed",
     "install:browsers": "playwright install chromium"
   },
   "devDependencies": {

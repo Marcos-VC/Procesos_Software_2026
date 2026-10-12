@@ -15,7 +15,16 @@ export default defineConfig({
     baseURL: `http://localhost:${webPort}`,
     trace: "retain-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        // npm run test:slow: pausa (ms) entre acciones para ver el test
+        launchOptions: { slowMo: Number(process.env.SLOWMO ?? 0) },
+      },
+    },
+  ],
   webServer: [
     {
       command: "node start-backend.mjs",
