@@ -6,12 +6,12 @@ Proyecto académico de la asignatura **Procesos de Software** · 3.º Grado en I
 
 - **Marcos Vidal Castillo** (Scrum Master - SM)
 - **Pablo Villaplana Rodríguez** (Product Owner - PO)
-- Paula Sánchez Garduño
-- Emiliano Sánchez Moreno
-- David Sebastián Sticea Covaciu
-- Raúl Tejada Merinero
-- Rubén Torres Rivero
-- Alessio Vecchio
+- Paula Sánchez Garduño (Developer)
+- Emiliano Sánchez Moreno (Developer)
+- David Sebastián Sticea Covaciu (Developer)
+- Raúl Tejada Merinero (Developer)
+- Rubén Torres Rivero (Developer)
+- Alessio Vecchio (Developer)
 
 ## Descripción del Módulo
 
