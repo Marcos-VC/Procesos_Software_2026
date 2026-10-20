@@ -3,6 +3,7 @@ import type {
   Food,
   DailySummary,
   Menu,
+  MenuFavorite,
   ProfileChanges,
   UserProfile,
   WeekDays,
@@ -55,4 +56,8 @@ export const api = {
   getMenu: (userId: string) => request<Menu>(`/api/menus/${userId}`),
   saveMenu: (userId: string, days: WeekDays) =>
     sendJson<Menu>("PUT", `/api/menus/${userId}`, { days }),
+  getFavoriteMenus: (userId: string) =>
+    request<MenuFavorite[]>(`/api/menus/favorites?${new URLSearchParams({ userId }).toString()}`),
+  saveFavoriteMenu: (userId: string, name: string, days: WeekDays) =>
+    sendJson<MenuFavorite>("POST", "/api/menus/favorites", { userId, name, days }),
 };
