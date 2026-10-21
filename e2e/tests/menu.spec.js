@@ -59,3 +59,39 @@ test.describe("HU 3.1 Crear menú básico", () => {
     await expect(page.getByRole("region", { name: "Cena" })).toContainText("Salmón");
   });
 });
+
+// HU 3.3 - Guardar menú favorito
+test.describe("HU 3.3 Guardar menú favorito", () => {
+  test("AC1: guardar un menú con nombre y cargarlo después recupera ese menú", async ({
+    page,
+    request,
+  }) => {
+    // Dado que el usuario tiene alimentos añadidos al Desayuno del Lunes
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menú" }).click();
+    await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();
+    const desayuno = page.getByRole("region", { name: "Desayuno" });
+    await desayuno.getByRole("button", { name: "Añadir alimento" }).click();
+    await desayuno.getByRole("button", { name: "Manzana" }).click();
+
+    // Cuando pulsa "Guardar como favorito", escribe un nombre y confirma en el modal
+    await page.getByRole("button", { name: "Guardar como favorito" }).click();
+    const dialog = page.getByRole("dialog", { name: "Guardar menú como favorito" });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("textbox", { name: "Nombre del menú favorito" }).fill("Semana ligera");
+    await dialog.getByRole("button", { name: "Guardar" }).click();
+
+    // Entonces se guarda bajo ese nombre en el backend
+    await expect(page.getByRole("status")).toHaveText('Menú guardado como favorito "Semana ligera"');
+    const favorites = await (await request.get(`${apiUrl}/api/menus/favorites?userId=${userId}`)).json();
+    expect(favorites).toHaveLength(1);
+    expect(favorites[0].name).toBe("Semana ligera");
+    expect(favorites[0].days.lunes.desayuno).toHaveLength(1);
+
+    // Y cuando vacía el Desayuno y carga el favorito desde el selector, recupera el alimento guardado
+    await desayuno.getByRole("button", { name: "Quitar Manzana de Desayuno" }).click();
+    await expect(desayuno.getByRole("listitem")).toHaveCount(0);
+    await page.getByRole("combobox", { name: "Cargar menú favorito" }).selectOption({ label: "Semana ligera" });
+    await expect(desayuno).toContainText("Manzana");
+  });
+});

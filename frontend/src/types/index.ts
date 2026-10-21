@@ -83,3 +83,12 @@ export interface Menu {
   userId: string;
   days: WeekDays;
 }
+
+/** Menú favorito guardado bajo un nombre (GET/POST /api/menus/favorites). */
+export interface MenuFavorite {
+  /** UUID v4 */
+  id: string;
+  userId: string;
+  name: string;
+  days: WeekDays;
+}

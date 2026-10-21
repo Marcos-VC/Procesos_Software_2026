@@ -4,6 +4,7 @@ import { readJson, updateJson } from "../store/jsonStore.js";
 import { findUser } from "./userService.js";
 
 const MENUS_FILE = "mock_menus.json";
+const FAVORITES_FILE = "mock_menu_favorites.json";
 
 export const DAYS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
 export const MEALS = ["desayuno", "comida", "cena"];
@@ -22,7 +23,7 @@ export async function getMenu(userId) {
  * y devuelve una copia completa (todos los días y comidas presentes).
  * Rechaza alimentos inexistentes.
  */
-async function parseDays(days) {
+export async function parseDays(days) {
   if (typeof days !== "object" || days === null || Array.isArray(days)) {
     throw new HttpError(400, "days debe ser un objeto con los días de la semana");
   }
@@ -77,5 +78,28 @@ export async function saveMenu(userId, days) {
       menu.days = validDays;
     }
     return menu;
+  });
+}
+
+// GET /api/menus/favorites?userId=: menús favoritos guardados por el usuario (HU 3.3).
+export async function listFavorites(userId) {
+  await findUser(userId);
+  const favorites = await readJson(FAVORITES_FILE);
+  return favorites.filter((item) => item.userId === userId);
+}
+
+// POST /api/menus/favorites { userId, name, days }: guarda un menú completo bajo un nombre.
+export async function createFavorite(userId, name, days) {
+  await findUser(userId);
+  const trimmedName = typeof name === "string" ? name.trim() : "";
+  if (!trimmedName) {
+    throw new HttpError(400, "name es obligatorio");
+  }
+  const validDays = await parseDays(days);
+
+  return updateJson(FAVORITES_FILE, (favorites) => {
+    const favorite = { id: randomUUID(), userId, name: trimmedName, days: validDays };
+    favorites.push(favorite);
+    return favorite;
   });
 }

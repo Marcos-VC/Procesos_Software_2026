@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import type { DayKey, Food, MealKey, WeekDays } from "../types";
+import type { DayKey, Food, MealKey, MenuFavorite, WeekDays } from "../types";
 
 const DAYS: [DayKey, string][] = [
   ["lunes", "Lunes"],
@@ -48,13 +48,19 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
   const [openMeal, setOpenMeal] = useState<MealKey | null>(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
+  // Menús favoritos guardados por el usuario (HU 3.3).
+  const [favorites, setFavorites] = useState<MenuFavorite[]>([]);
+  // Modal "Guardar como favorito": abierto/cerrado y el nombre que se está escribiendo.
+  const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
+  const [favoriteName, setFavoriteName] = useState("");
 
   useEffect(() => {
-    Promise.all([api.getFoods(""), api.getMenu(userId)])
-      .then(([foodData, menu]) => {
+    Promise.all([api.getFoods(""), api.getMenu(userId), api.getFavoriteMenus(userId)])
+      .then(([foodData, menu, favoriteData]) => {
         setFoods(foodData);
         setDays(menu.days);
         setSavedSnapshot(JSON.stringify(menu.days));
+        setFavorites(favoriteData);
       })
       .catch((error: unknown) =>
         setStatus({ type: "error", text: errorMessage(error) }),
@@ -118,6 +124,30 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
     } catch (error) {
       setStatus({ type: "error", text: errorMessage(error) });
     }
+  };
+
+  const openFavoriteModal = () => {
+    setFavoriteName("");
+    setFavoriteModalOpen(true);
+  };
+
+  const confirmSaveFavorite = async () => {
+    try {
+      const favorite = await api.saveFavoriteMenu(userId, favoriteName, days);
+      setFavorites([...favorites, favorite]);
+      setFavoriteModalOpen(false);
+      setStatus({ type: "ok", text: `Menú guardado como favorito "${favorite.name}"` });
+    } catch (error) {
+      setStatus({ type: "error", text: errorMessage(error) });
+    }
+  };
+
+  const loadFavorite = (favoriteId: string) => {
+    const favorite = favorites.find((item) => item.id === favoriteId);
+    if (!favorite) return;
+    setStatus(null);
+    setOpenMeal(null);
+    setDays(favorite.days);
   };
 
   const results = foods.filter((food) => plain(food.name).includes(plain(search.trim())));
@@ -294,9 +324,36 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
         <p className={`text-sm ${dirty ? "font-semibold text-warning" : "text-muted"}`}>
           {dirty ? "Tienes cambios sin guardar" : "Todos los cambios están guardados"}
         </p>
-        <button type="button" className="btn" onClick={saveMenu}>
-          Guardar menú
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {favorites.length > 0 && (
+            <select
+              className="input w-auto cursor-pointer py-2 text-sm"
+              aria-label="Cargar menú favorito"
+              value=""
+              onChange={(event) => {
+                if (event.target.value) loadFavorite(event.target.value);
+              }}
+            >
+              <option value="">Cargar menú favorito...</option>
+              {favorites.map((favorite) => (
+                <option key={favorite.id} value={favorite.id}>
+                  {favorite.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <button
+            type="button"
+            className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-xl border-2 border-line px-5 py-3 font-semibold text-primary-dark shadow-sm transition duration-200 hover:border-primary hover:bg-primary-soft active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            onClick={openFavoriteModal}
+          >
+            <span aria-hidden="true">★</span>
+            Guardar como favorito
+          </button>
+          <button type="button" className="btn" onClick={saveMenu}>
+            Guardar menú
+          </button>
+        </div>
       </div>
       {status && (
         <p
@@ -309,6 +366,57 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
         >
           {status.text}
         </p>
+      )}
+
+      {favoriteModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-secondary/40 px-4"
+          onClick={() => setFavoriteModalOpen(false)}
+        >
+          <div
+            className="card w-full max-w-sm p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="favorite-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h3 id="favorite-modal-title" className="font-display text-xl font-bold text-secondary">
+              Guardar menú como favorito
+            </h3>
+            <p className="mt-1 text-sm text-muted">
+              Dale un nombre para poder volver a cargarlo más adelante.
+            </p>
+            <input
+              className="input mt-4"
+              autoFocus
+              aria-label="Nombre del menú favorito"
+              placeholder="Ej. Semana de volumen"
+              value={favoriteName}
+              onChange={(event) => setFavoriteName(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") setFavoriteModalOpen(false);
+                if (event.key === "Enter" && favoriteName.trim()) void confirmSaveFavorite();
+              }}
+            />
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                className="cursor-pointer rounded-xl px-4 py-2.5 font-semibold text-muted transition hover:bg-surface"
+                onClick={() => setFavoriteModalOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="btn"
+                disabled={!favoriteName.trim()}
+                onClick={() => void confirmSaveFavorite()}
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
