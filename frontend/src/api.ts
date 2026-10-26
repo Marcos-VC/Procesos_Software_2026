@@ -1,5 +1,6 @@
 import type {
   Allergen,
+  AllergenId,
   Food,
   DailySummary,
   Menu,
@@ -51,6 +52,8 @@ export const api = {
       `/api/users/${userId}/nutritional-profile`,
       changes,
     ),
+  updateAllergies: (userId: string, allergies: AllergenId[]) =>
+    sendJson<UserProfile>("PUT", `/api/users/${userId}/allergies`, allergies),
   getSummary: (userId: string) =>
     request<DailySummary>(`/api/nutrition/${userId}/daily-summary`),
   getMenu: (userId: string) => request<Menu>(`/api/menus/${userId}`),

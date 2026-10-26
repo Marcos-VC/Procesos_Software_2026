@@ -43,3 +43,60 @@ test.describe("HU 2.1 Fijar objetivo calórico diario", () => {
     await expect(page.getByLabel("Objetivo calórico diario (kcal)")).toHaveValue("2000");
   });
 });
+
+const allergiesUrl = `${apiUrl}/api/users/${userId}/allergies`;
+
+// HU 2.2 - Configurar alergias
+test.describe("HU 2.2 Configurar alergias", () => {
+  let originalAllergies;
+
+  test.beforeAll(async ({ request }) => {
+    originalAllergies = (await (await request.get(profileUrl)).json()).medicalRestrictions.allergies;
+  });
+
+  // Restaura las alergias para no afectar al resto de pruebas.
+  test.afterAll(async ({ request }) => {
+    await request.put(allergiesUrl, { data: originalAllergies });
+  });
+
+  test("AC1: marcar alergias y guardar actualiza el perfil", async ({ page, request }) => {
+    // Dado que el usuario está en la pantalla de edición de su perfil
+    await page.goto("/");
+    await page.getByRole("button", { name: "Perfil" }).click();
+    const lactosa = page.getByRole("checkbox", { name: /Lactosa/ });
+    const gluten = page.getByRole("checkbox", { name: /Gluten/ });
+    await expect(gluten).toBeChecked();
+
+    // Cuando marca la lactosa, desmarca el gluten y guarda
+    await lactosa.check();
+    await gluten.uncheck();
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+
+    // Entonces la app actualiza las alergias del usuario en el sistema
+    await expect(page.getByRole("status")).toHaveText("Perfil guardado correctamente");
+    const saved = await (await request.get(profileUrl)).json();
+    expect(saved.medicalRestrictions.allergies.sort()).toEqual(["cacahuetes", "lactosa"]);
+
+    // Y el chip marcado lo indica con "Añadida"
+    await expect(page.getByText("✓ Añadida")).toHaveCount(2);
+
+    // Y persisten tras recargar
+    await page.reload();
+    await page.getByRole("button", { name: "Perfil" }).click();
+    await expect(page.getByRole("checkbox", { name: /Lactosa/ })).toBeChecked();
+    await expect(page.getByRole("checkbox", { name: /Gluten/ })).not.toBeChecked();
+  });
+
+  test("AC2: un alérgeno desconocido se rechaza con 400", async ({ request }) => {
+    const response = await request.put(allergiesUrl, { data: ["polvo_de_hadas"] });
+    expect(response.status()).toBe(400);
+    expect((await response.json()).error).toBe(true);
+  });
+
+  test("AC3: un usuario inexistente devuelve 404", async ({ request }) => {
+    const response = await request.put(`${apiUrl}/api/users/${crypto.randomUUID()}/allergies`, {
+      data: ["gluten"],
+    });
+    expect(response.status()).toBe(404);
+  });
+});
