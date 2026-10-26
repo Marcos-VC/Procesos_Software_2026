@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../api";
-import type { UserProfile } from "../types";
+import type { Allergen, UserProfile } from "../types";
+import AllergySelector from "./AllergySelector";
 
-// Edición del perfil nutricional: objetivo calórico diario. Guarda en el backend con PUT.
+// Edición del perfil nutricional: objetivo calórico diario y alergias (HU 2.2). Guarda en el backend con PUT.
 interface ProfileEditorProps {
   user: UserProfile;
+  allergens: Allergen[];
   onSaved: (user: UserProfile) => void;
 }
 
@@ -13,17 +15,17 @@ interface Status {
   text: string;
 }
 
-function ProfileEditor({ user, onSaved }: ProfileEditorProps) {
+function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
   const [caloricGoal, setCaloricGoal] = useState(String(user.caloricGoal));
+  const [allergies, setAllergies] = useState(user.medicalRestrictions.allergies);
   const [status, setStatus] = useState<Status | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus(null);
     try {
-      const updated = await api.updateProfile(user.userId, {
-        caloricGoal: Number(caloricGoal),
-      });
+      await api.updateProfile(user.userId, { caloricGoal: Number(caloricGoal) });
+      const updated = await api.updateAllergies(user.userId, allergies);
       onSaved(updated);
       setStatus({ type: "ok", text: "Perfil guardado correctamente" });
     } catch (error) {
@@ -50,6 +52,12 @@ function ProfileEditor({ user, onSaved }: ProfileEditorProps) {
           onChange={(event) => setCaloricGoal(event.target.value)}
         />
       </label>
+
+      <AllergySelector
+        allergenCatalog={allergens}
+        selected={allergies}
+        onChange={setAllergies}
+      />
 
       <button type="submit" className="btn">
         Guardar cambios

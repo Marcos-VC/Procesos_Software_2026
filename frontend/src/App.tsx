@@ -147,7 +147,7 @@ function App() {
         {tab === "perfil" && (
           <>
             <SectionHeading eyebrow="PERFIL" title="Perfil nutricional" />
-            {user && <ProfileEditor user={user} onSaved={setUser} />}
+            {user && <ProfileEditor user={user} allergens={allergens} onSaved={setUser} />}
           </>
         )}
 
