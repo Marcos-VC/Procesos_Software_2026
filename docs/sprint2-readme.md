@@ -21,45 +21,57 @@ Garantizar la seguridad clínica del usuario automatizando el bloqueo de aliment
 - HU 3.4 Motor de reglas para bloquear alimentos peligrosos (SCRUM-24)
 - HU 1.3 Añadir nuevos alimentos al catálogo (SCRUM-28)
 
-Tests E2E definidos para las historias implementadas en este módulo:
+## Tests E2E
 
-- HU 1.1: 2 criterios de aceptación (`catalogo.spec.js`)
-- HU 1.2: 2 criterios de aceptación (`catalogo.spec.js`)
-- HU 2.1: 1 criterio de aceptación (`perfil.spec.js`)
+Las historias implementadas cuentan con la siguiente cobertura:
+
+- HU 2.2: 3 criterios de aceptación (`perfil.spec.js`)
 - HU 2.3: 3 criterios de aceptación (`perfil.spec.js`)
-- HU 3.1: 1 criterio de aceptación (`menu.spec.js`)
+- HU 3.3: 1 criterio de aceptación (`menu.spec.js`)
 
-La HU 2.3 cubre la selección de una preferencia dietética desde el perfil, su
-persistencia tras recargar, el rechazo de valores no válidos con `400` y la
-respuesta `404` para usuarios inexistentes. En el catálogo, los alimentos
-incompatibles con la preferencia activa se ocultan para evitar recomendaciones
-engañosas y se muestra un aviso informativo.
+La HU 2.2 cubre la selección y persistencia de alergias desde el perfil, la
+validación de alérgenos desconocidos con `400` y la respuesta `404` para
+usuarios inexistentes. La HU 2.3 cubre la selección de una preferencia
+dietética, su persistencia tras recargar, el rechazo de valores no válidos con
+`400` y la respuesta `404` para usuarios inexistentes. La HU 3.3 cubre el
+guardado de un menú con nombre y la recuperación posterior del menú favorito.
 
-El estado de cada una está en el [tablero de Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary).
+El estado de cada historia está en el [tablero de Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary).
 
-## Interfaz
+## Historias implementadas
 
-Capturas en [`assets/sprint2/`](assets/sprint2), generadas con `cd e2e && npm run screenshots`.
+### HU 2.2 · Indicar alérgenos e intolerancias
 
-**HU 2.2 · Alergias en el perfil**
+Desde el perfil se pueden consultar y seleccionar los alérgenos del usuario.
+La selección se guarda en el backend, se conserva al recargar la aplicación y
+se validan tanto los alérgenos desconocidos como los usuarios inexistentes.
 
-![Perfil con alergias](assets/sprint2/perfil-alergias.png)
+### HU 2.3 · Introducir preferencias dietéticas
 
-**HU 3.3 · Menú favorito**
+La persona usuaria puede seleccionar una preferencia dietética —omnívora,
+vegetariana, vegana o pescetariana— y guardarla desde su perfil. La opción
+cetogénica no se ofrece en la interfaz. Los alimentos incompatibles con la
+dieta activa se ocultan del catálogo y se muestra un aviso informativo.
 
-![Menú con favoritos](assets/sprint2/menu-favoritos.png)
+### HU 3.3 · Guardar menú favorito
 
-**HU 2.3 · Preferencias dietéticas**
+El diseñador permite guardar el menú completo con un nombre personalizado y
+recuperarlo posteriormente desde la sección de favoritos para volver a
+utilizarlo.
 
-La persona usuaria puede seleccionar una preferencia dietética (omnívora,
-vegetariana, vegana o pescetariana), guardarla desde su perfil y
-comprobar que se conserva al volver a cargar la aplicación. La API valida los
-valores permitidos y devuelve `400` para preferencias desconocidas y `404` para
-usuarios inexistentes. Para una persona vegana, por ejemplo, el catálogo no
-muestra el salmón y avisa de que pueden faltar alimentos por el tipo de dieta.
+## Historias pendientes
 
-**HU 3.2 · Calorías del menú** — _pendiente_
+### HU 3.2 · Sumar calorías del menú automáticamente
 
-**HU 3.4 · Motor de reglas** — _pendiente_
+Está previsto mostrar y actualizar automáticamente el total calórico del menú
+a medida que se añaden o eliminan alimentos.
 
-**HU 1.3 · Añadir alimentos** — _pendiente_
+### HU 3.4 · Motor de reglas para bloquear alimentos peligrosos
+
+Está previsto impedir que se incorporen al menú alimentos incompatibles con las
+alergias o restricciones médicas del usuario.
+
+### HU 1.3 · Añadir nuevos alimentos al catálogo
+
+Está prevista la incorporación de nuevos alimentos al catálogo mediante un
+formulario validado y su posterior disponibilidad para las búsquedas.

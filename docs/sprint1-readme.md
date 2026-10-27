@@ -19,16 +19,25 @@ Tests E2E: 6 en verde.
 
 ## Interfaz
 
-Capturas generadas con `cd e2e && npm run screenshots`.
+### HU 1.1 · Buscar un alimento y ver sus macros
 
-**Catálogo** — búsqueda por nombre, macros e iconos de alérgenos:
+El catálogo permite buscar alimentos por nombre, ignorando diferencias de
+mayúsculas y acentos, y muestra sus valores nutricionales principales:
+calorías, proteínas, hidratos de carbono y grasas.
 
-![Pestaña Catálogo](assets/sprint1/catalogo.png)
+### HU 1.2 · Ver iconos de alérgenos
 
-**Perfil** — objetivo calórico diario:
+Cada alimento muestra de forma visible los iconos de los alérgenos que
+contiene. Al seleccionar un icono se puede consultar el nombre del alérgeno
+para identificar rápidamente los posibles riesgos.
 
-![Pestaña Perfil](assets/sprint1/perfil.png)
+### HU 2.1 · Fijar objetivo calórico diario
 
-**Menú** — diseñador de menús con Desayuno, Comida y Cena:
+Desde el perfil nutricional se puede consultar y actualizar el objetivo
+calórico diario. El valor se valida, se guarda en el backend y permanece tras
+recargar la aplicación.
 
-![Pestaña Menú](assets/sprint1/menu.png)
+### HU 3.1 · Crear un menú básico
+
+El diseñador permite añadir alimentos a Desayuno, Comida y Cena para cada día
+de la semana, retirar alimentos y guardar el menú completo asociado al usuario.
