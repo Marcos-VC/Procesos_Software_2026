@@ -25,6 +25,8 @@ export interface Food {
   suitableFor?: DietType[];
 }
 
+export type NewFood = Omit<Food, "id">;
+
 export type DietType = "omnivore" | "vegetarian" | "vegan" | "pescatarian";
 
 export interface DietOption {
