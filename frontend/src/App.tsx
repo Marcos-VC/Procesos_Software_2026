@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, demoUserId } from "./api";
 import FoodList from "./components/FoodList";
+import FoodForm from "./components/FoodForm";
 import MenuBuilder from "./components/MenuBuilder";
 import ProfileEditor from "./components/ProfileEditor";
 import SearchBar from "./components/SearchBar";
@@ -147,6 +148,10 @@ function App() {
             <SectionHeading eyebrow="CATÁLOGO" title="Alimentos disponibles">
               <SearchBar onSearch={setQuery} />
             </SectionHeading>
+            <FoodForm
+              allergens={allergens}
+              onCreated={(food) => setFoods((current) => (current ? [food, ...current] : [food]))}
+            />
             {user?.medicalRestrictions?.dietType && (
               <p className="mb-6 rounded-xl border border-primary/20 bg-primary-soft px-4 py-3 text-sm text-primary-dark">
                 Pueden no aparecer algunos alimentos por tu tipo de dieta.

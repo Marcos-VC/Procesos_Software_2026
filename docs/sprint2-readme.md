@@ -28,6 +28,7 @@ Las historias implementadas cuentan con la siguiente cobertura:
 - HU 2.2: 3 criterios de aceptación (`perfil.spec.js`)
 - HU 2.3: 3 criterios de aceptación (`perfil.spec.js`)
 - HU 3.3: 1 criterio de aceptación (`menu.spec.js`)
+- HU 1.3: 3 criterios de aceptación (`catalogo.spec.js`)
 
 La HU 2.2 cubre la selección y persistencia de alergias desde el perfil, la
 validación de alérgenos desconocidos con `400` y la respuesta `404` para
@@ -59,6 +60,13 @@ El diseñador permite guardar el menú completo con un nombre personalizado y
 recuperarlo posteriormente desde la sección de favoritos para volver a
 utilizarlo.
 
+### HU 1.3 · Añadir nuevos alimentos al catálogo
+
+El catálogo incorpora un formulario para que una persona administradora añada
+alimentos con sus valores nutricionales y alérgenos. Los datos se validan,
+persisten en el catálogo, se rechazan nombres duplicados y el nuevo alimento
+queda disponible para búsquedas.
+
 ## Historias pendientes
 
 ### HU 3.2 · Sumar calorías del menú automáticamente
@@ -70,8 +78,3 @@ a medida que se añaden o eliminan alimentos.
 
 Está previsto impedir que se incorporen al menú alimentos incompatibles con las
 alergias o restricciones médicas del usuario.
-
-### HU 1.3 · Añadir nuevos alimentos al catálogo
-
-Está prevista la incorporación de nuevos alimentos al catálogo mediante un
-formulario validado y su posterior disponibilidad para las búsquedas.

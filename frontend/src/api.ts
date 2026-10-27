@@ -6,6 +6,7 @@ import type {
   DailySummary,
   Menu,
   MenuFavorite,
+  NewFood,
   ProfileChanges,
   UserProfile,
   WeekDays,
@@ -44,6 +45,7 @@ const sendJson = <T>(method: "PUT" | "POST", path: string, payload: unknown) =>
 export const api = {
   getFoods: (search: string) =>
     request<Food[]>(`/api/foods?${new URLSearchParams({ search }).toString()}`),
+  addFood: (food: NewFood) => sendJson<Food>("POST", "/api/foods", food),
   getAllergens: () => request<Allergen[]>("/api/allergens"),
   getProfile: (userId: string) =>
     request<UserProfile>(`/api/users/${userId}/nutritional-profile`),
