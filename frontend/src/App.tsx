@@ -158,8 +158,8 @@ function App() {
               <SearchBar onSearch={setQuery} />
             </SectionHeading>
             {user?.medicalRestrictions?.dietType && (
-              <p className="mb-6 rounded-xl bg-primary-soft px-4 py-3 text-sm text-secondary">
-                Los alimentos no compatibles con tu preferencia dietética aparecen al final y están marcados.
+              <p className="mb-6 rounded-xl border border-primary/20 bg-primary-soft px-4 py-3 text-sm text-primary-dark">
+                Pueden no aparecer algunos alimentos por tu tipo de dieta.
               </p>
             )}
             <FoodList

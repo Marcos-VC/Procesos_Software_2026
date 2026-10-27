@@ -20,24 +20,20 @@ function FoodList({ foods, allergenCatalog = {}, dietType }: FoodListProps) {
     );
   }
 
-  const orderedFoods = [...foods].sort((a, b) => {
-    const aCompatible = !a.suitableFor || !dietType || a.suitableFor.includes(dietType as DietType);
-    const bCompatible = !b.suitableFor || !dietType || b.suitableFor.includes(dietType as DietType);
-    return Number(bCompatible) - Number(aCompatible);
-  });
+  const visibleFoods = foods.filter(
+    (food) =>
+      !food.suitableFor ||
+      !dietType ||
+      food.suitableFor.includes(dietType as DietType),
+  );
 
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {orderedFoods.map((food) => (
+      {visibleFoods.map((food) => (
         <FoodItem
           key={food.id}
           food={food}
           allergenCatalog={allergenCatalog}
-          isCompatible={
-            !food.suitableFor ||
-            !dietType ||
-            food.suitableFor.includes(dietType as DietType)
-          }
         />
       ))}
     </div>
