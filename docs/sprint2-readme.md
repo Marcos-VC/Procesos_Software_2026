@@ -57,6 +57,7 @@ comprobar que se conserva al volver a cargar la aplicación. La API valida los
 valores permitidos y devuelve `400` para preferencias desconocidas y `404` para
 usuarios inexistentes. Para una persona vegana, por ejemplo, el catálogo no
 muestra el salmón y avisa de que pueden faltar alimentos por el tipo de dieta.
+La misma regla se aplica a la dieta cetogénica y al resto de preferencias.
 
 **HU 3.2 · Calorías del menú** — _pendiente_
 

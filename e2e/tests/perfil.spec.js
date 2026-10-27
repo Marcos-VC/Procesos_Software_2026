@@ -110,4 +110,16 @@ test.describe("HU 2.3 Introducir preferencias dietéticas", () => {
 
     expect(response.status()).toBe(404);
   });
+
+  test("AC4: una dieta baja en carbohidratos oculta los alimentos no compatibles", async ({
+    page,
+    request,
+  }) => {
+    await request.put(dietUrl, { data: { dietType: "keto" } });
+    await page.goto("/");
+
+    await expect(page.getByText("Pueden no aparecer algunos alimentos por tu tipo de dieta.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Pan de trigo" })).not.toBeVisible();
+    await expect(page.getByRole("heading", { name: "Salmón" })).toBeVisible();
+  });
 });
