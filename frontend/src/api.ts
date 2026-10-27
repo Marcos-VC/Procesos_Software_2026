@@ -1,9 +1,11 @@
 import type {
   Allergen,
   DietType,
+  AllergenId,
   Food,
   DailySummary,
   Menu,
+  MenuFavorite,
   ProfileChanges,
   UserProfile,
   WeekDays,
@@ -53,9 +55,15 @@ export const api = {
     ),
   updateDietType: (userId: string, dietType: DietType | string) =>
     sendJson<UserProfile>("PUT", `/api/users/${userId}/diet-type`, { dietType }),
+  updateAllergies: (userId: string, allergies: AllergenId[]) =>
+    sendJson<UserProfile>("PUT", `/api/users/${userId}/allergies`, allergies),
   getSummary: (userId: string) =>
     request<DailySummary>(`/api/nutrition/${userId}/daily-summary`),
   getMenu: (userId: string) => request<Menu>(`/api/menus/${userId}`),
   saveMenu: (userId: string, days: WeekDays) =>
     sendJson<Menu>("PUT", `/api/menus/${userId}`, { days }),
+  getFavoriteMenus: (userId: string) =>
+    request<MenuFavorite[]>(`/api/menus/favorites?${new URLSearchParams({ userId }).toString()}`),
+  saveFavoriteMenu: (userId: string, name: string, days: WeekDays) =>
+    sendJson<MenuFavorite>("POST", "/api/menus/favorites", { userId, name, days }),
 };

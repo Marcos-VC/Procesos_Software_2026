@@ -22,15 +22,10 @@ export interface Food {
   carbohydrates: number;
   fat: number;
   allergens: AllergenId[];
-  /** Dietas para las que el alimento es adecuado. Ausente en respuestas antiguas: se considera compatible. */
   suitableFor?: DietType[];
 }
 
-export type DietType =
-  | "omnivore"
-  | "vegetarian"
-  | "vegan"
-  | "pescatarian";
+export type DietType = "omnivore" | "vegetarian" | "vegan" | "pescatarian";
 
 export interface DietOption {
   id: DietType;
@@ -40,30 +35,10 @@ export interface DietOption {
 }
 
 export const DIET_OPTIONS: DietOption[] = [
-  {
-    id: "omnivore",
-    name: "Omnívora",
-    icon: "🥩",
-    description: "Sin restricciones: consume carnes, pescados, lácteos, huevos y vegetales.",
-  },
-  {
-    id: "vegetarian",
-    name: "Vegetariana",
-    icon: "🥦",
-    description: "Basada en alimentos de origen vegetal, lácteos y huevos. Sin carnes ni pescados.",
-  },
-  {
-    id: "vegan",
-    name: "Vegana",
-    icon: "🌱",
-    description: "100% origen vegetal. Excluye carnes, pescados, mariscos, lácteos y huevos.",
-  },
-  {
-    id: "pescatarian",
-    name: "Pescetariana",
-    icon: "🐟",
-    description: "Vegetariana que incluye pescados y mariscos, además de lácteos y huevos.",
-  },
+  { id: "omnivore", name: "Omnívora", icon: "🥩", description: "Sin restricciones." },
+  { id: "vegetarian", name: "Vegetariana", icon: "🥦", description: "Sin carnes ni pescados." },
+  { id: "vegan", name: "Vegana", icon: "🌱", description: "100% origen vegetal." },
+  { id: "pescatarian", name: "Pescetariana", icon: "🐟", description: "Incluye pescados y mariscos." },
 ];
 
 export interface MedicalRestrictions {
@@ -124,5 +99,14 @@ export interface Menu {
   /** UUID v4 */
   id: string | null;
   userId: string;
+  days: WeekDays;
+}
+
+/** Menú favorito guardado bajo un nombre (GET/POST /api/menus/favorites). */
+export interface MenuFavorite {
+  /** UUID v4 */
+  id: string;
+  userId: string;
+  name: string;
   days: WeekDays;
 }

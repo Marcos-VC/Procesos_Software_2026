@@ -5,13 +5,7 @@ import MenuBuilder from "./components/MenuBuilder";
 import ProfileEditor from "./components/ProfileEditor";
 import SearchBar from "./components/SearchBar";
 import SectionHeading from "./components/SectionHeading";
-import {
-  DIET_OPTIONS,
-  type Allergen,
-  type DailySummary,
-  type Food,
-  type UserProfile,
-} from "./types";
+import { DIET_OPTIONS, type Allergen, type DailySummary, type Food, type UserProfile } from "./types";
 
 type Tab = "catalogo" | "perfil" | "menu";
 
@@ -72,13 +66,9 @@ function App() {
   const allergenCatalog = Object.fromEntries(
     allergens.map((allergen) => [allergen.id, allergen]),
   );
-
   const activeDiet = DIET_OPTIONS.find(
-    (opt) => opt.id === user?.medicalRestrictions?.dietType,
+    (option) => option.id === user?.medicalRestrictions?.dietType,
   );
-  const dietLabel = activeDiet
-    ? `${activeDiet.icon} ${activeDiet.name}`
-    : user?.medicalRestrictions?.dietType || "...";
 
   return (
     <main className="min-h-screen pb-24">
@@ -121,7 +111,7 @@ function App() {
         />
         <ProfileStat
           label="Preferencia dietética"
-          value={user ? dietLabel : "..."}
+          value={user && activeDiet ? `${activeDiet.icon} ${activeDiet.name}` : "..."}
         />
       </section>
 
@@ -173,7 +163,7 @@ function App() {
         {tab === "perfil" && (
           <>
             <SectionHeading eyebrow="PERFIL" title="Perfil nutricional" />
-            {user && <ProfileEditor user={user} onSaved={setUser} />}
+            {user && <ProfileEditor user={user} allergens={allergens} onSaved={setUser} />}
           </>
         )}
 

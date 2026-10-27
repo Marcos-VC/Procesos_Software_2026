@@ -1,5 +1,6 @@
 import { HttpError } from "../errors.js";
 import { readJson, updateJson } from "../store/jsonStore.js";
+import { normalizeText } from "../utils/text.js";
 
 const USERS_FILE = "mock_usuarios.json";
 const ALLERGENS_FILE = "mock_alergenos.json";
@@ -93,6 +94,31 @@ export async function updateNutritionalProfile(userId, body) {
         dietType: changes.dietType,
       };
     }
+    return user;
+  });
+}
+
+async function parseAllergies(body) {
+  if (!Array.isArray(body) || body.some((item) => typeof item !== "string")) {
+    throw new HttpError(400, "El cuerpo debe ser un array de strings");
+  }
+  const known = new Set((await getAllergenCatalog()).map((item) => item.id));
+  const allergies = [...new Set(body.map((item) => normalizeText(item).replace(/\s+/g, "_")))];
+  const unknown = allergies.find((item) => !known.has(item));
+  if (unknown) {
+    throw new HttpError(400, `Alérgeno no reconocido: ${unknown}`);
+  }
+  return allergies;
+}
+
+export async function updateAllergies(userId, body) {
+  const allergies = await parseAllergies(body);
+  return updateJson(USERS_FILE, (users) => {
+    const user = users.find((item) => item.userId === userId);
+    if (!user) {
+      throw new HttpError(404, "Usuario no encontrado");
+    }
+    user.medicalRestrictions = { ...user.medicalRestrictions, allergies };
     return user;
   });
 }
