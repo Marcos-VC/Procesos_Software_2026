@@ -22,11 +22,28 @@ export interface Food {
   carbohydrates: number;
   fat: number;
   allergens: AllergenId[];
+  suitableFor?: DietType[];
 }
+
+export type DietType = "omnivore" | "vegetarian" | "vegan" | "pescatarian";
+
+export interface DietOption {
+  id: DietType;
+  name: string;
+  icon: string;
+  description: string;
+}
+
+export const DIET_OPTIONS: DietOption[] = [
+  { id: "omnivore", name: "Omnívora", icon: "🥩", description: "Sin restricciones." },
+  { id: "vegetarian", name: "Vegetariana", icon: "🥦", description: "Sin carnes ni pescados." },
+  { id: "vegan", name: "Vegana", icon: "🌱", description: "100% origen vegetal." },
+  { id: "pescatarian", name: "Pescetariana", icon: "🐟", description: "Incluye pescados y mariscos." },
+];
 
 export interface MedicalRestrictions {
   allergies: AllergenId[];
-  dietType: string;
+  dietType: DietType | string;
 }
 
 /** Perfil nutricional del usuario (contrato con E1). */
@@ -41,6 +58,7 @@ export interface UserProfile {
 /** Cambios admitidos por PUT /api/users/:userId/nutritional-profile (parciales). */
 export interface ProfileChanges {
   caloricGoal?: number;
+  dietType?: DietType | string;
 }
 
 /** Resumen del día (contrato con E2/E5). */

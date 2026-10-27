@@ -15,13 +15,25 @@ Garantizar la seguridad clínica del usuario automatizando el bloqueo de aliment
 ## Historias
 
 - HU 2.2 Indicar alérgenos e intolerancias (SCRUM-26) · `perfil.spec.js`
-- HU 2.3 Introducir preferencias dietéticas (SCRUM-35)
+- HU 2.3 Introducir preferencias dietéticas (SCRUM-35) · `perfil.spec.js`
 - HU 3.2 Sumar calorías del menú automáticamente (SCRUM-20)
 - HU 3.3 Guardar menú favorito (SCRUM-23) · `menu.spec.js`
 - HU 3.4 Motor de reglas para bloquear alimentos peligrosos (SCRUM-24)
 - HU 1.3 Añadir nuevos alimentos al catálogo (SCRUM-28)
 
-Tests E2E hasta ahora: 4 en verde (HU 2.2: 3, HU 3.3: 1).
+Tests E2E definidos para las historias implementadas en este módulo:
+
+- HU 1.1: 2 criterios de aceptación (`catalogo.spec.js`)
+- HU 1.2: 2 criterios de aceptación (`catalogo.spec.js`)
+- HU 2.1: 1 criterio de aceptación (`perfil.spec.js`)
+- HU 2.3: 3 criterios de aceptación (`perfil.spec.js`)
+- HU 3.1: 1 criterio de aceptación (`menu.spec.js`)
+
+La HU 2.3 cubre la selección de una preferencia dietética desde el perfil, su
+persistencia tras recargar, el rechazo de valores no válidos con `400` y la
+respuesta `404` para usuarios inexistentes. En el catálogo, los alimentos
+incompatibles con la preferencia activa se ocultan para evitar recomendaciones
+engañosas y se muestra un aviso informativo.
 
 El estado de cada una está en el [tablero de Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary).
 
@@ -37,7 +49,14 @@ Capturas en [`assets/sprint2/`](assets/sprint2), generadas con `cd e2e && npm ru
 
 ![Menú con favoritos](assets/sprint2/menu-favoritos.png)
 
-**HU 2.3 · Preferencias dietéticas** — _pendiente_
+**HU 2.3 · Preferencias dietéticas**
+
+La persona usuaria puede seleccionar una preferencia dietética (omnívora,
+vegetariana, vegana o pescetariana), guardarla desde su perfil y
+comprobar que se conserva al volver a cargar la aplicación. La API valida los
+valores permitidos y devuelve `400` para preferencias desconocidas y `404` para
+usuarios inexistentes. Para una persona vegana, por ejemplo, el catálogo no
+muestra el salmón y avisa de que pueden faltar alimentos por el tipo de dieta.
 
 **HU 3.2 · Calorías del menú** — _pendiente_
 

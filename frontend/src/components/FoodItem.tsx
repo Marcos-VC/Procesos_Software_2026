@@ -69,7 +69,6 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
           {openInfo && `: ${openInfo.description}`}
         </p>
       )}
-
     </article>
   );
 }
