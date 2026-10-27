@@ -26,14 +26,21 @@ Tests E2E definidos para las historias implementadas en este módulo:
 - HU 1.1: 2 criterios de aceptación (`catalogo.spec.js`)
 - HU 1.2: 2 criterios de aceptación (`catalogo.spec.js`)
 - HU 2.1: 1 criterio de aceptación (`perfil.spec.js`)
+- HU 2.2: 3 criterios de aceptación (`perfil.spec.js`)
 - HU 2.3: 3 criterios de aceptación (`perfil.spec.js`)
 - HU 3.1: 1 criterio de aceptación (`menu.spec.js`)
+- HU 3.3: 1 criterio de aceptación (`menu.spec.js`)
 
 La HU 2.3 cubre la selección de una preferencia dietética desde el perfil, su
 persistencia tras recargar, el rechazo de valores no válidos con `400` y la
 respuesta `404` para usuarios inexistentes. En el catálogo, los alimentos
 incompatibles con la preferencia activa se ocultan para evitar recomendaciones
 engañosas y se muestra un aviso informativo.
+
+La HU 2.2 cubre la selección y persistencia de alergias desde el perfil, la
+validación de alérgenos desconocidos con `400` y la respuesta `404` para
+usuarios inexistentes. La HU 3.3 cubre el guardado de un menú con nombre y la
+recuperación posterior del menú favorito.
 
 El estado de cada una está en el [tablero de Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary).
 
@@ -57,6 +64,7 @@ comprobar que se conserva al volver a cargar la aplicación. La API valida los
 valores permitidos y devuelve `400` para preferencias desconocidas y `404` para
 usuarios inexistentes. Para una persona vegana, por ejemplo, el catálogo no
 muestra el salmón y avisa de que pueden faltar alimentos por el tipo de dieta.
+La opción cetogénica no se ofrece en la interfaz.
 
 **HU 3.2 · Calorías del menú** — _pendiente_
 
