@@ -30,8 +30,7 @@ export type DietType =
   | "omnivore"
   | "vegetarian"
   | "vegan"
-  | "pescatarian"
-  | "keto";
+  | "pescatarian";
 
 export interface DietOption {
   id: DietType;
@@ -64,12 +63,6 @@ export const DIET_OPTIONS: DietOption[] = [
     name: "Pescetariana",
     icon: "🐟",
     description: "Vegetariana que incluye pescados y mariscos, además de lácteos y huevos.",
-  },
-  {
-    id: "keto",
-    name: "Cetogénica (Keto)",
-    icon: "🥑",
-    description: "Baja en carbohidratos y rica en grasas saludables y proteínas.",
   },
 ];
 

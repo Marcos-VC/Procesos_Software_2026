@@ -52,12 +52,11 @@ Capturas en [`assets/sprint2/`](assets/sprint2), generadas con `cd e2e && npm ru
 **HU 2.3 · Preferencias dietéticas**
 
 La persona usuaria puede seleccionar una preferencia dietética (omnívora,
-vegetariana, vegana, pescetariana o cetogénica), guardarla desde su perfil y
+vegetariana, vegana o pescetariana), guardarla desde su perfil y
 comprobar que se conserva al volver a cargar la aplicación. La API valida los
 valores permitidos y devuelve `400` para preferencias desconocidas y `404` para
 usuarios inexistentes. Para una persona vegana, por ejemplo, el catálogo no
 muestra el salmón y avisa de que pueden faltar alimentos por el tipo de dieta.
-La misma regla se aplica a la dieta cetogénica y al resto de preferencias.
 
 **HU 3.2 · Calorías del menú** — _pendiente_
 
