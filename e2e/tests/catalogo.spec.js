@@ -121,6 +121,7 @@ test.describe("HU 1.3 Añadir nuevos alimentos al catálogo", () => {
 
     await expect(page.getByRole("status")).toHaveText("Alimento añadido correctamente");
     await expect(page.getByRole("heading", { name: food.name })).toBeVisible();
+    await expect(page.getByRole("status")).toBeHidden();
     const response = await request.get(`${foodsUrl}?search=${encodeURIComponent(food.name)}`);
     expect(response.ok()).toBe(true);
     expect((await response.json())[0]).toMatchObject(food);

@@ -65,7 +65,8 @@ utilizarlo.
 El catálogo incorpora un formulario para que una persona administradora añada
 alimentos con sus valores nutricionales y alérgenos. Los datos se validan,
 persisten en el catálogo, se rechazan nombres duplicados y el nuevo alimento
-queda disponible para búsquedas.
+queda disponible para búsquedas. Tras guardarlo, se muestra una confirmación
+breve que desaparece automáticamente.
 
 ## Historias pendientes
 

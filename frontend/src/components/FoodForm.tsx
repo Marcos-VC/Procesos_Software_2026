@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { api } from "../api";
 import type { Allergen, Food, NewFood } from "../types";
 
@@ -19,6 +19,12 @@ const initialForm: NewFood = {
 function FoodForm({ allergens, onCreated }: FoodFormProps) {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState("");
+
+  useEffect(() => {
+    if (!status || status.startsWith("No se pudo")) return;
+    const timeout = window.setTimeout(() => setStatus(""), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [status]);
 
   const updateNumber = (field: "calories" | "protein" | "carbohydrates" | "fat", value: string) => {
     setForm((current) => ({ ...current, [field]: Number(value) }));
@@ -45,7 +51,7 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
           Nombre
           <input
             required
-            className="rounded-lg border border-black/15 px-3 py-2"
+            className="input"
             value={form.name}
             onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
           />
@@ -63,7 +69,7 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
               min="0"
               step="0.1"
               type="number"
-              className="rounded-lg border border-black/15 px-3 py-2"
+              className="input"
               value={form[field]}
               onChange={(event) => updateNumber(field, event.target.value)}
             />
