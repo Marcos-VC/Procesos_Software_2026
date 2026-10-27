@@ -6,7 +6,9 @@ Proyecto académico de la asignatura **Procesos de Software** · 3.º Grado en I
 
 Marcos Vidal Castillo · Pablo Villaplana Rodríguez · Paula Sánchez Garduño · Emiliano Sánchez Moreno · David Sebastián Sticea Covaciu · Raúl Tejada Merinero · Rubén Torres Rivero · Alessio Vecchio
 
-Los roles de Scrum Master y Product Owner rotan; cada sprint indica los suyos.
+Los roles de Scrum Master y Product Owner rotan; cada sprint indica los suyos:
+- **Sprint 1:** Scrum Master: Marcos Vidal Castillo · Product Owner: Pablo Villaplana Rodríguez · Equipo de desarrollo: Paula Sánchez Garduño, Emiliano Sánchez Moreno, David Sebastián Sticea Covaciu, Raúl Tejada Merinero, Rubén Torres Rivero, Alessio Vecchio.
+- **Sprint 2:** Scrum Master: Emiliano Sánchez Moreno · Product Owner: Rubén Torres Rivero · Equipo de desarrollo: Marcos Vidal Castillo, Pablo Villaplana Rodríguez, Paula Sánchez Garduño, David Sebastián Sticea Covaciu, Raúl Tejada Merinero, Alessio Vecchio.
 
 ## Descripción del Módulo
 
@@ -28,7 +30,7 @@ Subsistema **E6** de la aplicación global "Healthy Life". Se encarga de:
 ## Enlaces de Interés
 
 - **Tablero Miro (Product Discovery & User Story Map):** [Healthy Life en Miro](https://miro.com/welcomeonboard/eC8vdlVYNEhXNmY2MkMwTEhFS2JGZ3lQZHptSWE1YzRXb1JzUlNoKzhkSHZ1SThwQkRJUVpyOXU0eTRQQVdoSUErNXZCM25LcW9wclJuZmZOZjFNb3RBVFhWSDVOTklMREU0R0R6TkUzMTg3cU5taXF2YkJDa3NBM0lMeWJreUNzVXVvMm53MW9OWFg5bkJoVXZxdFhRPT0hdjE=?share_link_id=302909706404)
-- **Tablero Jira (Sprint Backlog):** [Healthy Life en Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary?atlOrigin=eyJpIjoiODQ2NjYwOTg5MmE3NDNkZmFhOGUzMjgzYjU3ZGIwNTkiLCJwIjoiaiJ9)
+- **Tablero Jira (Sprint Backlog):** [Healthy Life en Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary?atlOrigin=eyJpIjoiODQ6NjYwOTg5MmE3NDNkZmFhOGUzgzgzYjU3ZGIwNTkiLCJwIjoiaiJ9)
 - **Documentación API / Mocks:** en la carpeta [`/mocks`](mocks) de este repositorio.
 
 ---
@@ -159,5 +161,3 @@ Una HU está terminada solo si cumple los cinco puntos; si falta alguno, no pasa
    ```
 
 4. **Bloqueo por mock:** no hacer peticiones `fetch`/`axios` reales a las URLs de otros equipos. Leer directamente del archivo local `mocks/mock_usuarios.json`.
-
----
