@@ -22,6 +22,8 @@ export interface Food {
   carbohydrates: number;
   fat: number;
   allergens: AllergenId[];
+  /** Dietas para las que el alimento es adecuado. Ausente en respuestas antiguas: se considera compatible. */
+  suitableFor?: DietType[];
 }
 
 export type DietType =

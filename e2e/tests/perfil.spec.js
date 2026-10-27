@@ -85,6 +85,14 @@ test.describe("HU 2.3 Introducir preferencias dietéticas", () => {
     await page.getByRole("button", { name: "Perfil" }).click();
     const veganRadio = page.getByRole("radio", { name: /Vegana/i });
     await expect(veganRadio).toBeChecked();
+
+    // Y el catálogo coloca los alimentos incompatibles al final y los marca.
+    await page.getByRole("button", { name: "Catálogo" }).click();
+    const salmon = page.getByRole("article", {
+      name: "Salmón, no compatible con tu dieta",
+    });
+    await expect(salmon).toBeVisible();
+    await expect(salmon.getByText("No compatible con tu dieta")).toBeVisible();
   });
 
   test("AC2: una preferencia dietética no válida se rechaza con 400", async ({ request }) => {

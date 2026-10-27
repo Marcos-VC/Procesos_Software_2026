@@ -157,7 +157,16 @@ function App() {
             <SectionHeading eyebrow="CATÁLOGO" title="Alimentos disponibles">
               <SearchBar onSearch={setQuery} />
             </SectionHeading>
-            <FoodList foods={foods} allergenCatalog={allergenCatalog} />
+            {user?.medicalRestrictions?.dietType && (
+              <p className="mb-6 rounded-xl bg-primary-soft px-4 py-3 text-sm text-secondary">
+                Los alimentos no compatibles con tu preferencia dietética aparecen al final y están marcados.
+              </p>
+            )}
+            <FoodList
+              foods={foods}
+              allergenCatalog={allergenCatalog}
+              dietType={user?.medicalRestrictions?.dietType}
+            />
           </>
         )}
 

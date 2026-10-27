@@ -31,7 +31,9 @@ Tests E2E definidos para las historias implementadas en este módulo:
 
 La HU 2.3 cubre la selección de una preferencia dietética desde el perfil, su
 persistencia tras recargar, el rechazo de valores no válidos con `400` y la
-respuesta `404` para usuarios inexistentes.
+respuesta `404` para usuarios inexistentes. En el catálogo, los alimentos
+incompatibles con la preferencia activa se mantienen visibles al final de la
+lista, atenuados y marcados para evitar recomendaciones engañosas.
 
 El estado de cada una está en el [tablero de Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary).
 
@@ -53,7 +55,9 @@ La persona usuaria puede seleccionar una preferencia dietética (omnívora,
 vegetariana, vegana, pescetariana o cetogénica), guardarla desde su perfil y
 comprobar que se conserva al volver a cargar la aplicación. La API valida los
 valores permitidos y devuelve `400` para preferencias desconocidas y `404` para
-usuarios inexistentes.
+usuarios inexistentes. El catálogo conserva, por ejemplo, el salmón visible
+para una persona vegana, pero lo identifica como no compatible y lo separa de
+los alimentos recomendados.
 
 **HU 3.2 · Calorías del menú** — _pendiente_
 
