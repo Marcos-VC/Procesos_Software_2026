@@ -98,7 +98,19 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
           </div>
         </fieldset>
         <button type="submit" className="btn sm:col-span-2">Guardar alimento</button>
-        {status && <p role="status" className="text-sm text-primary-dark sm:col-span-2">{status}</p>}
+        {status && (
+          <p
+            role="status"
+            className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium sm:col-span-2 ${
+              status === "Alimento añadido correctamente"
+                ? "border border-ok/25 bg-ok-soft text-ok"
+                : "border border-primary/20 bg-primary-soft text-primary-dark"
+            }`}
+          >
+            <span aria-hidden="true">{status === "Alimento añadido correctamente" ? "✓" : "!"}</span>
+            <span>{status}</span>
+          </p>
+        )}
       </form>
     </details>
   );
