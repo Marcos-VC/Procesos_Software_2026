@@ -86,4 +86,21 @@ test.describe("HU 2.3 Introducir preferencias dietéticas", () => {
     const veganRadio = page.getByRole("radio", { name: /Vegana/i });
     await expect(veganRadio).toBeChecked();
   });
+
+  test("AC2: una preferencia dietética no válida se rechaza con 400", async ({ request }) => {
+    const response = await request.put(dietUrl, {
+      data: { dietType: "sin_restricciones" },
+    });
+
+    expect(response.status()).toBe(400);
+    expect((await response.json()).error).toBe(true);
+  });
+
+  test("AC3: un usuario inexistente devuelve 404", async ({ request }) => {
+    const response = await request.put(`${apiUrl}/api/users/${crypto.randomUUID()}/diet-type`, {
+      data: { dietType: "vegan" },
+    });
+
+    expect(response.status()).toBe(404);
+  });
 });
