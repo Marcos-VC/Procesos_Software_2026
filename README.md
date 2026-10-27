@@ -178,6 +178,7 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta
 | GET    | `/api/foods?search=`                      | Catálogo de alimentos, con búsqueda por nombre (sin distinguir mayúsculas ni tildes)                                                            |
 | GET    | `/api/allergens`                          | Catálogo de alérgenos (id, nombre, icono y explicación)                                                                                         |
 | PUT    | `/api/users/{userId}/nutritional-profile` | Actualiza el objetivo calórico diario (`caloricGoal`) (escribe en `mock_usuarios.json`)                                                         |
+| PUT    | `/api/users/{userId}/diet-type`           | Actualiza la preferencia dietética (`dietType`: omnivore, vegetarian, vegan, pescatarian, keto) (escribe en `mock_usuarios.json`)                |
 | GET    | `/api/menus/{userId}`                     | Menú del usuario (vacío si aún no tiene)                                                                                                        |
 | PUT    | `/api/menus/{userId}`                     | Guarda el menú `{ days: { lunes: { desayuno: [foodId], comida: [], cena: [] }, ... } }`                                                        |
 

@@ -5,7 +5,13 @@ import MenuBuilder from "./components/MenuBuilder";
 import ProfileEditor from "./components/ProfileEditor";
 import SearchBar from "./components/SearchBar";
 import SectionHeading from "./components/SectionHeading";
-import type { Allergen, DailySummary, Food, UserProfile } from "./types";
+import {
+  DIET_OPTIONS,
+  type Allergen,
+  type DailySummary,
+  type Food,
+  type UserProfile,
+} from "./types";
 
 type Tab = "catalogo" | "perfil" | "menu";
 
@@ -67,6 +73,13 @@ function App() {
     allergens.map((allergen) => [allergen.id, allergen]),
   );
 
+  const activeDiet = DIET_OPTIONS.find(
+    (opt) => opt.id === user?.medicalRestrictions?.dietType,
+  );
+  const dietLabel = activeDiet
+    ? `${activeDiet.icon} ${activeDiet.name}`
+    : user?.medicalRestrictions?.dietType || "...";
+
   return (
     <main className="min-h-screen pb-24">
       <header className="relative overflow-hidden bg-linear-to-br from-secondary via-secondary to-secondary-soft text-white">
@@ -90,7 +103,7 @@ function App() {
       </header>
 
       <section
-        className="page relative z-10 -mt-20 grid grid-cols-1 gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-4"
+        className="page relative z-10 -mt-20 grid grid-cols-1 gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-5"
         aria-label="Perfil nutricional"
       >
         <ProfileStat
@@ -105,6 +118,10 @@ function App() {
         <ProfileStat
           label="Consumido hoy"
           value={summary ? `${summary.totalCaloriesConsumed} kcal` : "..."}
+        />
+        <ProfileStat
+          label="Preferencia dietética"
+          value={user ? dietLabel : "..."}
         />
       </section>
 

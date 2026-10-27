@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../api";
-import type { UserProfile } from "../types";
+import type { DietType, UserProfile } from "../types";
+import DietPreferenceSelector from "./DietPreferenceSelector";
 
-// Edición del perfil nutricional: objetivo calórico diario. Guarda en el backend con PUT.
+// Edición del perfil nutricional: objetivo calórico diario y preferencias dietéticas (HU 2.3). Guarda en el backend con PUT.
 interface ProfileEditorProps {
   user: UserProfile;
   onSaved: (user: UserProfile) => void;
@@ -15,15 +16,19 @@ interface Status {
 
 function ProfileEditor({ user, onSaved }: ProfileEditorProps) {
   const [caloricGoal, setCaloricGoal] = useState(String(user.caloricGoal));
+  const [dietType, setDietType] = useState<DietType | string>(
+    user.medicalRestrictions?.dietType || "omnivore"
+  );
   const [status, setStatus] = useState<Status | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus(null);
     try {
-      const updated = await api.updateProfile(user.userId, {
+      await api.updateProfile(user.userId, {
         caloricGoal: Number(caloricGoal),
       });
+      const updated = await api.updateDietType(user.userId, dietType);
       onSaved(updated);
       setStatus({ type: "ok", text: "Perfil guardado correctamente" });
     } catch (error) {
@@ -36,7 +41,7 @@ function ProfileEditor({ user, onSaved }: ProfileEditorProps) {
 
   return (
     <form
-      className="card grid max-w-xl justify-items-start gap-6 p-6 sm:p-8"
+      className="card grid max-w-2xl justify-items-start gap-6 p-6 sm:p-8"
       onSubmit={handleSubmit}
     >
       <label className="grid w-full gap-2 text-sm font-medium text-secondary">
@@ -50,6 +55,11 @@ function ProfileEditor({ user, onSaved }: ProfileEditorProps) {
           onChange={(event) => setCaloricGoal(event.target.value)}
         />
       </label>
+
+      <DietPreferenceSelector
+        selected={dietType}
+        onChange={setDietType}
+      />
 
       <button type="submit" className="btn">
         Guardar cambios

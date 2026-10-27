@@ -43,3 +43,47 @@ test.describe("HU 2.1 Fijar objetivo calórico diario", () => {
     await expect(page.getByLabel("Objetivo calórico diario (kcal)")).toHaveValue("2000");
   });
 });
+
+const dietUrl = `${apiUrl}/api/users/${userId}/diet-type`;
+
+// HU 2.3 - Introducir preferencias dietéticas
+test.describe("HU 2.3 Introducir preferencias dietéticas", () => {
+  let originalDiet;
+
+  test.beforeAll(async ({ request }) => {
+    const profile = await (await request.get(profileUrl)).json();
+    originalDiet = profile.medicalRestrictions?.dietType || "omnivore";
+  });
+
+  // Restaura la preferencia dietética para no afectar al resto de pruebas.
+  test.afterAll(async ({ request }) => {
+    await request.put(dietUrl, { data: { dietType: originalDiet } });
+  });
+
+  test("AC1: seleccionar una preferencia dietética y guardar actualiza el perfil y persiste tras recargar", async ({
+    page,
+    request,
+  }) => {
+    // Dado que el usuario está en la pantalla de edición de su perfil
+    await page.goto("/");
+    await page.getByRole("button", { name: "Perfil" }).click();
+    await expect(page.getByRole("heading", { name: "Perfil nutricional" })).toBeVisible();
+
+    // Cuando selecciona una preferencia dietética (por ejemplo, Vegana) y pulsa Guardar cambios
+    await page.getByLabel(/Vegana/i).click();
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+
+    // Entonces la app actualiza el perfil del usuario en el sistema
+    await expect(page.getByRole("status")).toHaveText("Perfil guardado correctamente");
+    await expect(page.getByLabel("Perfil nutricional").getByText(/Vegana/i)).toBeVisible();
+
+    const saved = await (await request.get(profileUrl)).json();
+    expect(saved.medicalRestrictions.dietType).toBe("vegan");
+
+    // Y la preferencia persiste tras recargar
+    await page.reload();
+    await page.getByRole("button", { name: "Perfil" }).click();
+    const veganRadio = page.getByRole("radio", { name: /Vegana/i });
+    await expect(veganRadio).toBeChecked();
+  });
+});

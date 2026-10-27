@@ -24,9 +24,56 @@ export interface Food {
   allergens: AllergenId[];
 }
 
+export type DietType =
+  | "omnivore"
+  | "vegetarian"
+  | "vegan"
+  | "pescatarian"
+  | "keto";
+
+export interface DietOption {
+  id: DietType;
+  name: string;
+  icon: string;
+  description: string;
+}
+
+export const DIET_OPTIONS: DietOption[] = [
+  {
+    id: "omnivore",
+    name: "Omnívora",
+    icon: "🥩",
+    description: "Sin restricciones: consume carnes, pescados, lácteos, huevos y vegetales.",
+  },
+  {
+    id: "vegetarian",
+    name: "Vegetariana",
+    icon: "🥦",
+    description: "Basada en alimentos de origen vegetal, lácteos y huevos. Sin carnes ni pescados.",
+  },
+  {
+    id: "vegan",
+    name: "Vegana",
+    icon: "🌱",
+    description: "100% origen vegetal. Excluye carnes, pescados, mariscos, lácteos y huevos.",
+  },
+  {
+    id: "pescatarian",
+    name: "Pescetariana",
+    icon: "🐟",
+    description: "Vegetariana que incluye pescados y mariscos, además de lácteos y huevos.",
+  },
+  {
+    id: "keto",
+    name: "Cetogénica (Keto)",
+    icon: "🥑",
+    description: "Baja en carbohidratos y rica en grasas saludables y proteínas.",
+  },
+];
+
 export interface MedicalRestrictions {
   allergies: AllergenId[];
-  dietType: string;
+  dietType: DietType | string;
 }
 
 /** Perfil nutricional del usuario (contrato con E1). */
@@ -41,6 +88,7 @@ export interface UserProfile {
 /** Cambios admitidos por PUT /api/users/:userId/nutritional-profile (parciales). */
 export interface ProfileChanges {
   caloricGoal?: number;
+  dietType?: DietType | string;
 }
 
 /** Resumen del día (contrato con E2/E5). */
