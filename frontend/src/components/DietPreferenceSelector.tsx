@@ -55,4 +55,3 @@ function DietPreferenceSelector({ selected, onChange }: DietPreferenceSelectorPr
 }
 
 export default DietPreferenceSelector;
-
