@@ -17,12 +17,8 @@ const MEALS: [MealKey, string, string][] = [
   ["cena", "Cena", "🌙"],
 ];
 
-// Diseñador de menús: la semana se ve de un vistazo (cada día muestra sus calorías).
-// En cada comida del día elegido se pulsa "Añadir alimento", se busca en el catálogo y
-// con un clic queda añadido. "Guardar menú" persiste la estructura en el backend.
 interface MenuBuilderProps {
   userId: string;
-  /** Objetivo calórico diario del perfil; si existe se muestra como referencia. */
   caloricGoal?: number;
 }
 
@@ -34,23 +30,18 @@ interface Status {
 const errorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Error inesperado";
 
-// Minúsculas y sin tildes, para que "salmon" encuentre "Salmón".
 const plain = (text: string) =>
   text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
   const [foods, setFoods] = useState<Food[]>([]);
   const [days, setDays] = useState<WeekDays | null>(null);
-  // Menú tal y como está guardado, para avisar de que hay cambios sin guardar.
   const [savedSnapshot, setSavedSnapshot] = useState("");
   const [day, setDay] = useState<DayKey>("lunes");
-  // Comida cuyo selector de alimentos está abierto (solo una a la vez).
   const [openMeal, setOpenMeal] = useState<MealKey | null>(null);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<Status | null>(null);
-  // Menús favoritos guardados por el usuario (HU 3.3).
   const [favorites, setFavorites] = useState<MenuFavorite[]>([]);
-  // Modal "Guardar como favorito": abierto/cerrado y el nombre que se está escribiendo.
   const [favoriteModalOpen, setFavoriteModalOpen] = useState(false);
   const [favoriteName, setFavoriteName] = useState("");
 
@@ -80,8 +71,12 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
   const foodsById = new Map(foods.map((food) => [food.id, food]));
   const caloriesOf = (ids: string[]) =>
     ids.reduce((total, id) => total + (foodsById.get(id)?.calories ?? 0), 0);
+
   const dayCalories = (key: DayKey) =>
     Math.round(MEALS.reduce((total, [meal]) => total + caloriesOf(days[key][meal]), 0));
+
+  // HU 3.2: Cálculo acumulado semanal
+  const weeklyCalories = DAYS.reduce((total, [key]) => total + dayCalories(key), 0);
 
   const dayLabel = DAYS.find(([key]) => key === day)?.[1] ?? "";
   const todayKcal = dayCalories(day);
@@ -154,7 +149,7 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
 
   return (
     <div className="grid gap-6">
-      {/* Semana: un botón por día con sus calorías. */}
+      {/* Selector de días de la semana con badge de calorías por día */}
       <div
         className="grid grid-cols-4 gap-2 sm:grid-cols-7"
         role="group"
@@ -184,7 +179,7 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
         })}
       </div>
 
-      {/* Resumen del día seleccionado, con el objetivo calórico como referencia. */}
+      {/* HU 3.2: Tarjeta de Resumen Calórico (Diario + Semanal) */}
       <div className="card p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
@@ -193,13 +188,20 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
             </p>
             <h3 className="text-2xl font-bold text-secondary">{dayLabel}</h3>
           </div>
-          <p className="text-sm text-muted">
-            <b className={`font-display text-2xl ${overGoal ? "text-warning" : "text-secondary"}`}>
-              {todayKcal}
-            </b>
-            {caloricGoal ? ` de ${caloricGoal} kcal` : " kcal"}
-          </p>
+          <div className="text-right">
+            <p className="text-sm text-muted">
+              Total día:{" "}
+              <b className={`font-display text-2xl ${overGoal ? "text-warning" : "text-secondary"}`}>
+                {todayKcal}
+              </b>
+              {caloricGoal ? ` / ${caloricGoal} kcal` : " kcal"}
+            </p>
+            <p className="text-xs text-muted mt-1">
+              Total acumulado semana: <b className="text-secondary">{weeklyCalories} kcal</b>
+            </p>
+          </div>
         </div>
+
         {caloricGoal ? (
           <div
             className="mt-4 h-2.5 overflow-hidden rounded-full bg-surface"
@@ -214,15 +216,16 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
           </div>
         ) : null}
         <p className="mt-3 text-xs text-muted">
-          Estimación contando 100 g de cada alimento.
+          Estimación automática considerando 100 g de ración por cada alimento añadido.
         </p>
       </div>
 
-      {/* Las tres comidas del día. */}
+      {/* Comidas del día con suma automática por comida */}
       <div className="grid gap-5 md:grid-cols-3 md:items-start">
         {MEALS.map(([meal, label, icon]) => {
           const items = days[day][meal];
           const isOpen = openMeal === meal;
+          const mealKcal = Math.round(caloriesOf(items));
           return (
             <section
               className="card flex flex-col gap-4 border-t-4 border-t-primary p-5"
@@ -235,7 +238,7 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
                   {label}
                 </h4>
                 <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary-dark">
-                  {Math.round(caloriesOf(items))} kcal
+                  {mealKcal} kcal
                 </span>
               </div>
 

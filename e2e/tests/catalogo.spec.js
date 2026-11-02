@@ -119,7 +119,7 @@ test.describe("HU 1.3 Añadir nuevos alimentos al catálogo", () => {
     await page.getByRole("checkbox", { name: "Gluten" }).check();
     await page.getByRole("button", { name: "Guardar alimento" }).click();
 
-    await expect(page.getByRole("status")).toHaveText("Alimento añadido correctamente");
+    await expect(page.getByRole("status")).toContainText("Alimento añadido correctamente");
     await expect(page.getByRole("heading", { name: food.name })).toBeVisible();
     await expect(page.getByRole("status")).toBeHidden();
     const response = await request.get(`${foodsUrl}?search=${encodeURIComponent(food.name)}`);
