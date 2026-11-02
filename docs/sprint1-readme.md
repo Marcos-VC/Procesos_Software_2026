@@ -15,7 +15,8 @@ MVP de 13 puntos, entregado. Visión general y cómo ejecutarlo en el [README pr
 - HU 2.1 Fijar objetivo calórico diario (SCRUM-17) · `perfil.spec.js`
 - HU 3.1 Crear un menú básico (SCRUM-34) · `menu.spec.js`
 
-Tests E2E: 6 en verde.
+Tests E2E: 8 en verde (2 criterios de aceptación por historia: el camino feliz
+y un caso de validación/rechazo).
 
 ## Interfaz
 
@@ -34,10 +35,12 @@ para identificar rápidamente los posibles riesgos.
 ### HU 2.1 · Fijar objetivo calórico diario
 
 Desde el perfil nutricional se puede consultar y actualizar el objetivo
-calórico diario. El valor se valida, se guarda en el backend y permanece tras
-recargar la aplicación.
+calórico diario. El valor se valida (entero entre 500 y 10000, con rechazo
+`400` fuera de ese rango), se guarda en el backend y permanece tras recargar
+la aplicación.
 
 ### HU 3.1 · Crear un menú básico
 
 El diseñador permite añadir alimentos a Desayuno, Comida y Cena para cada día
-de la semana, retirar alimentos y guardar el menú completo asociado al usuario.
+de la semana, retirar alimentos y guardar el menú completo asociado al
+usuario. Un alimento que no existe en el catálogo se rechaza con `400`.

@@ -5,8 +5,30 @@ import { normalizeText } from "../utils/text.js";
 const USERS_FILE = "mock_usuarios.json";
 const ALLERGENS_FILE = "mock_alergenos.json";
 
+// mock_usuarios.json simula el servicio de perfiles de E1 (ver README). Si llega vacío, vacío de
+// más (no es un array) o corrupto, lo tratamos como una caída de esa dependencia externa (503),
+// no como un bug nuestro (500).
+async function readUsers() {
+  let users;
+  try {
+    users = await readJson(USERS_FILE);
+  } catch {
+    throw new HttpError(
+      503,
+      "El servicio de perfiles de usuario (Equipo 1) no está disponible.",
+    );
+  }
+  if (!Array.isArray(users)) {
+    throw new HttpError(
+      503,
+      "El servicio de perfiles de usuario (Equipo 1) devolvió datos con un formato inválido.",
+    );
+  }
+  return users;
+}
+
 export async function findUser(userId) {
-  const users = await readJson(USERS_FILE);
+  const users = await readUsers();
   const user = users.find((item) => item.userId === userId);
   if (!user) {
     throw new HttpError(404, "Usuario no encontrado");

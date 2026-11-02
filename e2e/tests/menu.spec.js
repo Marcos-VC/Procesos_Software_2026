@@ -58,6 +58,24 @@ test.describe("HU 3.1 Crear menú básico", () => {
     await page.getByRole("button", { name: "Martes" }).click();
     await expect(page.getByRole("region", { name: "Cena" })).toContainText("Salmón");
   });
+
+  // Auditoría Sprint 1: menuService.parseDays rechaza con 400 un alimento que no existe en el
+  // catálogo (no había ningún test que cubriera este camino de validación del guardado del menú).
+  test("AC2: PUT /api/menus/:userId rechaza con 400 un alimento inexistente en el menú", async ({
+    request,
+  }) => {
+    // Dado un id de alimento que no existe en el catálogo
+    // Cuando se intenta guardar un menú que lo incluye
+    const response = await request.put(`${apiUrl}/api/menus/${userId}`, {
+      data: { days: { lunes: { desayuno: ["id-inexistente"], comida: [], cena: [] } } },
+    });
+
+    // Entonces se rechaza con 400 y un mensaje describiendo el error
+    expect(response.status()).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBe(true);
+    expect(body.message).toContain("Alimento no encontrado");
+  });
 });
 
 // HU 3.3 - Guardar menú favorito
@@ -93,6 +111,29 @@ test.describe("HU 3.3 Guardar menú favorito", () => {
     await expect(desayuno.getByRole("listitem")).toHaveCount(0);
     await page.getByRole("combobox", { name: "Cargar menú favorito" }).selectOption({ label: "Semana ligera" });
     await expect(desayuno).toContainText("Manzana");
+  });
+
+  test("AC2: guardar un favorito con el nombre vacío se rechaza con 400", async ({ request }) => {
+    // El botón "Guardar" del modal "Guardar menú como favorito" está disabled={!favoriteName.trim()}
+    // mientras el nombre esté vacío, así que no hay forma de disparar este 400 desde la UI real:
+    // probamos directamente el endpoint POST /api/menus/favorites { userId, name, days } que usa
+    // ese modal (menuController.postFavoriteMenu / menuService.createFavorite).
+
+    // Dado un nombre vacío
+    const emptyName = await request.post(`${apiUrl}/api/menus/favorites`, {
+      data: { userId, name: "", days: {} },
+    });
+    expect(emptyName.status()).toBe(400);
+    const emptyBody = await emptyName.json();
+    expect(emptyBody.error).toBe(true);
+    expect(emptyBody.message).toBe("name es obligatorio");
+
+    // Y un nombre que son solo espacios (menuService.createFavorite hace trim antes de validar)
+    const blankName = await request.post(`${apiUrl}/api/menus/favorites`, {
+      data: { userId, name: "   ", days: {} },
+    });
+    expect(blankName.status()).toBe(400);
+    expect((await blankName.json()).message).toBe("name es obligatorio");
   });
 });
 
@@ -134,5 +175,40 @@ test.describe("HU 3.2 Sumar calorías del menú automáticamente", () => {
     await desayuno.getByRole("button", { name: "Quitar Manzana de Desayuno" }).click();
     await expect(desayuno).toContainText("0 kcal");
     await expect(page.getByRole("button", { name: "Lunes" })).toContainText("165 kcal");
+  });
+
+  test("AC2: el total acumulado de la semana suma las calorías de varios días y baja al quitar un alimento", async ({
+    page,
+    request,
+  }) => {
+    // Limpiar menú antes de probar
+    await request.put(`${apiUrl}/api/menus/${userId}`, { data: { days: {} } });
+
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menú" }).click();
+    await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();
+
+    // Dado el total acumulado de la semana a 0 kcal
+    const weeklyTotal = page.locator("p", { hasText: "Total acumulado semana" });
+    await expect(weeklyTotal).toContainText("0 kcal");
+
+    // Cuando añade Manzana (52 kcal) al Desayuno del Lunes (día seleccionado por defecto)
+    const desayuno = page.getByRole("region", { name: "Desayuno" });
+    await desayuno.getByRole("button", { name: "Añadir alimento" }).click();
+    await desayuno.getByRole("button", { name: "Manzana" }).click();
+    await expect(weeklyTotal).toContainText("52 kcal");
+
+    // Y añade Pechuga de pollo (165 kcal) a la Comida del Martes (otro día de la semana)
+    await page.getByRole("button", { name: "Martes" }).click();
+    const comida = page.getByRole("region", { name: "Comida" });
+    await comida.getByRole("button", { name: "Añadir alimento" }).click();
+    await comida.getByRole("button", { name: "Pechuga de pollo" }).click();
+
+    // Entonces el total semanal es la suma de ambos días (52 + 165 = 217 kcal)
+    await expect(weeklyTotal).toContainText("217 kcal");
+
+    // Y al quitar el alimento del Martes, el total semanal baja en consecuencia
+    await comida.getByRole("button", { name: "Quitar Pechuga de pollo de Comida" }).click();
+    await expect(weeklyTotal).toContainText("52 kcal");
   });
 });

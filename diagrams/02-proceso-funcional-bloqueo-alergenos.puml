@@ -1,0 +1,44 @@
+@startuml 02-proceso-funcional-bloqueo-alergenos
+title HexaHealth - E6: Bloqueo de alimentos incompatibles con alergias\n(cubierto por e2e/tests/alergenos.spec.js)
+
+start
+:Usuario abre la pestaña "Perfil";
+:Marca la alergia "Lactosa" en el selector de alergias;
+:Pulsa "Guardar cambios"
+(PUT /api/users/{userId}/allergies);
+:<back:LightBlue>[PUNTO DE INYECCIÓN]
+El backend lee mocks/mock_usuarios.json
+(simulación del perfil de E1) para resolver
+al usuario en esta y cada petición siguiente;
+if (¿El JSON de E1 falla, está\ncorrupto o no es un array válido?) then (sí)
+  :<back:Orange>Backend responde 503
+  "servicio de perfiles de E1 no disponible";
+  :Frontend muestra el error real en pantalla;
+  stop
+else (no)
+endif
+:Usuario va a la pestaña "Menú";
+:Abre el selector "Añadir alimento" en una comida;
+:<back:LightBlue>[PUNTO DE INYECCIÓN]
+GET /api/foods?userId= marca cada alimento
+con blocked/blockedBy según las alergias
+leídas del perfil del usuario;
+if (¿El alimento elegido contiene\nun alérgeno del perfil?) then (sí)
+  :El botón aparece "⚠ bloqueado" y
+  deshabilitado: no se puede añadir;
+else (no)
+  :El alimento se añade al menú
+  (solo en memoria, todavía sin guardar);
+endif
+:Usuario pulsa "Guardar menú"
+(PUT /api/menus/{userId});
+if (¿El menú final sigue conteniendo\nun alimento bloqueado?\n(ej. el perfil cambió entre medias)) then (sí)
+  :<back:Orange>Backend rechaza con HTTP 422;
+  :Frontend muestra el error
+  ("<alimento> contiene alérgenos del perfil: ...");
+  stop
+else (no)
+  :<back:LightGreen>Menú guardado correctamente;
+  stop
+endif
+@enduml

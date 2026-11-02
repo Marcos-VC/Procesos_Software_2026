@@ -42,6 +42,26 @@ test.describe("HU 2.1 Fijar objetivo calórico diario", () => {
     await page.getByRole("button", { name: "Perfil" }).click();
     await expect(page.getByLabel("Objetivo calórico diario (kcal)")).toHaveValue("2000");
   });
+
+  // Auditoría Sprint 1: userService valida caloricGoal como entero entre 500 y 10000
+  // (Number.isInteger(goal) && goal >= 500 && goal <= 10000); no había ningún test que
+  // comprobara el rechazo cuando el valor está fuera de ese rango o no es entero.
+  test("AC2: un objetivo calórico fuera de rango o no entero se rechaza con 400", async ({
+    request,
+  }) => {
+    // Dado un valor por debajo del mínimo permitido (500)
+    const tooLow = await request.put(profileUrl, { data: { caloricGoal: 100 } });
+    expect(tooLow.status()).toBe(400);
+    expect((await tooLow.json()).error).toBe(true);
+
+    // Y un valor por encima del máximo permitido (10000)
+    const tooHigh = await request.put(profileUrl, { data: { caloricGoal: 20000 } });
+    expect(tooHigh.status()).toBe(400);
+
+    // Y un valor que no es un entero
+    const notInteger = await request.put(profileUrl, { data: { caloricGoal: 2000.5 } });
+    expect(notInteger.status()).toBe(400);
+  });
 });
 
 const allergiesUrl = `${apiUrl}/api/users/${userId}/allergies`;
@@ -134,7 +154,7 @@ test.describe("HU 2.3 Introducir preferencias dietéticas", () => {
     // Y el catálogo oculta los alimentos incompatibles y muestra un aviso.
     await page.getByRole("button", { name: "Catálogo" }).click();
     await expect(
-      page.getByText("Pueden no aparecer algunos alimentos por tu tipo de dieta."),
+      page.getByText("Se ocultan los alimentos que no encajan con tu dieta vegana."),
     ).toBeVisible();
     await expect(page.getByRole("heading", { name: "Salmón" })).not.toBeVisible();
   });

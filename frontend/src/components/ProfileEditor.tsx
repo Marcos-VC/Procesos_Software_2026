@@ -42,45 +42,52 @@ function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
   };
 
   return (
-    <form
-      className="card grid max-w-xl justify-items-start gap-6 p-6 sm:p-8"
-      onSubmit={handleSubmit}
-    >
-      <label className="grid w-full gap-2 text-sm font-medium text-secondary">
-        <span>Objetivo calórico diario (kcal)</span>
-        <input
-          className="input"
-          type="number"
-          min="500"
-          max="10000"
-          value={caloricGoal}
-          onChange={(event) => setCaloricGoal(event.target.value)}
-        />
-      </label>
+    <form className="grid gap-6" onSubmit={handleSubmit}>
+      <div className="card relative grid gap-2 overflow-hidden p-6 sm:p-8">
+        <span className="absolute inset-y-0 left-0 w-1.5 bg-primary" aria-hidden="true" />
+        <label className="grid max-w-xs gap-2 text-sm font-medium text-secondary">
+          <span>Objetivo calórico diario (kcal)</span>
+          <input
+            className="input"
+            type="number"
+            min="500"
+            max="10000"
+            value={caloricGoal}
+            onChange={(event) => setCaloricGoal(event.target.value)}
+          />
+        </label>
+      </div>
 
-      <AllergySelector
-        allergenCatalog={allergens}
-        selected={allergies}
-        onChange={setAllergies}
-      />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="card p-6 sm:p-8">
+          <AllergySelector
+            allergenCatalog={allergens}
+            selected={allergies}
+            onChange={setAllergies}
+          />
+        </div>
+        <div className="card p-6 sm:p-8">
+          <DietPreferenceSelector selected={dietType} onChange={setDietType} />
+        </div>
+      </div>
 
-      <DietPreferenceSelector selected={dietType} onChange={setDietType} />
-
-      <button type="submit" className="btn">
-        Guardar cambios
-      </button>
-      {status && (
-        <p
-          className={
-            status.type === "ok"
-              ? "rounded-xl bg-ok-soft px-4 py-2.5 font-semibold text-ok"
-              : "rounded-xl bg-primary-soft px-4 py-2.5 text-primary-dark"
-          }
-          role={status.type === "ok" ? "status" : "alert"}
-        >
-          {status.text}
-        </p>
-      )}
+      <div className="flex flex-wrap items-center gap-4">
+        <button type="submit" className="btn">
+          Guardar cambios
+        </button>
+        {status && (
+          <p
+            className={
+              status.type === "ok"
+                ? "rounded-xl bg-ok-soft px-4 py-2.5 font-semibold text-ok"
+                : "rounded-xl bg-primary-soft px-4 py-2.5 text-primary-dark"
+            }
+            role={status.type === "ok" ? "status" : "alert"}
+          >
+            {status.text}
+          </p>
+        )}
+      </div>
     </form>
   );
 }

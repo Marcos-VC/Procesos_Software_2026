@@ -25,7 +25,7 @@ Subsistema **E6** de la aplicación global "Healthy Life". Se encarga de:
 | ------ | ---- | ----------------------------- |
 | [Sprint 1](docs/sprint1-readme.md) | MVP: funcionalidad básica | HU 1.1 Buscar alimentos y ver macros (3) · HU 1.2 Iconos de alérgenos (2) · HU 2.1 Objetivo calórico diario (3) · HU 3.1 Crear menú básico (5) |
 | [Sprint 2](docs/sprint2-readme.md) | Lógica de negocio y seguridad | HU 2.2 Configurar alergias (2) · HU 2.3 Preferencias dietéticas (2) · HU 3.2 Sumar calorías del menú (3) · HU 3.3 Guardar menú favorito (2) · HU 3.4 Motor de reglas para bloquear alimentos peligrosos (5) · HU 1.3 Administrador añade alimentos (3) |
-| Sprint 3 | Funciones extra y cierre | HU 4.1 Despensa virtual (3) · HU 4.2 Sugerencias de recetas según la despensa (5) · HU 5.1 Lista de la compra desde el menú (5) · HU 5.2 Marcar ingredientes de la lista (2) · HU 5.3 Compartir lista (WhatsApp/Email) (3) |
+| [Sprint 3](docs/sprint3-readme.md) | Funciones extra y cierre | HU 4.1 Despensa virtual (3) · HU 4.2 Sugerencias de recetas según la despensa (5) · HU 5.1 Lista de la compra desde el menú (5) · HU 5.2 Marcar ingredientes de la lista (2) · HU 5.3 Compartir lista (WhatsApp/Email) (3) |
 
 ## Enlaces de Interés
 
@@ -100,6 +100,7 @@ Para la validación estricta de restricciones médicas y el cálculo de menús, 
   ```
 
 - **Estado actual:** aislado y resuelto mediante simulación local. Para evitar bloqueos, la respuesta de este endpoint está mockeada en [`/mocks/mock_usuarios.json`](mocks/mock_usuarios.json).
+- **Gestión de fallos (HU 3.4):** si esa lectura falla —fichero inexistente, JSON corrupto o con un formato inesperado—, E6 no lo trata como un bug propio: responde `503` con un mensaje identificando que el servicio de perfiles de E1 no está disponible, en vez de un error genérico. Un `userId` válido que simplemente no existe en los datos sigue devolviendo `404`, que es el caso normal.
 
 ### Servicios expuestos (lo que E6 ofrece al resto)
 

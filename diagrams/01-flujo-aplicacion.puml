@@ -1,0 +1,126 @@
+@startuml 01-flujo-aplicacion
+title HexaHealth - E6 Gestor Nutricional y Catálogo de Alimentos\nFlujo Frontend -> Backend -> Mocks (Sprint 2)
+
+skinparam componentStyle rectangle
+skinparam wrapWidth 220
+skinparam defaultTextAlignment left
+
+package "Frontend (React 19 + TS + Vite)" {
+  [App.tsx\n(pestañas Catálogo / Perfil / Menú)] as AppTsx
+  [SearchBar] as SearchBar
+  [FoodList] as FoodList
+  [FoodItem] as FoodItem
+  [FoodForm\n(HU 1.3)] as FoodForm
+  [ProfileEditor] as ProfileEditor
+  [AllergySelector\n(HU 2.2)] as AllergySelector
+  [DietPreferenceSelector\n(HU 2.3)] as DietPreferenceSelector
+  [MenuBuilder\n(HU 3.1/3.2/3.3/3.4:\ncalorias, favoritos, bloqueo)] as MenuBuilder
+  [api.ts\n(cliente HTTP)] as ApiTs
+
+  AppTsx --> SearchBar
+  AppTsx --> FoodList
+  FoodList --> FoodItem
+  AppTsx --> FoodForm
+  AppTsx --> ProfileEditor
+  ProfileEditor --> AllergySelector
+  ProfileEditor --> DietPreferenceSelector
+  AppTsx --> MenuBuilder
+
+  AppTsx --> ApiTs
+  SearchBar --> ApiTs
+  FoodList --> ApiTs
+  FoodForm --> ApiTs
+  ProfileEditor --> ApiTs
+  MenuBuilder --> ApiTs
+}
+
+package "Backend (Express 5 ESM)" {
+  package "routes" as RoutesPkg {
+    [food.js] as FoodRoute
+    [user.js] as UserRoute
+    [nutrition.js] as NutritionRoute
+    [menu.js] as MenuRoute
+  }
+  package "controllers" as ControllersPkg {
+    [foodController] as FoodController
+    [userController] as UserController
+    [nutritionController] as NutritionController
+    [menuController] as MenuController
+  }
+  package "services (reglas de negocio)" as ServicesPkg {
+    [foodService] as FoodService
+    [userService] as UserService
+    [nutritionService] as NutritionService
+    [menuService] as MenuService
+  }
+  [jsonStore.js\n(lectura/escritura atomica,\ncola de escrituras)] as JsonStore
+  [sqliteStore.js\n(preparado, SIN uso activo\nhasta Sprint 3)] as SqliteStore #LightGray
+
+  FoodRoute --> FoodController
+  UserRoute --> UserController
+  NutritionRoute --> NutritionController
+  MenuRoute --> MenuController
+
+  FoodController --> FoodService
+  UserController --> UserService
+  NutritionController --> NutritionService
+  MenuController --> MenuService
+
+  FoodService --> JsonStore
+  UserService --> JsonStore
+  NutritionService --> JsonStore
+  MenuService --> JsonStore
+}
+
+note right of SqliteStore
+  Ningun controller ni service lo importa todavia.
+  Conexion y CREATE TABLE ya definidos (usuarios,
+  alimentos, menus...); la migracion real desde
+  jsonStore.js queda para el Sprint 3.
+end note
+
+package "mocks/ (persistencia JSON, Sprint 1-2)" {
+  database "mock_usuarios.json\n(simula el perfil de E1)" as MockUsuarios
+  database "mock_alimentos.json" as MockAlimentos
+  database "mock_alergenos.json" as MockAlergenos
+  database "mock_consumo.json" as MockConsumo
+  database "mock_menus.json" as MockMenus
+  database "mock_menu_favorites.json" as MockFavorites
+}
+
+cloud "Equipo E1\n(Gestion de Usuarios)" as E1
+cloud "Equipos E2 / E5" as E2E5
+
+' --- Flujo de datos: Frontend -> api.ts -> routes -> controllers -> services -> jsonStore -> mocks ---
+ApiTs <--> FoodRoute : fetch HTTP/JSON
+ApiTs <--> UserRoute : fetch HTTP/JSON
+ApiTs <--> NutritionRoute : fetch HTTP/JSON
+ApiTs <--> MenuRoute : fetch HTTP/JSON
+
+JsonStore --> MockUsuarios
+JsonStore --> MockAlimentos
+JsonStore --> MockAlergenos
+JsonStore --> MockConsumo
+JsonStore --> MockMenus
+JsonStore --> MockFavorites
+
+' --- Elementos externos ---
+E1 ..> MockUsuarios : futuro: sustituira esta\nsimulacion (Sprint 3)
+NutritionController ..> E2E5 : consumen GET /api/nutrition/{userId}/daily-summary
+
+note right of RoutesPkg
+  food.js:    GET /api/foods?search=&userId=   POST /api/foods   GET /api/allergens
+  user.js:    GET/PUT /api/users/{userId}/nutritional-profile
+              PUT /api/users/{userId}/allergies   PUT /api/users/{userId}/diet-type
+  nutrition.js: GET /api/nutrition/{userId}/daily-summary
+  menu.js:    GET/PUT /api/menus/{userId}
+              GET/POST /api/menus/favorites
+end note
+
+note bottom of JsonStore
+  La respuesta JSON sube por las mismas capas en sentido inverso
+  (jsonStore.js -> services -> controllers -> routes -> api.ts)
+  hasta actualizar el estado de React en el Frontend.
+end note
+
+@enduml

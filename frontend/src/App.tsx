@@ -48,7 +48,9 @@ function App() {
         setSummary(summaryData);
         setAllergens(allergenData);
       })
-      .catch(() => setError("No se pudo conectar con el backend."));
+      .catch((error: unknown) =>
+        setError(error instanceof Error ? error.message : "No se pudo conectar con el backend."),
+      );
   }, []);
 
   useEffect(() => {
@@ -58,7 +60,9 @@ function App() {
       .then((data) => {
         if (!ignore) setFoods(data);
       })
-      .catch(() => setError("No se pudo conectar con el backend."));
+      .catch((error: unknown) =>
+        setError(error instanceof Error ? error.message : "No se pudo conectar con el backend."),
+      );
     return () => {
       ignore = true;
     };
@@ -146,15 +150,18 @@ function App() {
         {tab === "catalogo" && (
           <>
             <SectionHeading eyebrow="CATÁLOGO" title="Alimentos disponibles">
-              <SearchBar onSearch={setQuery} />
+              <div className="flex flex-wrap items-center gap-3">
+                <SearchBar onSearch={setQuery} />
+                <FoodForm
+                  allergens={allergens}
+                  onCreated={(food) => setFoods((current) => (current ? [food, ...current] : [food]))}
+                />
+              </div>
             </SectionHeading>
-            <FoodForm
-              allergens={allergens}
-              onCreated={(food) => setFoods((current) => (current ? [food, ...current] : [food]))}
-            />
-            {user?.medicalRestrictions?.dietType && (
-              <p className="mb-6 rounded-xl border border-primary/20 bg-primary-soft px-4 py-3 text-sm text-primary-dark">
-                Pueden no aparecer algunos alimentos por tu tipo de dieta.
+            {user && activeDiet && (
+              <p className="mb-6 flex items-center gap-1.5 text-sm text-muted">
+                <span aria-hidden="true">ℹ️</span>
+                Se ocultan los alimentos que no encajan con tu dieta {activeDiet.name.toLowerCase()}.
               </p>
             )}
             <FoodList

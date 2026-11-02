@@ -328,8 +328,8 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
                               }
                               onClick={() => addFood(meal, food.id)}
                             >
-                              <span className="font-medium">{food.name}</span>
-                              <span className="flex items-center gap-2 text-xs text-muted">
+                              <span className="truncate font-medium">{food.name}</span>
+                              <span className="flex shrink-0 items-center gap-2 text-xs whitespace-nowrap text-muted">
                                 {food.blocked && (
                                   <span className="font-semibold text-warning">
                                     ⚠ bloqueado
