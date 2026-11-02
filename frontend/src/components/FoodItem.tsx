@@ -11,9 +11,16 @@ interface FoodItemProps {
 function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
   const [openAllergen, setOpenAllergen] = useState<string | null>(null);
   const openInfo = openAllergen ? allergenCatalog[openAllergen] : undefined;
+  const blockedNames = (food.blockedBy ?? []).map(
+    (allergenId) => allergenCatalog[allergenId]?.name ?? allergenId,
+  );
 
   return (
-    <article className="card card-hover flex flex-col p-6">
+    <article
+      className={`card flex flex-col p-6 ${
+        food.blocked ? "opacity-60" : "card-hover"
+      }`}
+    >
       <div>
         <div className="flex items-center justify-between gap-2">
           <span className="font-mono text-xs text-muted">{food.id.slice(0, 8)}</span>
@@ -22,6 +29,19 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
           </span>
         </div>
         <h3 className="mt-6 mb-5 text-xl font-bold text-secondary">{food.name}</h3>
+
+        {food.blocked && (
+          <p
+            className="mb-5 flex items-start gap-2 rounded-xl bg-warning-soft px-4 py-3 text-sm leading-snug text-warning"
+            role="alert"
+          >
+            <span aria-hidden="true">⚠️</span>
+            <span>
+              <b>Bloqueado</b>
+              {blockedNames.length > 0 && `: contiene ${blockedNames.join(", ")}`}
+            </span>
+          </p>
+        )}
         <div className="grid divide-y divide-line rounded-xl bg-surface px-4 text-sm text-muted">
           <span className="flex items-center justify-between py-2">
             Proteína <b className="text-secondary">{food.protein}g</b>

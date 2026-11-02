@@ -46,7 +46,7 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
   const [favoriteName, setFavoriteName] = useState("");
 
   useEffect(() => {
-    Promise.all([api.getFoods(""), api.getMenu(userId), api.getFavoriteMenus(userId)])
+    Promise.all([api.getFoods("", userId), api.getMenu(userId), api.getFavoriteMenus(userId)])
       .then(([foodData, menu, favoriteData]) => {
         setFoods(foodData);
         setDays(menu.days);
@@ -302,18 +302,45 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
                     <p className="px-3 py-2 text-sm text-muted">Sin resultados</p>
                   ) : (
                     <ul className="max-h-60 overflow-y-auto">
-                      {results.map((food) => (
-                        <li key={food.id}>
-                          <button
-                            type="button"
-                            className="flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-primary-soft"
-                            onClick={() => addFood(meal, food.id)}
-                          >
-                            <span className="font-medium">{food.name}</span>
-                            <span className="text-xs text-muted">{food.calories} kcal</span>
-                          </button>
-                        </li>
-                      ))}
+                      {results.map((food) => {
+                        const blockReason = (food.blockedBy ?? [])
+                          .map((allergenId) => allergenId.replace(/_/g, " "))
+                          .join(", ");
+                        return (
+                          <li key={food.id}>
+                            <button
+                              type="button"
+                              disabled={food.blocked}
+                              className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition ${
+                                food.blocked
+                                  ? "cursor-not-allowed opacity-50"
+                                  : "cursor-pointer hover:bg-primary-soft"
+                              }`}
+                              title={
+                                food.blocked
+                                  ? `Bloqueado: contiene ${blockReason}`
+                                  : undefined
+                              }
+                              aria-label={
+                                food.blocked
+                                  ? `${food.name}, bloqueado: contiene ${blockReason}`
+                                  : food.name
+                              }
+                              onClick={() => addFood(meal, food.id)}
+                            >
+                              <span className="font-medium">{food.name}</span>
+                              <span className="flex items-center gap-2 text-xs text-muted">
+                                {food.blocked && (
+                                  <span className="font-semibold text-warning">
+                                    ⚠ bloqueado
+                                  </span>
+                                )}
+                                {food.calories} kcal
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                 </div>
