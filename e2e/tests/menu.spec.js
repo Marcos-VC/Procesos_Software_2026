@@ -95,3 +95,44 @@ test.describe("HU 3.3 Guardar menú favorito", () => {
     await expect(desayuno).toContainText("Manzana");
   });
 });
+
+// HU 3.2 - Sumar calorías del menú automáticamente
+test.describe("HU 3.2 Sumar calorías del menú automáticamente", () => {
+  test("AC1: sumar calorías de los alimentos asignados actualiza el total del día y de cada comida en tiempo real", async ({
+    page,
+    request,
+  }) => {
+    // Limpiar menú antes de probar
+    await request.put(`${apiUrl}/api/menus/${userId}`, { data: { days: {} } });
+
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menú" }).click();
+    await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();
+
+    // Comprobar estado inicial (0 kcal)
+    const desayuno = page.getByRole("region", { name: "Desayuno" });
+    await expect(desayuno).toContainText("0 kcal");
+
+    // Añadir Manzana (52 kcal) al Desayuno
+    await desayuno.getByRole("button", { name: "Añadir alimento" }).click();
+    await desayuno.getByRole("button", { name: "Manzana" }).click();
+
+    // Verificar actualización automática en la comida y en el día
+    await expect(desayuno).toContainText("52 kcal");
+    await expect(page.getByRole("button", { name: "Lunes" })).toContainText("52 kcal");
+
+    // Añadir Pechuga de pollo (165 kcal) a la Comida
+    const comida = page.getByRole("region", { name: "Comida" });
+    await comida.getByRole("button", { name: "Añadir alimento" }).click();
+    await comida.getByRole("button", { name: "Pechuga de pollo" }).click();
+
+    // Verificar total acumulado (52 + 165 = 217 kcal)
+    await expect(comida).toContainText("165 kcal");
+    await expect(page.getByRole("button", { name: "Lunes" })).toContainText("217 kcal");
+
+    // Eliminar alimento y comprobar que las calorías restan inmediatamente
+    await desayuno.getByRole("button", { name: "Quitar Manzana de Desayuno" }).click();
+    await expect(desayuno).toContainText("0 kcal");
+    await expect(page.getByRole("button", { name: "Lunes" })).toContainText("165 kcal");
+  });
+});
