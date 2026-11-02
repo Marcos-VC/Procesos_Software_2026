@@ -23,7 +23,7 @@ export async function getMenu(userId) {
  * y devuelve una copia completa (todos los días y comidas presentes).
  * Rechaza alimentos inexistentes.
  */
-export async function parseDays(days) {
+export async function parseDays(days, user) {
   if (typeof days !== "object" || days === null || Array.isArray(days)) {
     throw new HttpError(400, "days debe ser un objeto con los días de la semana");
   }
@@ -57,6 +57,10 @@ export async function parseDays(days) {
         if (!food) {
           throw new HttpError(400, `Alimento no encontrado: ${foodId}`);
         }
+        const blockedBy = food.allergens.filter((allergen) => user.medicalRestrictions.allergies.includes(allergen));
+        if (blockedBy.length > 0) {
+          throw new HttpError(422, `${food.name} contiene alérgenos del perfil: ${blockedBy.join(", ")}`);
+        }
         result[day][meal].push(foodId);
       }
     }
@@ -66,8 +70,8 @@ export async function parseDays(days) {
 
 // Crea o reemplaza el menú del usuario (un menú por usuario en el Sprint 1).
 export async function saveMenu(userId, days) {
-  await findUser(userId);
-  const validDays = await parseDays(days);
+  const user = await findUser(userId);
+  const validDays = await parseDays(days, user);
 
   return updateJson(MENUS_FILE, (menus) => {
     let menu = menus.find((item) => item.userId === userId);
@@ -90,12 +94,12 @@ export async function listFavorites(userId) {
 
 // POST /api/menus/favorites { userId, name, days }: guarda un menú completo bajo un nombre.
 export async function createFavorite(userId, name, days) {
-  await findUser(userId);
+  const user = await findUser(userId);
   const trimmedName = typeof name === "string" ? name.trim() : "";
   if (!trimmedName) {
     throw new HttpError(400, "name es obligatorio");
   }
-  const validDays = await parseDays(days);
+  const validDays = await parseDays(days, user);
 
   return updateJson(FAVORITES_FILE, (favorites) => {
     const favorite = { id: randomUUID(), userId, name: trimmedName, days: validDays };

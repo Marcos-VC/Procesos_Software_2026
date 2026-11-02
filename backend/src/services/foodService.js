@@ -1,13 +1,25 @@
 import { readJson, updateJson } from "../store/jsonStore.js";
 import { HttpError } from "../errors.js";
 import { normalizeText } from "../utils/text.js";
-import { getAllergenCatalog } from "./userService.js";
+import { findUser, getAllergenCatalog } from "./userService.js";
 
 // Busca alimentos por nombre (sin distinguir mayúsculas ni tildes).
-export async function searchFoods(search = "") {
+// Si se pasa userId, marca cada alimento con blocked/blockedBy según los alérgenos del perfil (HU 3.4).
+export async function searchFoods(search = "", userId) {
   const term = normalizeText(search);
   const foods = await readJson("mock_alimentos.json");
-  return term ? foods.filter((food) => normalizeText(food.name).includes(term)) : foods;
+  const matches = term ? foods.filter((food) => normalizeText(food.name).includes(term)) : foods;
+
+  if (!userId) {
+    return matches;
+  }
+
+  const user = await findUser(userId);
+  const forbiddenAllergens = new Set(user.medicalRestrictions.allergies);
+  return matches.map((food) => {
+    const blockedBy = food.allergens.filter((allergen) => forbiddenAllergens.has(allergen));
+    return { ...food, blocked: blockedBy.length > 0, blockedBy };
+  });
 }
 
 export function listAllergens() {

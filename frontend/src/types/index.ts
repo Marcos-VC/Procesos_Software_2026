@@ -23,6 +23,9 @@ export interface Food {
   fat: number;
   allergens: AllergenId[];
   suitableFor?: DietType[];
+  /** Solo presente cuando GET /api/foods se llama con userId: alérgenos del perfil que bloquean este alimento. */
+  blocked?: boolean;
+  blockedBy?: AllergenId[];
 }
 
 export type NewFood = Omit<Food, "id">;

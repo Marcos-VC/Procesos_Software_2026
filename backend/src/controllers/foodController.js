@@ -6,7 +6,7 @@ import {
 
 // GET /api/foods?search=
 export async function listFoods(request, response) {
-  response.json(await searchFoods(request.query.search));
+  response.json(await searchFoods(request.query.search, request.query.userId));
 }
 
 // GET /api/allergens: catálogo de alérgenos (id, nombre, icono y explicación).

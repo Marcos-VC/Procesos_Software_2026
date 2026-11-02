@@ -43,8 +43,12 @@ const sendJson = <T>(method: "PUT" | "POST", path: string, payload: unknown) =>
   });
 
 export const api = {
-  getFoods: (search: string) =>
-    request<Food[]>(`/api/foods?${new URLSearchParams({ search }).toString()}`),
+  getFoods: (search: string, userId?: string) =>
+    request<Food[]>(
+      `/api/foods?${new URLSearchParams(
+        userId ? { search, userId } : { search },
+      ).toString()}`,
+    ),
   addFood: (food: NewFood) => sendJson<Food>("POST", "/api/foods", food),
   getAllergens: () => request<Allergen[]>("/api/allergens"),
   getProfile: (userId: string) =>

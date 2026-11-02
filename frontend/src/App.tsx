@@ -54,7 +54,7 @@ function App() {
   useEffect(() => {
     let ignore = false;
     api
-      .getFoods(query)
+      .getFoods(query, demoUserId)
       .then((data) => {
         if (!ignore) setFoods(data);
       })
