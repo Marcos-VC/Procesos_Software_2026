@@ -176,4 +176,21 @@ test.describe("HU 2.3 Introducir preferencias dietéticas", () => {
     expect(response.status()).toBe(404);
   });
 
+  test("AC4: con una dieta activa, el diseñador de menús tampoco ofrece alimentos incompatibles", async ({
+    page,
+    request,
+  }) => {
+    // Dado un usuario con dieta vegana
+    await request.put(dietUrl, { data: { dietType: "vegan" } });
+
+    // Cuando abre el selector de alimentos de una comida en el diseñador de menús
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menú" }).click();
+    const desayuno = page.getByRole("region", { name: "Desayuno" });
+    await desayuno.getByRole("button", { name: "Añadir alimento" }).click();
+
+    // Entonces solo aparecen alimentos compatibles con su dieta, igual que en el catálogo
+    await expect(desayuno.getByRole("button", { name: "Tofu", exact: true })).toBeVisible();
+    await expect(desayuno.getByRole("button", { name: "Pechuga de pollo", exact: true })).toHaveCount(0);
+  });
 });

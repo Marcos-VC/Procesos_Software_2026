@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import type { DayKey, Food, MealKey, MenuFavorite, WeekDays } from "../types";
+import type { DayKey, DietType, Food, MealKey, MenuFavorite, WeekDays } from "../types";
 
 const DAYS: [DayKey, string][] = [
   ["lunes", "Lunes"],
@@ -20,6 +20,7 @@ const MEALS: [MealKey, string, string][] = [
 interface MenuBuilderProps {
   userId: string;
   caloricGoal?: number;
+  dietType?: DietType | string;
 }
 
 interface Status {
@@ -33,7 +34,7 @@ const errorMessage = (error: unknown) =>
 const plain = (text: string) =>
   text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
-function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
+function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
   const [foods, setFoods] = useState<Food[]>([]);
   const [days, setDays] = useState<WeekDays | null>(null);
   const [savedSnapshot, setSavedSnapshot] = useState("");
@@ -145,7 +146,12 @@ function MenuBuilder({ userId, caloricGoal }: MenuBuilderProps) {
     setDays(favorite.days);
   };
 
-  const results = foods.filter((food) => plain(food.name).includes(plain(search.trim())));
+  // Misma regla de dieta que FoodList, para que el menú no ofrezca lo que el catálogo oculta.
+  const results = foods.filter(
+    (food) =>
+      plain(food.name).includes(plain(search.trim())) &&
+      (!dietType || !food.suitableFor || food.suitableFor.includes(dietType as DietType)),
+  );
 
   return (
     <div className="grid gap-6">

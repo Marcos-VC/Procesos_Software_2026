@@ -111,4 +111,28 @@ test.describe("HU 3.4 Motor de reglas para bloquear alimentos peligrosos", () =>
     await expect(alert).toContainText("Yogur natural");
     await expect(alert).toContainText("lactosa");
   });
+
+  test("AC5: al guardar una alergia en el perfil, el catálogo marca el alimento como bloqueado sin recargar", async ({
+    page,
+    request,
+  }) => {
+    // Dado que el usuario todavía no es alérgico a la lactosa y el yogur aparece sin bloquear
+    await request.put(allergiesUrl, { data: ["gluten", "cacahuetes"] });
+    await page.goto("/");
+    const yogur = page.locator("article", {
+      has: page.getByRole("heading", { name: "Yogur natural" }),
+    });
+    await expect(yogur).toBeVisible();
+    await expect(yogur.getByRole("alert")).toHaveCount(0);
+
+    // Cuando marca la lactosa en su perfil y guarda
+    await page.getByRole("button", { name: "Perfil" }).click();
+    await page.getByRole("checkbox", { name: /Lactosa/ }).check();
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect(page.getByRole("status")).toHaveText("Perfil guardado correctamente");
+
+    // Entonces, al volver al catálogo, el yogur ya aparece bloqueado por la lactosa
+    await page.getByRole("button", { name: "Catálogo" }).click();
+    await expect(yogur.getByRole("alert")).toContainText("Lactosa");
+  });
 });

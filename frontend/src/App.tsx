@@ -66,7 +66,8 @@ function App() {
     return () => {
       ignore = true;
     };
-  }, [query]);
+    // `user` cambia al guardar el perfil: así blocked/blockedBy reflejan las alergias nuevas.
+  }, [query, user]);
 
   const allergenCatalog = Object.fromEntries(
     allergens.map((allergen) => [allergen.id, allergen]),
@@ -158,7 +159,7 @@ function App() {
                 />
               </div>
             </SectionHeading>
-            {user && activeDiet && (
+            {activeDiet && activeDiet.id !== "omnivore" && (
               <p className="mb-6 flex items-center gap-1.5 text-sm text-muted">
                 <span aria-hidden="true">ℹ️</span>
                 Se ocultan los alimentos que no encajan con tu dieta {activeDiet.name.toLowerCase()}.
@@ -182,7 +183,11 @@ function App() {
         {tab === "menu" && (
           <>
             <SectionHeading eyebrow="MENÚ" title="Diseñador de menús" />
-            <MenuBuilder userId={demoUserId} caloricGoal={user?.caloricGoal} />
+            <MenuBuilder
+              userId={demoUserId}
+              caloricGoal={user?.caloricGoal}
+              dietType={user?.medicalRestrictions?.dietType}
+            />
           </>
         )}
       </section>

@@ -26,17 +26,18 @@ Garantizar la seguridad clínica del usuario automatizando el bloqueo de aliment
 Las historias implementadas cuentan con la siguiente cobertura:
 
 - HU 2.2: 3 criterios de aceptación (`perfil.spec.js`)
-- HU 2.3: 3 criterios de aceptación (`perfil.spec.js`)
+- HU 2.3: 4 criterios de aceptación (`perfil.spec.js`)
 - HU 3.2: 2 criterios de aceptación (`menu.spec.js`)
 - HU 3.3: 2 criterios de aceptación (`menu.spec.js`)
-- HU 3.4: 4 criterios de aceptación (`alergenos.spec.js`)
+- HU 3.4: 5 criterios de aceptación (`alergenos.spec.js`)
 - HU 1.3: 3 criterios de aceptación (`catalogo.spec.js`)
 
 La HU 2.2 cubre la selección y persistencia de alergias desde el perfil, la
 validación de alérgenos desconocidos con `400` y la respuesta `404` para
 usuarios inexistentes. La HU 2.3 cubre la selección de una preferencia
 dietética, su persistencia tras recargar, el rechazo de valores no válidos con
-`400` y la respuesta `404` para usuarios inexistentes. La HU 3.2 cubre que el
+`400`, la respuesta `404` para usuarios inexistentes y que el diseñador de
+menús tampoco ofrece alimentos incompatibles con la dieta. La HU 3.2 cubre que el
 total calórico del día y de cada comida se actualiza en tiempo real al añadir
 y quitar alimentos, y que el total acumulado de la semana suma correctamente
 varios días. La HU 3.3 cubre el guardado de un menú con nombre, la
@@ -44,8 +45,9 @@ recuperación posterior del menú favorito y el rechazo `400` al intentar
 guardar uno sin nombre. La HU 3.4 cubre el marcado
 `blocked`/`blockedBy` en el catálogo, el rechazo `422` al guardar un menú con
 un alimento peligroso (tanto directamente vía API como desde la interfaz real
-cuando el perfil cambia después de añadir el alimento), y que un menú sin
-alérgenos del perfil se sigue guardando con normalidad.
+cuando el perfil cambia después de añadir el alimento), que un menú sin
+alérgenos del perfil se sigue guardando con normalidad, y que una alergia
+recién guardada en el perfil se refleja al momento en el catálogo.
 
 El estado de cada historia está en el [tablero de Jira](https://procesossoftware.atlassian.net/jira/software/projects/SCRUM/summary).
 
@@ -62,7 +64,8 @@ se validan tanto los alérgenos desconocidos como los usuarios inexistentes.
 La persona usuaria puede seleccionar una preferencia dietética —omnívora,
 vegetariana, vegana o pescetariana— y guardarla desde su perfil. La opción
 cetogénica no se ofrece en la interfaz. Los alimentos incompatibles con la
-dieta activa se ocultan del catálogo y se muestra un aviso informativo.
+dieta activa se ocultan del catálogo (con un aviso informativo) y del selector
+del diseñador de menús.
 
 ### HU 3.3 · Guardar menú favorito
 

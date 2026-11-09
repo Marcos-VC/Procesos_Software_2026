@@ -18,11 +18,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-        // npm run test:slow: pausa (ms) entre acciones para ver el test
-        launchOptions: { slowMo: Number(process.env.SLOWMO ?? 0) },
-      },
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
   webServer: [
