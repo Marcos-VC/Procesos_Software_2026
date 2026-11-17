@@ -7,6 +7,8 @@ import type {
   Menu,
   MenuFavorite,
   NewFood,
+  NewPantryItem,
+  PantryItem,
   ProfileChanges,
   UserProfile,
   WeekDays,
@@ -72,4 +74,16 @@ export const api = {
     request<MenuFavorite[]>(`/api/menus/favorites?${new URLSearchParams({ userId }).toString()}`),
   saveFavoriteMenu: (userId: string, name: string, days: WeekDays) =>
     sendJson<MenuFavorite>("POST", "/api/menus/favorites", { userId, name, days }),
+  getPantry: (userId: string) => request<PantryItem[]>(`/api/pantry/${userId}`),
+  addPantryItem: (userId: string, item: NewPantryItem) =>
+    sendJson<PantryItem>("POST", `/api/pantry/${userId}`, item),
+  updatePantryItem: (
+    userId: string,
+    itemId: string,
+    changes: { quantity: number; unit?: string },
+  ) => sendJson<PantryItem>("PUT", `/api/pantry/${userId}/${itemId}`, changes),
+  deletePantryItem: (userId: string, itemId: string) =>
+    request<{ deleted: boolean; id: string }>(`/api/pantry/${userId}/${itemId}`, {
+      method: "DELETE",
+    }),
 };

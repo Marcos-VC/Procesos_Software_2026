@@ -3,17 +3,19 @@ import { api, demoUserId } from "./api";
 import FoodList from "./components/FoodList";
 import FoodForm from "./components/FoodForm";
 import MenuBuilder from "./components/MenuBuilder";
+import PantryManager from "./components/PantryManager";
 import ProfileEditor from "./components/ProfileEditor";
 import SearchBar from "./components/SearchBar";
 import SectionHeading from "./components/SectionHeading";
 import { DIET_OPTIONS, type Allergen, type DailySummary, type Food, type UserProfile } from "./types";
 
-type Tab = "catalogo" | "perfil" | "menu";
+type Tab = "catalogo" | "perfil" | "menu" | "despensa";
 
 const TABS: [Tab, string][] = [
   ["catalogo", "Catálogo"],
   ["perfil", "Perfil"],
   ["menu", "Menú"],
+  ["despensa", "Despensa"],
 ];
 
 function ProfileStat({ label, value }: { label: string; value: string }) {
@@ -188,6 +190,13 @@ function App() {
               caloricGoal={user?.caloricGoal}
               dietType={user?.medicalRestrictions?.dietType}
             />
+          </>
+        )}
+
+        {tab === "despensa" && (
+          <>
+            <SectionHeading eyebrow="DESPENSA" title="Despensa virtual" />
+            <PantryManager userId={demoUserId} />
           </>
         )}
       </section>
