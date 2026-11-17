@@ -4,6 +4,7 @@ import { errorHandler, notFoundHandler } from "./errors.js";
 import foodRoutes from "./routes/food.js";
 import menuRoutes from "./routes/menu.js";
 import nutritionRoutes from "./routes/nutrition.js";
+import pantryRoutes from "./routes/pantry.js";
 import userRoutes from "./routes/user.js";
 
 const app = express();
@@ -16,7 +17,7 @@ app.get("/api/health", (_request, response) => {
 });
 
 // Express 5 propaga los errores de handlers async a errorHandler.
-app.use("/api", foodRoutes, userRoutes, nutritionRoutes, menuRoutes);
+app.use("/api", foodRoutes, userRoutes, nutritionRoutes, menuRoutes, pantryRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

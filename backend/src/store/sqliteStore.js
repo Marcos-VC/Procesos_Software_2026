@@ -69,6 +69,14 @@ CREATE TABLE IF NOT EXISTS menu_items (
   food_id       TEXT    NOT NULL REFERENCES foods(id),
   PRIMARY KEY (menu_id, day, meal, position)
 );
+
+CREATE TABLE IF NOT EXISTS pantry_items (
+  id            TEXT PRIMARY KEY,                    -- UUID v4
+  user_id       TEXT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+  name          TEXT NOT NULL,
+  quantity      REAL NOT NULL CHECK (quantity > 0),
+  unit          TEXT NOT NULL
+);
 `;
 
 /**
