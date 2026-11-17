@@ -16,7 +16,7 @@ reduciendo el desperdicio de comida y el tiempo invertido en planificar la compr
 
 ## Historias planificadas
 
-- HU 4.1 Añadir y quitar productos de la despensa virtual (3)
+- HU 4.1 Añadir y quitar productos de la despensa virtual (3) · `despensa.spec.js`
 - HU 4.2 Recibir sugerencias de recetas basadas en los productos de la despensa (5)
 - HU 5.1 Generar lista de la compra automática desde el menú (5)
 - HU 5.2 Marcar/tachar ingredientes de la lista (2)
@@ -25,6 +25,19 @@ reduciendo el desperdicio de comida y el tiempo invertido en planificar la compr
 18 puntos en total. Pendiente de contrastar contra la velocidad real del Sprint 2 (igual que se
 hizo con la del Sprint 1 para comprometer el Sprint 2) antes de darlo por definitivo en el Sprint
 Planning.
+
+## Tests E2E
+
+- HU 4.1: 3 criterios de aceptación (`despensa.spec.js`)
+
+## Historias implementadas
+
+### HU 4.1 · Añadir y quitar productos de la despensa virtual
+
+La pestaña **Despensa** permite al usuario consultar las existencias que tiene en casa, añadir
+ingredientes indicando nombre, cantidad y unidad (`g`, `kg`, `ml`, `l` o `unidades`) —sumando la
+cantidad automáticamente si el producto ya figuraba con la misma unidad—, y reducir o eliminar
+productos del inventario con actualización inmediata tanto en la interfaz como en el backend.
 
 ## Pendiente al cerrar este Sprint
 

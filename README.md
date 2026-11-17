@@ -136,6 +136,10 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta
 | PUT    | `/api/menus/{userId}`                     | Guarda el menú `{ days: { lunes: { desayuno: [foodId], comida: [], cena: [] }, ... } }`                                                        |
 | GET    | `/api/menus/favorites`                    | Lista los menús favoritos con nombre                                                                                                            |
 | POST   | `/api/menus/favorites`                    | Guarda un menú favorito `{ userId, name, days }`                                                                                                |
+| GET    | `/api/pantry/{userId}`                    | Lista las existencias de la despensa virtual del usuario (HU 4.1)                                                                               |
+| POST   | `/api/pantry/{userId}`                    | Añade un producto `{ name, quantity, unit }` o suma su cantidad si ya existe en la despensa (HU 4.1)                                            |
+| PUT    | `/api/pantry/{userId}/{itemId}`           | Actualiza la cantidad (`quantity`) o unidad (`unit`) de un producto de la despensa (HU 4.1)                                                     |
+| DELETE | `/api/pantry/{userId}/{itemId}`           | Elimina un producto de la despensa virtual del usuario (HU 4.1)                                                                                 |
 
 ---
 
