@@ -92,7 +92,7 @@ test.describe("HU 2.2 Configurar alergias", () => {
     await expect(page.getByRole("status")).toHaveText("Perfil guardado correctamente");
     const saved = await (await request.get(profileUrl)).json();
     expect(saved.medicalRestrictions.allergies.sort()).toEqual(["cacahuetes", "lactosa"]);
-    await expect(page.getByText("✓ Añadida")).toHaveCount(2);
+    await expect(page.getByText("Añadida", { exact: true })).toHaveCount(2);
   });
 
   test("AC2: un alérgeno desconocido se rechaza con 400", async ({ request }) => {

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../api";
 import type { Allergen, Food, NewFood } from "../types";
+import { AlertIcon, CheckIcon, CloseIcon, PlusIcon } from "./icons";
 
 interface FoodFormProps {
   allergens: Allergen[];
@@ -52,7 +53,7 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
         className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border-2 border-line bg-white px-4 py-2.5 text-sm font-semibold text-primary-dark shadow-sm transition duration-200 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         onClick={() => setOpen(true)}
       >
-        <span aria-hidden="true" className="text-base leading-none">+</span>
+        <PlusIcon className="size-4" />
         Añadir alimento
       </button>
 
@@ -74,11 +75,11 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
               </h3>
               <button
                 type="button"
-                className="-mt-2 -mr-2 flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg text-2xl leading-none text-muted transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-primary"
+                className="-mt-2 -mr-2 flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg text-muted transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-primary"
                 aria-label="Cerrar"
                 onClick={close}
               >
-                ×
+                <CloseIcon className="size-5" />
               </button>
             </div>
             <form className="grid gap-4 sm:grid-cols-2" onSubmit={submit}>
@@ -143,7 +144,11 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
                       : "border border-primary/20 bg-primary-soft text-primary-dark"
                   }`}
                 >
-                  <span aria-hidden="true">{status === "Alimento añadido correctamente" ? "✓" : "!"}</span>{" "}
+                  {status === "Alimento añadido correctamente" ? (
+                    <CheckIcon className="size-4 shrink-0" />
+                  ) : (
+                    <AlertIcon className="size-4 shrink-0" />
+                  )}
                   <span>{status}</span>
                 </p>
               )}

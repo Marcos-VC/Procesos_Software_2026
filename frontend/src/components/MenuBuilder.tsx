@@ -1,6 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { api } from "../api";
 import type { DayKey, DietType, Food, MealKey, MenuFavorite, WeekDays } from "../types";
+import {
+  MinusIcon,
+  MoonIcon,
+  PlusIcon,
+  StarIcon,
+  SunriseIcon,
+  UtensilsIcon,
+  WarningIcon,
+  type IconProps,
+} from "./icons";
 
 const DAYS: [DayKey, string][] = [
   ["lunes", "Lunes"],
@@ -11,10 +21,10 @@ const DAYS: [DayKey, string][] = [
   ["sabado", "Sábado"],
   ["domingo", "Domingo"],
 ];
-const MEALS: [MealKey, string, string][] = [
-  ["desayuno", "Desayuno", "🌅"],
-  ["comida", "Comida", "🍽️"],
-  ["cena", "Cena", "🌙"],
+const MEALS: [MealKey, string, ComponentType<IconProps>][] = [
+  ["desayuno", "Desayuno", SunriseIcon],
+  ["comida", "Comida", UtensilsIcon],
+  ["cena", "Cena", MoonIcon],
 ];
 
 interface MenuBuilderProps {
@@ -228,7 +238,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
 
       {/* Comidas del día con suma automática por comida */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:items-start">
-        {MEALS.map(([meal, label, icon]) => {
+        {MEALS.map(([meal, label, MealIcon]) => {
           const items = days[day][meal];
           const isOpen = openMeal === meal;
           const mealKcal = Math.round(caloriesOf(items));
@@ -240,7 +250,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
             >
               <div className="flex items-center justify-between gap-2">
                 <h4 className="flex items-center gap-2 font-display text-xl font-bold text-secondary">
-                  <span aria-hidden="true">{icon}</span>
+                  <MealIcon className="size-5 text-primary" />
                   {label}
                 </h4>
                 <span className="rounded-full bg-primary-soft px-3 py-1 text-xs font-bold text-primary-dark">
@@ -285,9 +295,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
                 aria-expanded={isOpen}
                 onClick={() => togglePicker(meal)}
               >
-                <span aria-hidden="true" className="text-lg leading-none">
-                  {isOpen ? "−" : "+"}
-                </span>
+                {isOpen ? <MinusIcon className="size-4" /> : <PlusIcon className="size-4" />}
                 Añadir alimento
               </button>
 
@@ -337,8 +345,9 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
                               <span className="truncate font-medium">{food.name}</span>
                               <span className="flex shrink-0 items-center gap-2 text-xs whitespace-nowrap text-muted">
                                 {food.blocked && (
-                                  <span className="font-semibold text-warning">
-                                    ⚠ bloqueado
+                                  <span className="flex items-center gap-1 font-semibold text-warning">
+                                    <WarningIcon className="size-3.5" />
+                                    bloqueado
                                   </span>
                                 )}
                                 {food.calories} kcal
@@ -383,7 +392,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
             className="inline-flex cursor-pointer items-center justify-center gap-1 rounded-xl border-2 border-line px-5 py-3 font-semibold text-primary-dark shadow-sm transition duration-200 hover:border-primary hover:bg-primary-soft active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             onClick={openFavoriteModal}
           >
-            <span aria-hidden="true">★</span>
+            <StarIcon className="size-4" />
             Guardar como favorito
           </button>
           <button type="button" className="btn" onClick={saveMenu}>

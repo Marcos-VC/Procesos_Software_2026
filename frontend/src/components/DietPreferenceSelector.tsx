@@ -34,7 +34,6 @@ function DietPreferenceSelector({ selected, onChange }: DietPreferenceSelectorPr
               />
               <div className="grid gap-0.5 text-left">
                 <span className="flex items-center gap-1.5 text-sm font-bold text-secondary">
-                  <span aria-hidden="true" className="text-base">{option.icon}</span>
                   {option.name}
                   {checked && (
                     <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">

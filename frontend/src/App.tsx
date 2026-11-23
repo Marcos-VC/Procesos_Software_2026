@@ -8,6 +8,7 @@ import {
   CalendarIcon,
   DotIcon,
   GridIcon,
+  InfoIcon,
   UserIcon,
   type IconProps,
 } from "./components/icons";
@@ -147,7 +148,7 @@ function App() {
         />
         <ProfileStat
           label="Preferencia dietética"
-          value={user && activeDiet ? `${activeDiet.icon} ${activeDiet.name}` : "..."}
+          value={user && activeDiet ? activeDiet.name : "..."}
         />
       </section>
 
@@ -208,7 +209,7 @@ function App() {
             </SectionHeading>
             {activeDiet && activeDiet.id !== "omnivore" && (
               <p className="mb-6 flex items-center gap-1.5 text-sm text-muted">
-                <span aria-hidden="true">ℹ️</span>
+                <InfoIcon className="size-4 shrink-0" />
                 Se ocultan los alimentos que no encajan con tu dieta {activeDiet.name.toLowerCase()}.
               </p>
             )}

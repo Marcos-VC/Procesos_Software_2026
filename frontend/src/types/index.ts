@@ -8,6 +8,7 @@ export type AllergenId = string;
 export interface Allergen {
   id: AllergenId;
   name: string;
+  /** Emoji del catálogo. La interfaz no lo muestra (usa el nombre), pero es parte del JSON. */
   icon: string;
   description: string;
 }
@@ -35,15 +36,14 @@ export type DietType = "omnivore" | "vegetarian" | "vegan" | "pescatarian";
 export interface DietOption {
   id: DietType;
   name: string;
-  icon: string;
   description: string;
 }
 
 export const DIET_OPTIONS: DietOption[] = [
-  { id: "omnivore", name: "Omnívora", icon: "🥩", description: "Sin restricciones." },
-  { id: "vegetarian", name: "Vegetariana", icon: "🥦", description: "Sin carnes ni pescados." },
-  { id: "vegan", name: "Vegana", icon: "🌱", description: "100% origen vegetal." },
-  { id: "pescatarian", name: "Pescetariana", icon: "🐟", description: "Incluye pescados y mariscos." },
+  { id: "omnivore", name: "Omnívora", description: "Sin restricciones." },
+  { id: "vegetarian", name: "Vegetariana", description: "Sin carnes ni pescados." },
+  { id: "vegan", name: "Vegana", description: "100% origen vegetal." },
+  { id: "pescatarian", name: "Pescetariana", description: "Incluye pescados y mariscos." },
 ];
 
 export interface MedicalRestrictions {
