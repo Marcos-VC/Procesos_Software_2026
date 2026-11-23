@@ -8,6 +8,7 @@
 <!-- Contratos de API, tests u otras partes que no se tocan en este PR. -->
 
 ## Verificación
+- [ ] La rama sale de `main` actualizado y este PR va contra `main` (no contra otra rama)
 - [ ] `tsc --noEmit` sin errores y `npm run build` correcto
 - [ ] Batería E2E en verde (`cd e2e && npm test`)
 

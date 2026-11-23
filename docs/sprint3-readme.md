@@ -154,8 +154,11 @@ muestra el motivo. Se guardan en `mock_shopping_lists.json` (`manualItems`).
 - [ ] Mover estas historias a "Historias implementadas" con su descripción, siguiendo el
       formato de `docs/sprint2-readme.md`.
 - [ ] Actualizar el recuento de tests E2E.
-- [ ] Regenerar las capturas de `docs/assets/` (`cd e2e && npm run screenshots`): todavía muestran
-      la interfaz antigua, con emojis.
+- [ ] Capturas: las de `docs/assets/` se quitaron del repositorio porque mostraban la interfaz
+      antigua. Si se quieren en la documentación final, añadir a `e2e/tests/screenshots.spec.ts` las
+      pestañas Despensa y Compra y regenerarlas con `cd e2e && npm run screenshots`.
+- [ ] HU 4.2: su rama sale de `main` actualizado y su PR va contra `main` (ver la Definition of
+      Done del README).
 
 ## Mejoras de interfaz
 
@@ -170,6 +173,10 @@ móvil y tenga un aspecto más cuidado:
   que el contenido de cada pestaña aparece en la primera pantalla.
 - **Controles cómodos de pulsar:** botones, casillas y filas del selector de alimentos de al menos
   44 px de alto, y sin desbordamiento horizontal en el diseñador de menús.
+- **Explicaciones en cada sección:** bajo el título de Despensa y Compra, una línea explica para
+  qué sirve y cómo se usa (por ejemplo, que "2 veces" es el número de comidas del menú en las que
+  aparece el alimento). En la despensa, eliminar un producto es una papelera, como en la lista de
+  la compra, y los errores de cantidad se muestran en castellano.
 - **Sin emojis:** todos los emojis y símbolos se sustituyen por iconos SVG con un mismo estilo
   (`frontend/src/components/icons.tsx`). Los alérgenos de cada alimento se muestran como
   etiquetas con un icono de aviso y su nombre (HU 1.2), y las dietas ya no llevan icono.

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { api } from "../api";
 import { PANTRY_UNITS, type PantryItem, type PantryUnit } from "../types";
+import { TrashIcon } from "./icons";
 
 interface PantryManagerProps {
   userId: string;
@@ -59,6 +60,7 @@ function PantryManager({ userId }: PantryManagerProps) {
       }));
       setName("");
       setQuantity("1");
+      setUnit("unidades");
       setStatus({ type: "ok", text: `Producto "${saved.name}" añadido a la despensa` });
     } catch (error) {
       setStatus({ type: "error", text: errorMessage(error) });
@@ -188,7 +190,7 @@ function PantryManager({ userId }: PantryManagerProps) {
         </p>
       )}
 
-      <div className="card p-6">
+      <div className="card p-4 sm:p-6">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
           <div>
             <p className="text-xs font-semibold tracking-wider text-muted uppercase">
@@ -212,7 +214,7 @@ function PantryManager({ userId }: PantryManagerProps) {
               return (
                 <li
                   key={item.id}
-                  className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-surface/60 px-4 py-3.5 transition hover:border-primary/30"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface/60 px-3 py-3.5 sm:gap-4 sm:px-4 transition hover:border-primary/30"
                 >
                   <div className="flex items-center gap-3">
                     <span className="font-display text-lg font-bold text-secondary">
@@ -231,7 +233,7 @@ function PantryManager({ userId }: PantryManagerProps) {
                         min="0"
                         step="any"
                         aria-label={`Cantidad de ${item.name}`}
-                        className="input w-24 py-1.5 text-sm"
+                        className="input w-20 py-1.5 text-sm sm:w-24"
                         value={currentDraft}
                         onChange={(event) =>
                           setDraftQuantities((current) => ({
@@ -240,7 +242,7 @@ function PantryManager({ userId }: PantryManagerProps) {
                           }))
                         }
                       />
-                      <span className="text-xs font-medium text-muted">{item.unit}</span>
+                      <span className="hidden text-xs font-medium text-muted sm:inline">{item.unit}</span>
                     </label>
 
                     <button
@@ -252,13 +254,15 @@ function PantryManager({ userId }: PantryManagerProps) {
                       Confirmar
                     </button>
 
+                    {/* Papelera, como en la lista de la compra: la fila cabe en una línea en el móvil. */}
                     <button
                       type="button"
-                      className="cursor-pointer rounded-xl px-3.5 py-2 text-sm font-semibold text-primary-dark transition hover:bg-primary-soft"
+                      className="grid size-9 cursor-pointer place-items-center rounded-lg text-muted transition hover:bg-primary-soft hover:text-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                       aria-label={`Eliminar ${item.name}`}
+                      title={`Eliminar ${item.name}`}
                       onClick={() => void handleDelete(item)}
                     >
-                      Eliminar
+                      <TrashIcon className="size-[18px]" />
                     </button>
                   </div>
                 </li>

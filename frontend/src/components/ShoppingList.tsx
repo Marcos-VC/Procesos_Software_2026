@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { api } from "../api";
 import type { ShoppingItem } from "../types";
+import { TrashIcon } from "./icons";
 import {
   buildShoppingListText,
   copyShoppingListText,
@@ -502,20 +503,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
                     title={`Eliminar ${item.name}`}
                     onClick={() => removeManualItem(item)}
                   >
-                    {/* Icono de papelera */}
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 24 24"
-                      className="size-[18px]"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                      <path d="M10 11v6M14 11v6" />
-                    </svg>
+                    <TrashIcon className="size-[18px]" />
                   </button>
                 )}
               </span>

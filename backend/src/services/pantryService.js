@@ -16,7 +16,7 @@ function parseQuantity(rawQuantity, defaultIfUndefined = false) {
     return 1;
   }
   if (typeof rawQuantity !== "number" || !Number.isFinite(rawQuantity) || rawQuantity <= 0) {
-    throw new HttpError(400, "quantity debe ser un número mayor que 0");
+    throw new HttpError(400, "La cantidad debe ser un número mayor que 0");
   }
   return roundQuantity(rawQuantity);
 }
@@ -81,7 +81,7 @@ export async function updatePantryItem(userId, itemId, changes) {
         : ""
       : undefined;
   if (unit !== undefined && !unit) {
-    throw new HttpError(400, "unit no puede estar vacío");
+    throw new HttpError(400, "La unidad no puede estar vacía");
   }
 
   return updateJson(PANTRY_FILE, (items) => {

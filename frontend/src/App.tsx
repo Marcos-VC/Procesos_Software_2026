@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ComponentType } from "react";
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
 import { api, demoUserId } from "./api";
 import FoodList from "./components/FoodList";
 import FoodForm from "./components/FoodForm";
@@ -39,6 +39,16 @@ function ProfileStat({ label, value }: { label: string; value: string }) {
       </span>
       <strong className="font-display text-lg break-words text-secondary sm:text-xl">{value}</strong>
     </div>
+  );
+}
+
+// Explicación breve bajo el título de una sección: qué es y cómo se usa.
+function SectionHint({ children }: { children: ReactNode }) {
+  return (
+    <p className="mb-6 flex max-w-3xl items-start gap-1.5 text-sm leading-relaxed text-muted">
+      <InfoIcon className="mt-0.5 size-4 shrink-0" />
+      <span>{children}</span>
+    </p>
   );
 }
 
@@ -212,10 +222,9 @@ function App() {
               </div>
             </SectionHeading>
             {activeDiet && activeDiet.id !== "omnivore" && (
-              <p className="mb-6 flex items-center gap-1.5 text-sm text-muted">
-                <InfoIcon className="size-4 shrink-0" />
+              <SectionHint>
                 Se ocultan los alimentos que no encajan con tu dieta {activeDiet.name.toLowerCase()}.
-              </p>
+              </SectionHint>
             )}
             <FoodList
               foods={foods}
@@ -246,6 +255,11 @@ function App() {
         {tab === "despensa" && (
           <>
             <SectionHeading eyebrow="DESPENSA" title="Despensa virtual" />
+            <SectionHint>
+              Apunta lo que ya tienes en casa. Si añades un ingrediente que ya está con la misma
+              unidad, se suma la cantidad; cuando gastes parte, cambia la cantidad y pulsa
+              Confirmar (con 0 se quita).
+            </SectionHint>
             <PantryManager userId={demoUserId} />
           </>
         )}
@@ -253,6 +267,11 @@ function App() {
         {tab === "compra" && (
           <>
             <SectionHeading eyebrow="COMPRA" title="Lista de la compra" />
+            <SectionHint>
+              Se genera sola con los alimentos de tu menú semanal: "2 veces" significa que ese
+              alimento aparece en dos comidas. Marca lo que vayas comprando, añade a mano lo que
+              falte y compártela por WhatsApp o por correo.
+            </SectionHint>
             <ShoppingList userId={demoUserId} />
           </>
         )}

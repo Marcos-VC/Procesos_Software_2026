@@ -39,11 +39,11 @@ test("capturas de las pestañas Catálogo, Perfil y Menú", async ({ page }) => 
   const addFood = async (meal: string, food: string) => {
     const region = page.getByRole("region", { name: meal });
     await region.getByRole("button", { name: "Añadir alimento" }).click();
-    await region.getByRole("button", { name: food }).click();
+    await region.getByRole("button", { name: food, exact: true }).click();
     await expect(region).toContainText(food);
   };
   for (const [meal, food] of [
-    ["Desayuno", "Copos de avena"],
+    ["Desayuno", "Manzana"],
     ["Desayuno", "Plátano"],
     ["Comida", "Pechuga de pollo"],
     ["Comida", "Arroz integral"],
@@ -79,13 +79,13 @@ test("capturas del Sprint 2: alergias en el perfil y menús favoritos", async ({
   await page.getByRole("button", { name: "Menú" }).click();
   await expect(page.getByRole("heading", { name: "Diseñador de menús" })).toBeVisible();
   for (const [meal, food] of [
-    ["Desayuno", "Copos de avena"],
+    ["Desayuno", "Manzana"],
     ["Comida", "Pechuga de pollo"],
     ["Cena", "Salmón"],
   ]) {
     const region = page.getByRole("region", { name: meal });
     await region.getByRole("button", { name: "Añadir alimento" }).click();
-    await region.getByRole("button", { name: food }).click();
+    await region.getByRole("button", { name: food, exact: true }).click();
     await expect(region).toContainText(food);
   }
   await page.getByRole("button", { name: "Guardar como favorito" }).click();
