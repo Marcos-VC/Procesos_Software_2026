@@ -21,10 +21,27 @@ reduciendo el desperdicio de comida y el tiempo invertido en planificar la compr
 - HU 5.1 Generar lista de la compra automática desde el menú (5)
 - HU 5.2 Marcar/tachar ingredientes de la lista (3)
 - HU 5.3 Compartir lista de la compra (WhatsApp/Email) (3)
+- HU 5.4 Añadir productos manuales a la lista de la compra (3)
 
-19 puntos en total. Pendiente de contrastar contra la velocidad real del Sprint 2 (igual que se
-hizo con la del Sprint 1 para comprometer el Sprint 2) antes de darlo por definitivo en el Sprint
-Planning.
+22 puntos en total.
+
+### Planificación por velocidad histórica
+
+El enunciado del Sprint 3 pide partir de la velocidad del Sprint 2 y comprometer **al menos un
+10 % más**, con un máximo de 8 puntos por historia.
+
+| Dato | Puntos |
+| ---- | ------ |
+| Velocidad del Sprint 2 (entregado) | 17 |
+| Mínimo a comprometer (17 × 1,10 = 18,7) | 19 |
+| **Comprometido en el Sprint 3** | **22** (+29 % sobre el Sprint 2) |
+
+- Ninguna historia pasa de 8 puntos: las mayores (HU 4.2 y HU 5.1) valen 5, así que no hace
+  falta dividir ninguna.
+- Todas las estimaciones usan la escala de Fibonacci (1, 2, 3, 5, 8) y se comparan con historias
+  ya terminadas en los Sprints anteriores.
+- La semana del 7 de diciembre no hay clase (festivos de la Constitución y la Inmaculada); el
+  trabajo de esos días se organiza sin sesión presencial.
 
 ## Pendiente al cerrar este Sprint
 
