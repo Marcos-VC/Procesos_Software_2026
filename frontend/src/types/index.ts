@@ -136,3 +136,23 @@ export interface ShoppingItem {
   /** De dónde viene el producto: del menú semanal o añadido a mano (HU 5.4). */
   source: ShoppingItemSource;
 }
+
+export const PANTRY_UNITS = ["g", "kg", "ml", "l", "unidades"] as const;
+export type PantryUnit = (typeof PANTRY_UNITS)[number] | string;
+
+/** Producto en la despensa virtual de un usuario (HU 4.1). */
+export interface PantryItem {
+  /** UUID v4 */
+  id: string;
+  userId: string;
+  name: string;
+  quantity: number;
+  unit: PantryUnit;
+}
+
+export interface NewPantryItem {
+  name: string;
+  quantity: number;
+  unit: PantryUnit;
+}
+

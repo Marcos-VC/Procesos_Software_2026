@@ -1,0 +1,24 @@
+[
+  {
+    "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "userId": "5d37a69d-97c8-4280-afb7-2dc90467d688",
+    "name": "Arroz integral",
+    "quantity": 500,
+    "unit": "g"
+  },
+  {
+    "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+    "userId": "5d37a69d-97c8-4280-afb7-2dc90467d688",
+    "name": "Pechuga de pollo",
+    "quantity": 300,
+    "unit": "g"
+  },
+  {
+    "id": "c3d4e5f6-a7b8-4c9d-8e0f-2a3b4c5d6e7f",
+    "userId": "5d37a69d-97c8-4280-afb7-2dc90467d688",
+    "name": "Huevos",
+    "quantity": 6,
+    "unit": "unidades"
+  }
+]
+

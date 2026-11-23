@@ -13,18 +13,20 @@ import {
   type IconProps,
 } from "./components/icons";
 import MenuBuilder from "./components/MenuBuilder";
+import PantryManager from "./components/PantryManager";
 import ProfileEditor from "./components/ProfileEditor";
 import SearchBar from "./components/SearchBar";
 import SectionHeading from "./components/SectionHeading";
 import ShoppingList from "./components/ShoppingList";
 import { DIET_OPTIONS, type Allergen, type DailySummary, type Food, type UserProfile } from "./types";
 
-type Tab = "catalogo" | "perfil" | "menu" | "compra";
+type Tab = "catalogo" | "perfil" | "menu" | "despensa" | "compra";
 
 const TABS: [Tab, string][] = [
   ["catalogo", "Catálogo"],
   ["perfil", "Perfil"],
   ["menu", "Menú"],
+  ["despensa", "Despensa"],
   ["compra", "Compra"],
 ];
 
@@ -238,6 +240,13 @@ function App() {
               caloricGoal={user?.caloricGoal}
               dietType={user?.medicalRestrictions?.dietType}
             />
+          </>
+        )}
+
+        {tab === "despensa" && (
+          <>
+            <SectionHeading eyebrow="DESPENSA" title="Despensa virtual" />
+            <PantryManager userId={demoUserId} />
           </>
         )}
 
