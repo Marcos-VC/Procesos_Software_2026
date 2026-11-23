@@ -43,6 +43,28 @@ El enunciado del Sprint 3 pide partir de la velocidad del Sprint 2 y comprometer
 - La semana del 7 de diciembre no hay clase (festivos de la Constitución y la Inmaculada); el
   trabajo de esos días se organiza sin sesión presencial.
 
+## Tests E2E
+
+- HU 5.1: 3 criterios de aceptación (`compra.spec.js`)
+
+La HU 5.1 cubre que la pestaña "Compra" muestra los alimentos del menú semanal
+agrupados, con las veces que aparece cada uno ("2 veces", "1 vez"), que con el
+menú vacío se muestra el aviso de lista vacía, y que
+`GET /api/menus/{userId}/shopping-list` devuelve cada alimento con su nombre y
+el número de veces que aparece en el menú.
+
+## Historias implementadas
+
+### HU 5.1 · Generar lista de la compra automática desde el menú
+
+La pestaña **Compra** genera la lista de la compra a partir del menú semanal
+del usuario: recorre los siete días y las tres comidas, agrupa los alimentos
+repetidos y muestra cada uno una sola vez, ordenados por nombre, con las veces
+que aparece en la semana. La lista se calcula en el momento a partir del menú
+guardado, así que siempre está al día (el botón "Actualizar" la vuelve a
+generar sin recargar la página). Si el menú está vacío, se indica que hay que
+añadir alimentos al menú para generarla.
+
 ## Pendiente al cerrar este Sprint
 
 - [ ] Actualizar `diagrams/01-flujo-aplicacion.puml` con los componentes y endpoints nuevos
