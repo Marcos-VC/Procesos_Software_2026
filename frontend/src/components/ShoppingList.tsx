@@ -44,7 +44,7 @@ function shareHint(pendingCount: number) {
   return `Se copian los ${pendingCount} productos pendientes`;
 }
 
-// Iconos de línea (24×24); son decorativos (aria-hidden) y toman el color del texto.
+// Iconos de línea (24×24) de la pestaña Compra; son decorativos (aria-hidden) y toman el color del texto.
 function Icon({ children, className = "size-5" }: { children: ReactNode; className?: string }) {
   return (
     <svg
@@ -89,6 +89,34 @@ const MailIcon = () => (
 const CheckIcon = () => (
   <Icon className="size-4">
     <path d="M20 6 9 17l-5-5" />
+  </Icon>
+);
+
+const RefreshIcon = () => (
+  <Icon className="size-4">
+    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+    <path d="M21 3v5h-5" />
+  </Icon>
+);
+
+const PlusIcon = () => (
+  <Icon>
+    <path d="M5 12h14M12 5v14" />
+  </Icon>
+);
+
+const CartIcon = () => (
+  <Icon className="size-7">
+    <circle cx="8" cy="21" r="1" />
+    <circle cx="19" cy="21" r="1" />
+    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+  </Icon>
+);
+
+const PencilIcon = () => (
+  <Icon className="size-3">
+    <path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z" />
+    <path d="m15 5 4 4" />
   </Icon>
 );
 
@@ -354,7 +382,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
             className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border-2 border-line px-4 py-2 text-sm font-semibold text-primary-dark transition duration-200 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             onClick={load}
           >
-            <span aria-hidden="true">↻</span>
+            <RefreshIcon />
             Actualizar
           </button>
         </div>
@@ -396,7 +424,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
           className="btn gap-1.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           disabled={!newName.trim() || adding}
         >
-          <span aria-hidden="true" className="text-lg leading-none">+</span>
+          <PlusIcon />
           Añadir
         </button>
       </form>
@@ -415,7 +443,9 @@ function ShoppingList({ userId }: ShoppingListProps) {
 
       {items.length === 0 ? (
         <div className="card p-10 text-center text-muted">
-          <p className="text-4xl mb-3" aria-hidden="true">🛒</p>
+          <span className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-surface text-muted">
+            <CartIcon />
+          </span>
           <p>No hay alimentos en el menú semanal.</p>
         </div>
       ) : (
@@ -455,7 +485,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
                 >
                   {item.source === "manual" ? (
                     <>
-                      <span aria-hidden="true">✎</span>
+                      <PencilIcon />
                       {/* En móvil, versión corta para no partir el nombre en dos líneas. */}
                       <span className="sm:hidden">A mano</span>
                       <span className="hidden sm:inline">Añadido a mano</span>
