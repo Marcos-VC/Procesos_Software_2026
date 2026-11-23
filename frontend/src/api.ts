@@ -75,4 +75,10 @@ export const api = {
     sendJson<MenuFavorite>("POST", "/api/menus/favorites", { userId, name, days }),
   getShoppingList: (userId: string) =>
     request<ShoppingItem[]>(`/api/menus/${userId}/shopping-list`),
+  setShoppingItemChecked: (userId: string, itemId: string, checked: boolean) =>
+    sendJson<ShoppingItem>(
+      "PUT",
+      `/api/menus/${userId}/shopping-list/items/${itemId}`,
+      { checked },
+    ),
 };

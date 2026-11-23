@@ -118,8 +118,12 @@ export interface MenuFavorite {
 
 /** Elemento de la lista de la compra generada a partir del menú semanal (HU 5.1). */
 export interface ShoppingItem {
+  /** Identificador del producto en la lista; en los alimentos del menú coincide con `foodId` (HU 5.2). */
+  id: string;
   foodId: string;
   name: string;
   /** Número de veces que aparece el alimento en el menú semanal. */
   count: number;
+  /** Marcado (tachado) como comprado; se guarda en el backend (HU 5.2). */
+  checked: boolean;
 }
