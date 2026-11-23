@@ -115,3 +115,11 @@ export interface MenuFavorite {
   name: string;
   days: WeekDays;
 }
+
+/** Elemento de la lista de la compra generada a partir del menú semanal (HU 5.1). */
+export interface ShoppingItem {
+  foodId: string;
+  name: string;
+  /** Número de veces que aparece el alimento en el menú semanal. */
+  count: number;
+}

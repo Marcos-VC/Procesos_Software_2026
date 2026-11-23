@@ -8,6 +8,7 @@ import type {
   MenuFavorite,
   NewFood,
   ProfileChanges,
+  ShoppingItem,
   UserProfile,
   WeekDays,
 } from "./types";
@@ -72,4 +73,6 @@ export const api = {
     request<MenuFavorite[]>(`/api/menus/favorites?${new URLSearchParams({ userId }).toString()}`),
   saveFavoriteMenu: (userId: string, name: string, days: WeekDays) =>
     sendJson<MenuFavorite>("POST", "/api/menus/favorites", { userId, name, days }),
+  getShoppingList: (userId: string) =>
+    request<ShoppingItem[]>(`/api/menus/${userId}/shopping-list`),
 };
