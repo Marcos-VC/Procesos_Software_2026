@@ -157,7 +157,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
     <div className="grid gap-6">
       {/* Selector de días de la semana con badge de calorías por día */}
       <div
-        className="grid grid-cols-4 gap-2 sm:grid-cols-7"
+        className="grid grid-cols-4 gap-1.5 sm:grid-cols-7 sm:gap-2"
         role="group"
         aria-label="Día de la semana"
       >
@@ -170,13 +170,13 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
               type="button"
               aria-pressed={selected}
               onClick={() => selectDay(key)}
-              className={`grid cursor-pointer gap-0.5 rounded-2xl px-2 py-3 text-center transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+              className={`grid min-w-0 cursor-pointer gap-0.5 rounded-2xl px-1 py-2.5 text-center sm:px-2 sm:py-3 transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
                 selected
                   ? "bg-primary text-white shadow-lg shadow-primary/30"
                   : "card hover:-translate-y-0.5 hover:bg-primary-soft"
               }`}
             >
-              <span className="font-display text-sm font-bold">{label}</span>
+              <span className="font-display text-[13px] font-bold sm:text-sm">{label}</span>
               <span className={`text-xs ${selected ? "text-white/85" : "text-muted"}`}>
                 {kcal > 0 ? `${kcal} kcal` : "Vacío"}
               </span>
@@ -186,7 +186,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
       </div>
 
       {/* HU 3.2: Tarjeta de Resumen Calórico (Diario + Semanal) */}
-      <div className="card p-6">
+      <div className="card p-5 sm:p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-xs font-semibold tracking-wider text-muted uppercase">
@@ -227,7 +227,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
       </div>
 
       {/* Comidas del día con suma automática por comida */}
-      <div className="grid gap-5 md:grid-cols-3 md:items-start">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:items-start">
         {MEALS.map(([meal, label, icon]) => {
           const items = days[day][meal];
           const isOpen = openMeal === meal;
@@ -258,16 +258,16 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
                   {items.map((id, index) => (
                     <li
                       key={`${id}-${index}`}
-                      className="flex items-center justify-between gap-2 rounded-xl bg-surface px-4 py-2.5"
+                      className="flex items-center justify-between gap-2 rounded-xl bg-surface py-1 pr-1 pl-4"
                     >
-                      <span className="font-medium">{foodsById.get(id)?.name ?? id}</span>
-                      <span className="flex items-center gap-2">
-                        <span className="text-xs text-muted">
+                      <span className="min-w-0 font-medium break-words">{foodsById.get(id)?.name ?? id}</span>
+                      <span className="flex shrink-0 items-center gap-1">
+                        <span className="text-xs whitespace-nowrap text-muted">
                           {foodsById.get(id)?.calories ?? 0} kcal
                         </span>
                         <button
                           type="button"
-                          className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-primary-dark transition hover:bg-primary-soft"
+                          className="min-h-11 cursor-pointer rounded-lg px-3 text-sm font-medium text-primary-dark transition hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-primary"
                           aria-label={`Quitar ${foodsById.get(id)?.name ?? id} de ${label}`}
                           onClick={() => removeFood(meal, index)}
                         >
@@ -294,7 +294,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
               {isOpen && (
                 <div className="rounded-xl border border-line bg-white p-3 shadow-lg">
                   <input
-                    className="input mb-2 py-2 text-sm"
+                    className="input mb-2 py-2 text-base sm:text-sm"
                     autoFocus
                     aria-label={`Buscar alimento para ${label}`}
                     placeholder="Buscar alimento..."
@@ -307,7 +307,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
                   {results.length === 0 ? (
                     <p className="px-3 py-2 text-sm text-muted">Sin resultados</p>
                   ) : (
-                    <ul className="max-h-60 overflow-y-auto">
+                    <ul className="max-h-72 overflow-y-auto sm:max-h-60">
                       {results.map((food) => {
                         const blockReason = (food.blockedBy ?? [])
                           .map((allergenId) => allergenId.replace(/_/g, " "))
@@ -317,7 +317,7 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
                             <button
                               type="button"
                               disabled={food.blocked}
-                              className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition ${
+                              className={`flex min-h-11 w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition ${
                                 food.blocked
                                   ? "cursor-not-allowed opacity-50"
                                   : "cursor-pointer hover:bg-primary-soft"
@@ -360,10 +360,10 @@ function MenuBuilder({ userId, caloricGoal, dietType }: MenuBuilderProps) {
         <p className={`text-sm ${dirty ? "font-semibold text-warning" : "text-muted"}`}>
           {dirty ? "Tienes cambios sin guardar" : "Todos los cambios están guardados"}
         </p>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
           {favorites.length > 0 && (
             <select
-              className="input w-auto cursor-pointer py-2 text-sm"
+              className="input min-h-11 cursor-pointer py-2 text-base sm:w-auto sm:text-sm"
               aria-label="Cargar menú favorito"
               value=""
               onChange={(event) => {

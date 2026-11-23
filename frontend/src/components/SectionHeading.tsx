@@ -9,7 +9,7 @@ interface SectionHeadingProps {
 
 function SectionHeading({ eyebrow, title, children }: SectionHeadingProps) {
   return (
-    <div className="mb-8 flex flex-col items-start gap-6 md:flex-row md:items-end md:justify-between">
+    <div className="mb-6 flex flex-col items-start gap-4 sm:mb-8 sm:gap-6 md:flex-row md:items-end md:justify-between">
       <div>
         <p className="mb-2 flex items-center gap-2 text-xs font-bold tracking-widest text-primary">
           <span className="h-0.5 w-6 rounded-full bg-primary" aria-hidden="true" />

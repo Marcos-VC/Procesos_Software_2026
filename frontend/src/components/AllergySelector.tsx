@@ -20,7 +20,7 @@ function AllergySelector({ allergenCatalog, selected, onChange }: AllergySelecto
           return (
             <label
               key={allergen.id}
-              className={`relative flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ring-1 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
+              className={`relative flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm sm:min-h-0 font-semibold ring-1 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
                 checked
                   ? "bg-primary text-white ring-primary"
                   : "bg-white text-secondary ring-black/20 hover:bg-primary-soft"

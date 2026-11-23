@@ -17,7 +17,7 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
 
   return (
     <article
-      className={`card flex flex-col p-6 ${
+      className={`card flex flex-col p-5 sm:p-6 ${
         food.blocked ? "opacity-60" : "card-hover"
       }`}
     >
@@ -28,7 +28,7 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
             {food.calories} kcal
           </span>
         </div>
-        <h3 className="mt-6 mb-5 text-xl font-bold text-secondary">{food.name}</h3>
+        <h3 className="mt-4 mb-4 text-xl font-bold text-secondary sm:mt-6 sm:mb-5">{food.name}</h3>
 
         {food.blocked && (
           <p
@@ -63,7 +63,7 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
                 <li key={allergenId}>
                   <button
                     type="button"
-                    className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-line bg-surface text-lg leading-none transition duration-200 hover:scale-110 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-expanded:border-primary aria-expanded:bg-primary-soft"
+                    className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-line bg-surface text-lg leading-none transition duration-200 hover:scale-110 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-expanded:border-primary aria-expanded:bg-primary-soft sm:size-10"
                     aria-label={`Alérgeno: ${name}`}
                     aria-expanded={openAllergen === allergenId}
                     title={name}
