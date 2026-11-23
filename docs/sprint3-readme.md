@@ -29,12 +29,23 @@ Planning.
 ## Tests E2E
 
 - HU 5.2: 4 criterios de aceptación (`compra.spec.js`)
+- HU 5.4: 4 criterios de aceptación (`compra.spec.js`)
 
 La HU 5.2 cubre que al marcar un ingrediente en la pestaña "Compra" aparece
 tachado y el contador de comprados se actualiza, que la marca se conserva al
 recargar la página, que se puede desmarcar (y también se conserva), y que el
 endpoint rechaza con `400` un `checked` que no es booleano y con `404` un
 producto que no está en la lista o un usuario inexistente.
+
+La HU 5.4 cubre que un producto añadido a mano desde el formulario aparece en
+la lista, ordenado junto a los alimentos del menú y con la etiqueta "Añadido a
+mano", y se conserva al recargar; que se puede marcar como comprado (cuenta en
+el contador) y eliminar, y no vuelve a aparecer al recargar; que con el menú
+semanal vacío se puede crear una lista solo con productos añadidos a mano; y
+que la API rechaza con `400` un nombre vacío o demasiado largo y el borrado de
+un alimento del menú, con `409` un producto que ya está en la lista (sin
+distinguir mayúsculas ni tildes, y el formulario muestra el error) y con `404`
+un usuario inexistente o el borrado de un producto que no está en la lista.
 
 ## Historias implementadas
 
@@ -46,6 +57,18 @@ indica cuántos productos se han comprado ya del total. La marca se guarda en
 el backend (`mock_shopping_lists.json`), así que se conserva al recargar, y se
 puede desmarcar en cualquier momento. Si el guardado falla, la casilla vuelve
 a su estado anterior y se muestra el error.
+
+### HU 5.4 · Añadir productos manuales a la lista de la compra
+
+Encima de la lista hay un formulario para añadir productos que no salen del
+menú semanal (papel de cocina, detergente...). Aparecen ordenados junto a los
+alimentos del menú con la etiqueta "Añadido a mano", se pueden marcar como
+comprados igual que el resto y, a diferencia de los alimentos del menú, se
+pueden eliminar desde la propia lista. El formulario se muestra aunque el menú
+esté vacío, así que se puede hacer una lista solo con productos añadidos a
+mano. No se admiten nombres vacíos, de más de 60 caracteres ni productos que
+ya estén en la lista (sin distinguir mayúsculas ni tildes); en ese caso se
+muestra el motivo. Se guardan en `mock_shopping_lists.json` (`manualItems`).
 
 ## Pendiente al cerrar este Sprint
 

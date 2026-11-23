@@ -253,3 +253,251 @@ test.describe("HU 5.2 Marcar ingredientes de la lista", () => {
     expect(list.map((item) => item.checked)).toEqual([false, false, false]);
   });
 });
+
+// HU 5.4 - Añadir productos manuales a la lista de la compra
+test.describe("HU 5.4 Añadir productos manuales a la lista de la compra", () => {
+  const arrozId = "9017b44e-1d3f-4414-95d9-bac5d28790fc"; // Arroz integral
+  const pechugaId = "05756545-04f4-4f3f-8254-6e5d678edc93"; // Pechuga de pollo
+
+  const shoppingListUrl = `${apiUrl}/api/menus/${userId}/shopping-list`;
+  const itemsUrl = `${shoppingListUrl}/items`;
+  const itemUrl = (itemId) => `${itemsUrl}/${itemId}`;
+  const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+
+  // Menú con Arroz integral (2 veces) y Pechuga de pollo (1 vez), sin alérgenos.
+  const weeklyMenu = {
+    lunes: { desayuno: [arrozId], comida: [pechugaId], cena: [] },
+    martes: { desayuno: [arrozId], comida: [], cena: [] },
+  };
+
+  // Los tests comparten backend: borra los productos añadidos a mano que hayan quedado.
+  async function deleteManualItems(request) {
+    const list = await (await request.get(shoppingListUrl)).json();
+    for (const item of list.filter((entry) => entry.source === "manual")) {
+      const deleted = await request.delete(itemUrl(item.id));
+      expect(deleted.status()).toBe(204);
+    }
+  }
+
+  // Guarda el menú semanal dado, sin productos añadidos a mano y sin nada marcado como comprado.
+  async function givenWeeklyMenu(request, days) {
+    const menu = await request.put(`${apiUrl}/api/menus/${userId}`, { data: { days } });
+    expect(menu.ok()).toBe(true);
+    await deleteManualItems(request);
+    const list = await (await request.get(shoppingListUrl)).json();
+    for (const item of list.filter((entry) => entry.checked)) {
+      const reset = await request.put(itemUrl(item.id), { data: { checked: false } });
+      expect(reset.ok()).toBe(true);
+    }
+  }
+
+  // Cada test deja la lista sin los productos manuales que haya creado.
+  test.afterEach(async ({ request }) => {
+    await deleteManualItems(request);
+  });
+
+  async function openShoppingTab(page) {
+    await page.getByRole("button", { name: "Compra" }).click();
+    await expect(page.getByRole("heading", { name: "Lista de la compra" })).toBeVisible();
+    return page.getByRole("list", { name: "Lista de la compra" });
+  }
+
+  const addInput = (page) => page.getByRole("textbox", { name: "Añadir producto a la lista" });
+  const addButton = (page) => page.getByRole("button", { name: "Añadir", exact: true });
+  const progress = (page) => page.getByRole("status").filter({ hasText: "comprados" });
+  const itemName = (list, name) => list.getByRole("listitem").filter({ hasText: name }).getByText(name, { exact: true });
+
+  // Espera a que el backend confirme el cambio (la interfaz lo muestra antes, de forma optimista).
+  const waitForItemRequest = (page, method, itemId) =>
+    page.waitForResponse(
+      (response) => response.request().method() === method && response.url().endsWith(`/items/${itemId}`),
+    );
+
+  test("AC1: un producto añadido a mano aparece en la lista junto a los alimentos del menú y se conserva al recargar", async ({
+    page,
+    request,
+  }) => {
+    // Dado un menú semanal con Arroz integral y Pechuga de pollo
+    await givenWeeklyMenu(request, weeklyMenu);
+    await page.goto("/");
+    let lista = await openShoppingTab(page);
+    await expect(lista.getByRole("listitem")).toHaveCount(2);
+    await expect(addButton(page)).toBeDisabled();
+
+    // Cuando el usuario escribe "Papel de cocina" y pulsa "Añadir"
+    await addInput(page).fill("Papel de cocina");
+    await addButton(page).click();
+
+    // Entonces aparece en la lista, ordenado por nombre junto a los alimentos del menú,
+    // con la etiqueta "Añadido a mano" en lugar del número de veces
+    await expect(lista.getByRole("listitem")).toHaveText([
+      /Arroz integral.*2 veces/,
+      /Papel de cocina.*Añadido a mano/,
+      /Pechuga de pollo.*1 vez/,
+    ]);
+    await expect(progress(page)).toHaveText("0 de 3 comprados");
+    // y el campo se vacía para añadir otro producto
+    await expect(addInput(page)).toHaveValue("");
+    await expect(addInput(page)).toBeFocused();
+    // y solo el producto añadido a mano se puede eliminar desde la lista
+    await expect(lista.getByRole("button", { name: "Eliminar Papel de cocina" })).toBeVisible();
+    await expect(lista.getByRole("button", { name: /^Eliminar/ })).toHaveCount(1);
+
+    // y se conserva al recargar la página
+    await page.reload();
+    lista = await openShoppingTab(page);
+    await expect(lista.getByRole("listitem").filter({ hasText: "Papel de cocina" })).toContainText("Añadido a mano");
+
+    // y el backend lo devuelve como producto manual
+    const list = await (await request.get(shoppingListUrl)).json();
+    const papel = list.find((item) => item.name === "Papel de cocina");
+    expect(papel).toMatchObject({ foodId: null, count: 1, checked: false, source: "manual" });
+    expect(papel.id).toMatch(uuidV4);
+    expect(list.find((item) => item.id === arrozId)).toMatchObject({ source: "menu", count: 2 });
+  });
+
+  test("AC2: un producto añadido a mano se puede marcar como comprado y eliminar, y no vuelve a aparecer al recargar", async ({
+    page,
+    request,
+  }) => {
+    // Dado un menú semanal y un producto añadido a mano, "Bolsas de basura"
+    await givenWeeklyMenu(request, weeklyMenu);
+    const created = await request.post(itemsUrl, { data: { name: "Bolsas de basura" } });
+    expect(created.status()).toBe(201);
+    const bolsas = await created.json();
+    await page.goto("/");
+    let lista = await openShoppingTab(page);
+    await expect(progress(page)).toHaveText("0 de 3 comprados");
+
+    // Cuando el usuario lo marca como comprado
+    const saved = waitForItemRequest(page, "PUT", bolsas.id);
+    await lista.getByRole("checkbox", { name: "Bolsas de basura" }).check();
+    expect((await saved).ok()).toBe(true);
+
+    // Entonces aparece tachado y cuenta como comprado
+    await expect(lista.getByRole("checkbox", { name: "Bolsas de basura" })).toBeChecked();
+    await expect(itemName(lista, "Bolsas de basura")).toHaveCSS("text-decoration-line", "line-through");
+    await expect(progress(page)).toHaveText("1 de 3 comprados");
+
+    // Cuando lo elimina con el botón "Eliminar Bolsas de basura"
+    const deleted = waitForItemRequest(page, "DELETE", bolsas.id);
+    await lista.getByRole("button", { name: "Eliminar Bolsas de basura" }).click();
+    expect((await deleted).status()).toBe(204);
+
+    // Entonces desaparece de la lista y el contador solo cuenta los alimentos del menú
+    await expect(lista.getByRole("listitem").filter({ hasText: "Bolsas de basura" })).toHaveCount(0);
+    await expect(progress(page)).toHaveText("0 de 2 comprados");
+
+    // y sigue sin aparecer al recargar la página
+    await page.reload();
+    lista = await openShoppingTab(page);
+    await expect(lista.getByRole("listitem")).toHaveText([/Arroz integral/, /Pechuga de pollo/]);
+    await expect(progress(page)).toHaveText("0 de 2 comprados");
+
+    // y el backend ya no lo devuelve
+    const list = await (await request.get(shoppingListUrl)).json();
+    expect(list.map((item) => item.name)).toEqual(["Arroz integral", "Pechuga de pollo"]);
+  });
+
+  test("AC3: con el menú semanal vacío se puede añadir un producto a mano y la lista muestra solo ese producto", async ({
+    page,
+    request,
+  }) => {
+    // Dado un menú semanal vacío y ningún producto añadido a mano
+    await givenWeeklyMenu(request, {});
+    await page.goto("/");
+    const lista = await openShoppingTab(page);
+    await expect(page.getByText("No hay alimentos en el menú semanal")).toBeVisible();
+    await expect(lista).toHaveCount(0);
+
+    // Cuando el usuario escribe "Detergente" y lo envía con Enter
+    await addInput(page).fill("Detergente");
+    await addInput(page).press("Enter");
+
+    // Entonces la lista aparece solo con ese producto
+    await expect(lista.getByRole("listitem")).toHaveText([/Detergente.*Añadido a mano/]);
+    await expect(progress(page)).toHaveText("0 de 1 comprados");
+    await expect(page.getByText("El menú semanal está vacío; 1 producto añadido a mano.")).toBeVisible();
+    // y deja de mostrarse el mensaje de lista vacía
+    await expect(page.getByText("No hay alimentos en el menú semanal")).toHaveCount(0);
+
+    // y el backend devuelve solo ese producto
+    const list = await (await request.get(shoppingListUrl)).json();
+    expect(list).toEqual([
+      expect.objectContaining({ name: "Detergente", foodId: null, source: "manual" }),
+    ]);
+  });
+
+  test("AC4: la API rechaza con 400 un nombre vacío, con 409 un producto que ya está en la lista (también desde el formulario), con 400 eliminar un alimento del menú y con 404 uno que no está en la lista", async ({
+    page,
+    request,
+  }) => {
+    // Dado un menú semanal con Arroz integral y Pechuga de pollo, y "Café molido" añadido a mano
+    await givenWeeklyMenu(request, weeklyMenu);
+    const cafe = await request.post(itemsUrl, { data: { name: "Café molido" } });
+    expect(cafe.status()).toBe(201);
+
+    // Cuando se añade un producto con el nombre vacío, en blanco o de más de 60 caracteres
+    for (const name of ["", "   ", "a".repeat(61)]) {
+      const invalid = await request.post(itemsUrl, { data: { name } });
+      // Entonces se rechaza con 400
+      expect(invalid.status()).toBe(400);
+      expect(await invalid.json()).toMatchObject({ error: true, code: 400 });
+    }
+
+    // Cuando se añade un producto que ya está en la lista con otras mayúsculas o tildes
+    // (un alimento del menú o un producto añadido a mano)
+    for (const name of ["arroz INTEGRAL", "cafe MOLIDO"]) {
+      const duplicated = await request.post(itemsUrl, { data: { name } });
+      // Entonces se rechaza con 409
+      expect(duplicated.status()).toBe(409);
+      expect(await duplicated.json()).toMatchObject({
+        error: true,
+        code: 409,
+        message: "Ese producto ya está en la lista de la compra",
+      });
+    }
+
+    // Cuando el usuario no existe
+    const unknownUser = await request.post(`${apiUrl}/api/menus/${crypto.randomUUID()}/shopping-list/items`, {
+      data: { name: "Servilletas" },
+    });
+    // Entonces se responde 404
+    expect(unknownUser.status()).toBe(404);
+
+    // Cuando se intenta eliminar un alimento que viene del menú
+    const menuItem = await request.delete(itemUrl(arrozId));
+    // Entonces se rechaza con 400
+    expect(menuItem.status()).toBe(400);
+    expect(await menuItem.json()).toMatchObject({
+      error: true,
+      code: 400,
+      message: "Los productos del menú se quitan desde el menú semanal",
+    });
+
+    // Cuando se intenta eliminar un producto que no está en la lista
+    const missing = await request.delete(itemUrl(crypto.randomUUID()));
+    // Entonces se responde 404
+    expect(missing.status()).toBe(404);
+    expect(await missing.json()).toMatchObject({
+      error: true,
+      code: 404,
+      message: "El producto no está en la lista de la compra",
+    });
+
+    // Cuando el usuario intenta añadir desde el formulario un alimento que ya está en la lista
+    await page.goto("/");
+    const lista = await openShoppingTab(page);
+    await addInput(page).fill("arroz INTEGRAL");
+    await addButton(page).click();
+
+    // Entonces se muestra el mensaje de error del backend y el texto se conserva para corregirlo
+    await expect(page.getByRole("alert")).toHaveText("Ese producto ya está en la lista de la compra");
+    await expect(addInput(page)).toHaveValue("arroz INTEGRAL");
+
+    // y la lista no cambia, ni en la interfaz ni en el backend
+    await expect(lista.getByRole("listitem")).toHaveText([/Arroz integral/, /Café molido/, /Pechuga de pollo/]);
+    const list = await (await request.get(shoppingListUrl)).json();
+    expect(list.map((item) => item.name)).toEqual(["Arroz integral", "Café molido", "Pechuga de pollo"]);
+  });
+});
