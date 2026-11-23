@@ -25,7 +25,7 @@ Subsistema **E6** de la aplicación global "Healthy Life". Se encarga de:
 | ------ | ---- | ----------------------------- |
 | [Sprint 1](docs/sprint1-readme.md) | MVP: funcionalidad básica | HU 1.1 Buscar alimentos y ver macros (3) · HU 1.2 Iconos de alérgenos (2) · HU 2.1 Objetivo calórico diario (3) · HU 3.1 Crear menú básico (5) |
 | [Sprint 2](docs/sprint2-readme.md) | Lógica de negocio y seguridad | HU 2.2 Configurar alergias (2) · HU 2.3 Preferencias dietéticas (2) · HU 3.2 Sumar calorías del menú (3) · HU 3.3 Guardar menú favorito (2) · HU 3.4 Motor de reglas para bloquear alimentos peligrosos (5) · HU 1.3 Administrador añade alimentos (3) |
-| [Sprint 3](docs/sprint3-readme.md) | Funciones extra y cierre | HU 4.1 Despensa virtual (3) · HU 4.2 Sugerencias de recetas según la despensa (5) · HU 5.1 Lista de la compra desde el menú (5) · HU 5.2 Marcar ingredientes de la lista (2) · HU 5.3 Compartir lista (WhatsApp/Email) (3) |
+| [Sprint 3](docs/sprint3-readme.md) | Funciones extra y cierre | HU 4.1 Despensa virtual (3) · HU 4.2 Sugerencias de recetas según la despensa (5) · HU 5.1 Lista de la compra desde el menú (5) · HU 5.2 Marcar ingredientes de la lista (3) · HU 5.3 Compartir lista (WhatsApp/Email) (3) |
 
 ## Enlaces de Interés
 
