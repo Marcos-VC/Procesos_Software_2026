@@ -117,26 +117,48 @@ function ShoppingList({ userId }: ShoppingListProps) {
   }
 
   const checkedCount = items.filter((item) => item.checked).length;
+  const allBought = items.length > 0 && checkedCount === items.length;
 
   return (
     <div className="grid gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="grid gap-1">
-          <p className="text-sm text-muted">{summaryText(items)}</p>
-          {items.length > 0 && (
-            <p className="text-sm font-semibold text-secondary" role="status">
-              {checkedCount} de {items.length} comprados
-            </p>
-          )}
+      <div className="grid gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="grid gap-1">
+            <p className="text-sm text-muted">{summaryText(items)}</p>
+            {items.length > 0 && (
+              <p
+                className={`text-sm font-semibold ${allBought ? "text-ok" : "text-secondary"}`}
+                role="status"
+              >
+                {checkedCount} de {items.length} comprados
+              </p>
+            )}
+          </div>
+          <button
+            type="button"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border-2 border-line px-4 py-2 text-sm font-semibold text-primary-dark transition duration-200 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            onClick={load}
+          >
+            <span aria-hidden="true">↻</span>
+            Actualizar
+          </button>
         </div>
-        <button
-          type="button"
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border-2 border-line px-4 py-2 text-sm font-semibold text-primary-dark transition duration-200 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          onClick={load}
-        >
-          <span aria-hidden="true">↻</span>
-          Actualizar
-        </button>
+        {/* Barra de progreso de la compra: se pone verde al tenerlo todo. */}
+        {items.length > 0 && (
+          <div
+            className="h-2 w-full overflow-hidden rounded-full bg-line"
+            role="progressbar"
+            aria-label="Progreso de la compra"
+            aria-valuemin={0}
+            aria-valuemax={items.length}
+            aria-valuenow={checkedCount}
+          >
+            <div
+              className={`h-full rounded-full transition-all duration-300 ${allBought ? "bg-ok" : "bg-primary"}`}
+              style={{ width: `${(checkedCount / items.length) * 100}%` }}
+            />
+          </div>
+        )}
       </div>
 
       <form className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-end" onSubmit={addManualItem}>
@@ -186,11 +208,12 @@ function ShoppingList({ userId }: ShoppingListProps) {
           {items.map((item) => (
             <li
               key={item.id}
-              className={`card flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 transition duration-200 ${
+              className={`card flex items-center gap-3 py-1 pr-3 pl-1 transition duration-200 ${
                 item.checked ? "bg-surface shadow-none" : ""
               }`}
             >
-              <label className="flex min-w-40 flex-1 cursor-pointer items-center gap-3">
+              {/* Toda la fila (no solo la casilla) marca el producto: área táctil amplia en móvil. */}
+              <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-xl px-4 py-3">
                 <input
                   type="checkbox"
                   className="size-5 shrink-0 cursor-pointer accent-primary"
@@ -198,36 +221,56 @@ function ShoppingList({ userId }: ShoppingListProps) {
                   onChange={(event) => toggle(item.id, event.target.checked)}
                 />
                 <span
-                  className={
-                    item.checked ? "font-medium text-muted line-through" : "font-medium text-secondary"
-                  }
+                  className={`min-w-0 break-words font-medium ${
+                    item.checked ? "text-muted line-through" : "text-secondary"
+                  }`}
                 >
                   {item.name}
                 </span>
               </label>
-              {/* En pantallas estrechas pasa a una segunda línea para no apretar el nombre. */}
-              <span className="ml-auto flex shrink-0 items-center gap-2">
+              <span className="flex shrink-0 items-center gap-1">
                 <span
-                  className={`rounded-full px-3 py-1 text-xs font-bold ${
+                  className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap ${
                     item.checked
                       ? "bg-line text-muted"
                       : item.source === "manual"
-                        ? "bg-surface text-secondary ring-1 ring-line"
+                        ? "bg-white text-secondary ring-1 ring-line"
                         : "bg-primary-soft text-primary-dark"
                   }`}
                 >
-                  {item.source === "manual"
-                    ? "Añadido a mano"
-                    : `${item.count} ${item.count === 1 ? "vez" : "veces"}`}
+                  {item.source === "manual" ? (
+                    <>
+                      <span aria-hidden="true">✎</span>
+                      {/* En móvil, versión corta para no partir el nombre en dos líneas. */}
+                      <span className="sm:hidden">A mano</span>
+                      <span className="hidden sm:inline">Añadido a mano</span>
+                    </>
+                  ) : (
+                    `${item.count} ${item.count === 1 ? "vez" : "veces"}`
+                  )}
                 </span>
                 {item.source === "manual" && (
                   <button
                     type="button"
-                    className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-primary-dark transition hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    className="grid size-9 cursor-pointer place-items-center rounded-lg text-muted transition hover:bg-primary-soft hover:text-primary-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                     aria-label={`Eliminar ${item.name}`}
+                    title={`Eliminar ${item.name}`}
                     onClick={() => removeManualItem(item)}
                   >
-                    Eliminar
+                    {/* Icono de papelera */}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      className="size-[18px]"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                      <path d="M10 11v6M14 11v6" />
+                    </svg>
                   </button>
                 )}
               </span>
