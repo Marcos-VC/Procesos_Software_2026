@@ -1,7 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { api, demoUserId } from "./api";
 import FoodList from "./components/FoodList";
 import FoodForm from "./components/FoodForm";
+import {
+  BagIcon,
+  BoxIcon,
+  CalendarIcon,
+  DotIcon,
+  GridIcon,
+  UserIcon,
+  type IconProps,
+} from "./components/icons";
 import MenuBuilder from "./components/MenuBuilder";
 import ProfileEditor from "./components/ProfileEditor";
 import SearchBar from "./components/SearchBar";
@@ -18,15 +27,25 @@ const TABS: [Tab, string][] = [
 
 function ProfileStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card relative grid gap-2 overflow-hidden p-5 pl-6">
-      <span className="absolute inset-y-0 left-0 w-1.5 bg-primary" aria-hidden="true" />
-      <span className="text-xs font-semibold tracking-wider text-muted uppercase">
+    <div className="card relative grid content-start gap-0.5 overflow-hidden p-3 pl-4 sm:gap-2 sm:p-5 sm:pl-6">
+      <span className="absolute inset-y-0 left-0 w-1 bg-primary sm:w-1.5" aria-hidden="true" />
+      <span className="text-[11px] font-semibold tracking-wider text-muted uppercase sm:text-xs">
         {label}
       </span>
-      <strong className="font-display text-xl break-words text-secondary">{value}</strong>
+      <strong className="font-display text-lg break-words text-secondary sm:text-xl">{value}</strong>
     </div>
   );
 }
+
+// Icono de cada pestaña en la barra inferior del móvil. Incluye las pestañas de Despensa y
+// Compra de las HU 4.1 y 5.1; una pestaña sin entrada aquí usa el icono genérico.
+const TAB_ICONS: Partial<Record<string, ComponentType<IconProps>>> = {
+  catalogo: GridIcon,
+  perfil: UserIcon,
+  menu: CalendarIcon,
+  despensa: BoxIcon,
+  compra: BagIcon,
+};
 
 function App() {
   const [tab, setTab] = useState<Tab>("catalogo");
@@ -36,6 +55,17 @@ function App() {
   const [foods, setFoods] = useState<Food[] | null>(null);
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
+  const contentRef = useRef<HTMLElement>(null);
+
+  // En móvil las pestañas están fijas abajo y se pueden pulsar desde cualquier punto de la
+  // página: si ya se había pasado el inicio del contenido, se vuelve al principio de la
+  // nueva sección en vez de quedarse a mitad (o al final) de ella.
+  useEffect(() => {
+    const content = contentRef.current;
+    if (content && content.getBoundingClientRect().top < 0) {
+      content.scrollIntoView({ block: "start" });
+    }
+  }, [tab]);
 
   useEffect(() => {
     Promise.all([
@@ -84,14 +114,14 @@ function App() {
           className="pointer-events-none absolute -top-24 -right-24 size-96 rounded-full bg-primary/30 blur-3xl"
           aria-hidden="true"
         />
-        <div className="page relative pt-16 pb-36 sm:pt-24">
-          <p className="mb-6 inline-flex rounded-full bg-primary px-4 py-1.5 text-xs font-bold tracking-widest text-white shadow-lg shadow-primary/30">
+        <div className="page relative pt-8 pb-24 sm:pt-24 sm:pb-36">
+          <p className="mb-4 inline-flex rounded-full bg-primary px-3 py-1 text-[11px] font-bold tracking-widest text-white shadow-lg shadow-primary/30 sm:mb-6 sm:px-4 sm:py-1.5 sm:text-xs">
             HEALTHY LIFE / E6
           </p>
-          <h1 className="max-w-3xl text-5xl leading-[0.95] font-bold sm:text-7xl lg:text-8xl">
+          <h1 className="max-w-3xl text-[2.625rem] leading-[0.95] font-bold sm:text-7xl lg:text-8xl">
             Come con <span className="text-primary-light">criterio.</span>
           </h1>
-          <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/75">
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-white/75 sm:mt-7 sm:text-lg">
             Catálogo de alimentos y decisiones nutricionales adaptadas a cada
             persona.
           </p>
@@ -99,7 +129,7 @@ function App() {
       </header>
 
       <section
-        className="page relative z-10 -mt-20 grid grid-cols-1 gap-4 pb-10 sm:grid-cols-2 lg:grid-cols-5"
+        className="page relative z-10 -mt-16 grid grid-cols-2 gap-2.5 pb-6 sm:-mt-20 sm:gap-4 sm:pb-10 lg:grid-cols-5 [&>:last-child]:col-span-2 lg:[&>:last-child]:col-span-1"
         aria-label="Perfil nutricional"
       >
         <ProfileStat
@@ -121,27 +151,44 @@ function App() {
         />
       </section>
 
-      <nav className="page pb-10" aria-label="Secciones">
-        <div className="inline-flex flex-wrap gap-1 rounded-full bg-white p-1.5 shadow-lg ring-1 ring-black/5">
-          {TABS.map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              className={`cursor-pointer rounded-full px-6 py-2.5 text-sm font-semibold transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                tab === id
-                  ? "bg-primary text-white shadow-md shadow-primary/30"
-                  : "text-secondary hover:bg-primary-soft"
-              }`}
-              aria-current={tab === id ? "page" : undefined}
-              onClick={() => setTab(id)}
-            >
-              {label}
-            </button>
-          ))}
+      {/* Pestañas. En móvil: barra fija abajo, al alcance del pulgar, con las pestañas a partes
+          iguales (icono + nombre), así caben de 3 a 5 sin partirse ni desplazarse. Desde sm:
+          la barra de pastilla bajo el perfil. */}
+      <nav
+        className="page fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-1 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur-md sm:static sm:z-auto sm:border-0 sm:bg-transparent sm:px-8 sm:pb-10 sm:shadow-none sm:backdrop-blur-none"
+        aria-label="Secciones"
+      >
+        <div className="mx-auto grid max-w-md auto-cols-fr grid-flow-col sm:mx-0 sm:inline-flex sm:max-w-none sm:flex-wrap sm:gap-1 sm:rounded-full sm:bg-white sm:p-1.5 sm:shadow-lg sm:ring-1 sm:ring-black/5">
+          {TABS.map(([id, label]) => {
+            const TabIcon = TAB_ICONS[id] ?? DotIcon;
+            const active = tab === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                className={`flex min-h-14 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-xl px-1 pt-1.5 pb-1 text-[11px] font-semibold transition duration-200 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary sm:min-h-0 sm:flex-row sm:rounded-full sm:px-6 sm:py-2.5 sm:text-sm sm:focus-visible:outline-offset-2 ${
+                  active
+                    ? "text-primary-dark sm:bg-primary sm:text-white sm:shadow-md sm:shadow-primary/30"
+                    : "text-muted hover:text-secondary sm:text-secondary sm:hover:bg-primary-soft"
+                }`}
+                aria-current={active ? "page" : undefined}
+                onClick={() => setTab(id)}
+              >
+                <span
+                  className={`flex h-7 w-12 items-center justify-center rounded-full transition duration-200 sm:hidden ${
+                    active ? "bg-primary-soft" : ""
+                  }`}
+                >
+                  <TabIcon className="size-5" />
+                </span>
+                {label}
+              </button>
+            );
+          })}
         </div>
       </nav>
 
-      <section className="page">
+      <section ref={contentRef} className="page scroll-mt-4">
         {error && (
           <p className="mb-6 rounded-xl bg-primary-soft px-4 py-3 text-primary-dark">
             {error}
