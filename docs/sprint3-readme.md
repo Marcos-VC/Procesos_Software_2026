@@ -19,18 +19,42 @@ reduciendo el desperdicio de comida y el tiempo invertido en planificar la compr
 - HU 4.1 Añadir y quitar productos de la despensa virtual (3)
 - HU 4.2 Recibir sugerencias de recetas basadas en los productos de la despensa (5)
 - HU 5.1 Generar lista de la compra automática desde el menú (5)
-- HU 5.2 Marcar/tachar ingredientes de la lista (2)
+- HU 5.2 Marcar/tachar ingredientes de la lista (3)
 - HU 5.3 Compartir lista de la compra (WhatsApp/Email) (3)
+- HU 5.4 Añadir productos manuales a la lista de la compra (3)
 
-18 puntos en total. Pendiente de contrastar contra la velocidad real del Sprint 2 (igual que se
-hizo con la del Sprint 1 para comprometer el Sprint 2) antes de darlo por definitivo en el Sprint
-Planning.
+22 puntos en total.
+
+### Planificación por velocidad histórica
+
+El enunciado del Sprint 3 pide partir de la velocidad del Sprint 2 y comprometer **al menos un
+10 % más**, con un máximo de 8 puntos por historia.
+
+| Dato | Puntos |
+| ---- | ------ |
+| Velocidad del Sprint 2 (entregado) | 17 |
+| Mínimo a comprometer (17 × 1,10 = 18,7) | 19 |
+| **Comprometido en el Sprint 3** | **22** (+29 % sobre el Sprint 2) |
+
+- Ninguna historia pasa de 8 puntos: las mayores (HU 4.2 y HU 5.1) valen 5, así que no hace
+  falta dividir ninguna.
+- Todas las estimaciones usan la escala de Fibonacci (1, 2, 3, 5, 8) y se comparan con historias
+  ya terminadas en los Sprints anteriores.
+- La semana del 7 de diciembre no hay clase (festivos de la Constitución y la Inmaculada); el
+  trabajo de esos días se organiza sin sesión presencial.
 
 ## Tests E2E
 
+- HU 5.1: 3 criterios de aceptación (`compra.spec.js`)
 - HU 5.2: 4 criterios de aceptación (`compra.spec.js`)
 - HU 5.3: 4 criterios de aceptación (`compra.spec.js`)
 - HU 5.4: 4 criterios de aceptación (`compra.spec.js`)
+
+La HU 5.1 cubre que la pestaña "Compra" muestra los alimentos del menú semanal
+agrupados, con las veces que aparece cada uno ("2 veces", "1 vez"), que con el
+menú vacío se muestra el aviso de lista vacía, y que
+`GET /api/menus/{userId}/shopping-list` devuelve cada alimento con su nombre y
+el número de veces que aparece en el menú.
 
 La HU 5.2 cubre que al marcar un ingrediente en la pestaña "Compra" aparece
 tachado y el contador de comprados se actualiza, que la marca se conserva al
@@ -61,6 +85,16 @@ distinguir mayúsculas ni tildes, y el formulario muestra el error) y con `404`
 un usuario inexistente o el borrado de un producto que no está en la lista.
 
 ## Historias implementadas
+
+### HU 5.1 · Generar lista de la compra automática desde el menú
+
+La pestaña **Compra** genera la lista de la compra a partir del menú semanal
+del usuario: recorre los siete días y las tres comidas, agrupa los alimentos
+repetidos y muestra cada uno una sola vez, ordenados por nombre, con las veces
+que aparece en la semana. La lista se calcula en el momento a partir del menú
+guardado, así que siempre está al día (el botón "Actualizar" la vuelve a
+generar sin recargar la página). Si el menú está vacío, se indica que hay que
+añadir alimentos al menú para generarla.
 
 ### HU 5.2 · Marcar/tachar ingredientes de la lista
 
