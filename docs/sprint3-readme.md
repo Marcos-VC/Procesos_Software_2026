@@ -47,6 +47,7 @@ El enunciado del Sprint 3 pide partir de la velocidad del Sprint 2 y comprometer
 
 - HU 5.1: 3 criterios de aceptación (`compra.spec.js`)
 - HU 5.2: 4 criterios de aceptación (`compra.spec.js`)
+- HU 5.3: 4 criterios de aceptación (`compra.spec.js`)
 - HU 5.4: 4 criterios de aceptación (`compra.spec.js`)
 
 La HU 5.1 cubre que la pestaña "Compra" muestra los alimentos del menú semanal
@@ -60,6 +61,18 @@ tachado y el contador de comprados se actualiza, que la marca se conserva al
 recargar la página, que se puede desmarcar (y también se conserva), y que el
 endpoint rechaza con `400` un `checked` que no es booleano y con `404` un
 producto que no está en la lista o un usuario inexistente.
+
+La HU 5.3 cubre que "Copiar y abrir WhatsApp" copia al portapapeles el título y
+todos los productos pendientes (con "(x2)" en un alimento repetido en el menú),
+abre `https://wa.me/` en una pestaña nueva y muestra el aviso "Lista copiada";
+que "Copiar y abrir correo" copia el mismo texto y es un `mailto:` con el
+asunto "Lista de la compra"; que tras marcar un producto y añadir otro a mano
+lo que se copia cambia al momento, sin recargar la lista (el comprado
+desaparece y el manual aparece); y que sin productos pendientes los dos
+controles están desactivados con el aviso "No hay productos pendientes que
+compartir", y vuelven a activarse al desmarcar uno. Los tests leen el
+portapapeles del navegador; WhatsApp se sirve en local y la navegación al
+`mailto:` se cancela, así que nunca se abre WhatsApp ni el correo de verdad.
 
 La HU 5.4 cubre que un producto añadido a mano desde el formulario aparece en
 la lista, ordenado junto a los alimentos del menú y con la etiqueta "Añadido a
@@ -91,6 +104,25 @@ indica cuántos productos se han comprado ya del total. La marca se guarda en
 el backend (`mock_shopping_lists.json`), así que se conserva al recargar, y se
 puede desmarcar en cualquier momento. Si el guardado falla, la casilla vuelve
 a su estado anterior y se muestra el error.
+
+### HU 5.3 · Compartir lista de la compra (WhatsApp/Email)
+
+Debajo de la lista, la tarjeta "Compartir lista" tiene dos botones: "Copiar y
+abrir WhatsApp" y "Copiar y abrir correo". Cada uno copia la lista al
+portapapeles y abre WhatsApp (`wa.me`, en una pestaña nueva) o un correo nuevo
+con el asunto "Lista de la compra"; el usuario elige el chat o el destinatario
+y pega la lista. La aplicación no envía nada ni llama a ningún servicio
+externo. Solo se copian los productos pendientes, es decir, lo que de verdad
+falta por comprar: los del menú (con "(x2)", "(x3)"... si se repiten en la
+semana) y los añadidos a mano, en el mismo orden que la lista; los ya marcados
+como comprados no se incluyen, y el texto siempre es el del momento en que se
+pulsa. Tras copiar se muestra unos segundos el aviso "Lista copiada. Pégala
+en...". Si el navegador no deja copiar, se avisa y se muestra el texto en un
+cuadro para copiarlo a mano (la app se abre igualmente). Desde el móvil por
+`http` con la IP del equipo no existe la API del portapapeles, así que se usa
+el método clásico de copiar la selección. Si no queda nada pendiente, los
+botones aparecen desactivados con el aviso "No hay productos pendientes que
+compartir".
 
 ### HU 5.4 · Añadir productos manuales a la lista de la compra
 

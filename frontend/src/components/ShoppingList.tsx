@@ -1,6 +1,13 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { api } from "../api";
 import type { ShoppingItem } from "../types";
+import {
+  buildShoppingListText,
+  copyShoppingListText,
+  EMAIL_URL,
+  pendingShoppingItems,
+  WHATSAPP_URL,
+} from "../utils/shareShoppingList";
 
 interface ShoppingListProps {
   userId: string;
@@ -29,6 +36,242 @@ function summaryText(items: ShoppingItem[]) {
   }
   const menuText = `${plural(menuCount, "alimento necesario", "alimentos necesarios")} para la semana`;
   return manualCount > 0 ? `${menuText} y ${manualText}.` : `${menuText}.`;
+}
+
+function shareHint(pendingCount: number) {
+  if (pendingCount === 0) return "No hay productos pendientes que compartir";
+  if (pendingCount === 1) return "Se copia 1 producto pendiente";
+  return `Se copian los ${pendingCount} productos pendientes`;
+}
+
+// Iconos de línea (24×24) de la pestaña Compra; son decorativos (aria-hidden) y toman el color del texto.
+function Icon({ children, className = "size-5" }: { children: ReactNode; className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className={`shrink-0 ${className}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {children}
+    </svg>
+  );
+}
+
+// Portapapeles: la lista se copia para pegarla después.
+const CopyIcon = () => (
+  <Icon>
+    <rect width="8" height="4" x="8" y="2" rx="1" />
+    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+    <path d="M9 12h6M9 16h4" />
+  </Icon>
+);
+
+// Bocadillo de chat, para WhatsApp.
+const ChatIcon = () => (
+  <Icon>
+    <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    <path d="M8 12h.01M12 12h.01M16 12h.01" />
+  </Icon>
+);
+
+const MailIcon = () => (
+  <Icon>
+    <rect width="20" height="16" x="2" y="4" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </Icon>
+);
+
+const CheckIcon = () => (
+  <Icon className="size-4">
+    <path d="M20 6 9 17l-5-5" />
+  </Icon>
+);
+
+const RefreshIcon = () => (
+  <Icon className="size-4">
+    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+    <path d="M21 3v5h-5" />
+  </Icon>
+);
+
+const PlusIcon = () => (
+  <Icon>
+    <path d="M5 12h14M12 5v14" />
+  </Icon>
+);
+
+const CartIcon = () => (
+  <Icon className="size-7">
+    <circle cx="8" cy="21" r="1" />
+    <circle cx="19" cy="21" r="1" />
+    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+  </Icon>
+);
+
+const PencilIcon = () => (
+  <Icon className="size-3">
+    <path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z" />
+    <path d="m15 5 4 4" />
+  </Icon>
+);
+
+// Mismo alto (44 px) y borde en todos los controles, para que no "salten" al activarse o desactivarse.
+const shareControlBase =
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border-2 px-4 py-2 text-sm font-semibold whitespace-nowrap transition duration-200";
+const shareLinkBase = `${shareControlBase} cursor-pointer active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`;
+const shareDisabledClass = `${shareControlBase} cursor-not-allowed border-line bg-surface text-muted`;
+
+const shareChannels = [
+  {
+    key: "whatsapp",
+    name: "Copiar y abrir WhatsApp",
+    icon: <ChatIcon />,
+    href: WHATSAPP_URL,
+    newTab: true,
+    copiedMessage: "Lista copiada. Pégala en el chat de WhatsApp.",
+    className: `${shareLinkBase} border-transparent bg-whatsapp text-white shadow-md shadow-whatsapp/25 hover:bg-whatsapp-dark hover:shadow-lg`,
+  },
+  {
+    key: "email",
+    name: "Copiar y abrir correo",
+    icon: <MailIcon />,
+    href: EMAIL_URL,
+    newTab: false,
+    copiedMessage: "Lista copiada. Pégala en el correo.",
+    className: `${shareLinkBase} border-line bg-white text-secondary hover:border-primary hover:bg-primary-soft hover:text-primary-dark`,
+  },
+] as const;
+
+type ShareChannel = (typeof shareChannels)[number]["key"];
+
+// Tiempo que se ve el aviso de "Lista copiada".
+const COPIED_FEEDBACK_MS = 4000;
+
+interface CopyResult {
+  channel: ShareChannel;
+  copied: boolean;
+}
+
+// Compartir los productos pendientes (HU 5.3): cada botón copia la lista al portapapeles y abre
+// WhatsApp o el correo para que el usuario la pegue. El texto se calcula a partir de `items`, así que
+// siempre es el de ese momento. Sin productos pendientes los controles se muestran desactivados
+// (como botones, porque un enlace no se puede desactivar).
+function ShareShoppingList({ items }: { items: ShoppingItem[] }) {
+  const titleId = useId();
+  const hintId = useId();
+  const [result, setResult] = useState<CopyResult | null>(null);
+  const manualCopyRef = useRef<HTMLTextAreaElement>(null);
+  const pendingCount = pendingShoppingItems(items).length;
+  const text = buildShoppingListText(items);
+  const copyFailed = result !== null && !result.copied && pendingCount > 0;
+
+  // El aviso de "copiada" se oculta solo; el de error se queda hasta el siguiente intento.
+  useEffect(() => {
+    if (!result?.copied) return;
+    const timer = window.setTimeout(() => setResult(null), COPIED_FEEDBACK_MS);
+    return () => window.clearTimeout(timer);
+  }, [result]);
+
+  // Si no se pudo copiar, se enfoca (y selecciona) el texto para copiarlo a mano.
+  useEffect(() => {
+    if (copyFailed) manualCopyRef.current?.focus();
+  }, [copyFailed, result]);
+
+  // Se copia dentro del propio clic, sin esperar al resultado: así el enlace abre la app a la vez y
+  // ningún navegador lo bloquea. Cuando termina la copia se muestra el aviso.
+  const copyAndOpen = (channel: ShareChannel) => {
+    void copyShoppingListText(text).then((copied) => setResult({ channel, copied }));
+  };
+
+  const copiedMessage =
+    result?.copied ? shareChannels.find((channel) => channel.key === result.channel)?.copiedMessage : "";
+
+  return (
+    <section aria-labelledby={titleId} className="card p-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-6">
+        <div className="flex items-start gap-3">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary-dark">
+            <CopyIcon />
+          </span>
+          <div className="grid gap-0.5">
+            <h3 id={titleId} className="text-lg font-semibold text-secondary">
+              Compartir lista
+            </h3>
+            <p id={hintId} className="text-sm text-muted">
+              {shareHint(pendingCount)}
+            </p>
+          </div>
+        </div>
+        {/* Móvil: uno debajo de otro a todo el ancho; desde sm, uno al lado del otro. */}
+        <div className="grid gap-2 sm:grid-cols-2">
+          {shareChannels.map(({ key, name, icon, href, newTab, className }) =>
+            pendingCount > 0 ? (
+              <a
+                key={key}
+                className={className}
+                href={href}
+                target={newTab ? "_blank" : undefined}
+                rel={newTab ? "noopener noreferrer" : undefined}
+                aria-describedby={hintId}
+                onClick={() => copyAndOpen(key)}
+              >
+                {icon}
+                {name}
+              </a>
+            ) : (
+              <button key={key} type="button" className={shareDisabledClass} disabled aria-describedby={hintId}>
+                {icon}
+                {name}
+              </button>
+            ),
+          )}
+        </div>
+      </div>
+
+      {/* Región "polite" siempre presente (vacía si no hay aviso) para que los lectores de pantalla lo anuncien. */}
+      <p
+        role="status"
+        className={
+          copiedMessage
+            ? "mt-4 flex items-center gap-2 rounded-xl bg-ok-soft px-4 py-3 text-sm font-semibold text-ok"
+            : ""
+        }
+      >
+        {copiedMessage && (
+          <>
+            <CheckIcon />
+            {copiedMessage}
+          </>
+        )}
+      </p>
+
+      {copyFailed && (
+        <div className="mt-4 grid gap-2">
+          <p className="rounded-xl bg-primary-soft px-4 py-3 text-sm text-primary-dark" role="alert">
+            No se ha podido copiar la lista automáticamente. Selecciona el texto de abajo y cópialo a mano.
+          </p>
+          <textarea
+            ref={manualCopyRef}
+            className="input resize-y text-sm leading-6"
+            aria-label="Texto de la lista para copiar"
+            readOnly
+            // Título, línea en blanco y un producto por línea, con una de margen por si alguna se parte.
+            rows={Math.min(pendingCount + 3, 12)}
+            value={text}
+            onFocus={(event) => {
+              event.currentTarget.select();
+              event.currentTarget.setSelectionRange(0, event.currentTarget.value.length);
+            }}
+          />
+        </div>
+      )}
+    </section>
+  );
 }
 
 function ShoppingList({ userId }: ShoppingListProps) {
@@ -139,7 +382,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
             className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border-2 border-line px-4 py-2 text-sm font-semibold text-primary-dark transition duration-200 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             onClick={load}
           >
-            <span aria-hidden="true">↻</span>
+            <RefreshIcon />
             Actualizar
           </button>
         </div>
@@ -181,7 +424,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
           className="btn gap-1.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           disabled={!newName.trim() || adding}
         >
-          <span aria-hidden="true" className="text-lg leading-none">+</span>
+          <PlusIcon />
           Añadir
         </button>
       </form>
@@ -200,7 +443,9 @@ function ShoppingList({ userId }: ShoppingListProps) {
 
       {items.length === 0 ? (
         <div className="card p-10 text-center text-muted">
-          <p className="text-4xl mb-3" aria-hidden="true">🛒</p>
+          <span className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-surface text-muted">
+            <CartIcon />
+          </span>
           <p>No hay alimentos en el menú semanal.</p>
         </div>
       ) : (
@@ -240,7 +485,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
                 >
                   {item.source === "manual" ? (
                     <>
-                      <span aria-hidden="true">✎</span>
+                      <PencilIcon />
                       {/* En móvil, versión corta para no partir el nombre en dos líneas. */}
                       <span className="sm:hidden">A mano</span>
                       <span className="hidden sm:inline">Añadido a mano</span>
@@ -278,6 +523,8 @@ function ShoppingList({ userId }: ShoppingListProps) {
           ))}
         </ul>
       )}
+
+      <ShareShoppingList items={items} />
     </div>
   );
 }
