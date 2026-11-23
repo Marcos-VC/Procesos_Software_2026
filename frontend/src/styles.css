@@ -22,6 +22,11 @@
   --color-warning-soft: #fef3c7;
   --color-ok: #15803d;
   --color-ok-soft: #dcfce7;
+
+  /* Botón de WhatsApp (HU 5.3): el verde de la marca (#25d366) con texto blanco solo da 2:1 de
+     contraste, así que se usa un verde más oscuro del mismo tono (4,7:1, AA). */
+  --color-whatsapp: #108542;
+  --color-whatsapp-dark: #0b6e36;
 }
 
 @layer base {
