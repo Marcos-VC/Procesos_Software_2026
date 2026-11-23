@@ -5,7 +5,12 @@ import {
   postFavoriteMenu,
   putUserMenu,
 } from "../controllers/menuController.js";
-import { getShoppingListHandler } from "../controllers/shoppingController.js";
+import {
+  deleteShoppingItemHandler,
+  getShoppingListHandler,
+  postShoppingItemHandler,
+  putShoppingItemHandler,
+} from "../controllers/shoppingController.js";
 
 const router = Router();
 
@@ -15,6 +20,11 @@ router.post("/menus/favorites", postFavoriteMenu);
 
 // HU 5.1: lista de la compra generada a partir del menú semanal del usuario.
 router.get("/menus/:userId/shopping-list", getShoppingListHandler);
+// HU 5.2: marcar/desmarcar un producto de la lista como comprado.
+router.put("/menus/:userId/shopping-list/items/:itemId", putShoppingItemHandler);
+// HU 5.4: añadir y quitar productos a mano (que no salen del menú).
+router.post("/menus/:userId/shopping-list/items", postShoppingItemHandler);
+router.delete("/menus/:userId/shopping-list/items/:itemId", deleteShoppingItemHandler);
 
 router.get("/menus/:userId", getUserMenu);
 router.put("/menus/:userId", putUserMenu);

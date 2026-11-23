@@ -117,9 +117,22 @@ export interface MenuFavorite {
 }
 
 /** Elemento de la lista de la compra generada a partir del menú semanal (HU 5.1). */
+/** Origen de un producto de la lista de la compra: el menú semanal o añadido a mano (HU 5.4). */
+export type ShoppingItemSource = "menu" | "manual";
+
 export interface ShoppingItem {
-  foodId: string;
+  /**
+   * Identificador del producto en la lista; en los alimentos del menú coincide con `foodId` (HU 5.2)
+   * y en los productos añadidos a mano es un UUID propio (HU 5.4).
+   */
+  id: string;
+  /** Alimento del catálogo; `null` en los productos añadidos a mano (HU 5.4). */
+  foodId: string | null;
   name: string;
-  /** Número de veces que aparece el alimento en el menú semanal. */
+  /** Número de veces que aparece el alimento en el menú semanal (siempre 1 en los añadidos a mano). */
   count: number;
+  /** Marcado (tachado) como comprado; se guarda en el backend (HU 5.2). */
+  checked: boolean;
+  /** De dónde viene el producto: del menú semanal o añadido a mano (HU 5.4). */
+  source: ShoppingItemSource;
 }
