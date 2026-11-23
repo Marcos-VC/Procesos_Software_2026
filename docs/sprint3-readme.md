@@ -19,7 +19,7 @@ reduciendo el desperdicio de comida y el tiempo invertido en planificar la compr
 - HU 4.1 Añadir y quitar productos de la despensa virtual (3)
 - HU 4.2 Recibir sugerencias de recetas basadas en los productos de la despensa (5)
 - HU 5.1 Generar lista de la compra automática desde el menú (5)
-- HU 5.2 Marcar/tachar ingredientes de la lista (2)
+- HU 5.2 Marcar/tachar ingredientes de la lista (3)
 - HU 5.3 Compartir lista de la compra (WhatsApp/Email) (3)
 
 18 puntos en total. Pendiente de contrastar contra la velocidad real del Sprint 2 (igual que se
