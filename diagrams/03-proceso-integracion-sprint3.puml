@@ -1,0 +1,158 @@
+@startuml 03-proceso-integracion-sprint3
+title HexaHealth - E6 · Sprint 3: despensa, recetas y lista de la compra\nFlujo de las HU 4.1, 4.2, 5.1, 5.4, 5.2 y 5.3 e integración con el JSON de E1
+
+skinparam dpi 150
+skinparam defaultTextAlignment left
+skinparam wrapWidth 320
+skinparam shadowing false
+skinparam ArrowColor #444444
+skinparam ActivityBorderColor #444444
+skinparam ActivityDiamondBackgroundColor #FFFFFF
+skinparam SwimlaneTitleFontStyle bold
+skinparam SwimlaneTitleFontSize 14
+skinparam LegendBackgroundColor #FFFFFF
+
+|#F7F7F7|Usuario|
+|E6 · HexaHealth (Frontend + Backend)|
+|#E3F2FD|E1 · Gestión de usuarios|
+
+|Usuario|
+start
+:Abre HexaHealth;
+
+|E6 · HexaHealth (Frontend + Backend)|
+repeat
+  :Pide el perfil nutricional del usuario
+  (alergias, tipo de dieta, objetivo calórico);
+
+  |E1 · Gestión de usuarios|
+  #LightBlue:<b>[PUNTO DE INTEGRACIÓN]</b>
+  GET /api/users/{userId}/nutritional-profile
+  devuelve el JSON del perfil
+  (hoy simulado en mocks/mock_usuarios.json);
+  note right
+    E6 no llama a la API real de E1:
+    lee el mock local con el mismo contrato.
+    Cada petición vuelve a leer el perfil:
+    si E1 cae a mitad de uso, se sigue
+    este mismo camino alternativo.
+  end note
+
+  |E6 · HexaHealth (Frontend + Backend)|
+  if (¿Llega un JSON legible\ncon formato válido?) then (sí)
+  else (no)
+    #Orange:<b>Camino alternativo: falla</b>
+    Sin respuesta, fichero vacío o corrupto,
+    o no es un array → HTTP 503
+    "El servicio de perfiles (E1) no está disponible";
+    :Muestra el aviso con el botón "Reintentar".
+    La despensa, el menú y la lista no se pierden:
+    son datos propios de E6;
+    |Usuario|
+    if (¿Pulsa "Reintentar"?) then (no)
+      #Orange:Se queda en la pantalla de aviso;
+      stop
+    else (sí)
+    endif
+    |E6 · HexaHealth (Frontend + Backend)|
+  endif
+repeat while (¿Falló la lectura?) is (sí, reintenta)
+-> no;
+
+if (¿El usuario aparece en el JSON?\n(p. ej. llega [] vacío)) then (no)
+  #Orange:<b>Camino alternativo: vacío</b>
+  HTTP 404 "Usuario no encontrado"
+  y la app muestra el error;
+  stop
+elseif (¿Trae alergias y tipo de dieta?) then (no, campos vacíos o ausentes)
+  #FFE082:<b>Camino alternativo: perfil incompleto</b>
+  Usa valores por defecto:
+  allergies = [] · dietType = "omnivore"
+  y avisa "No conocemos tus alergias:
+  revisa los iconos de alérgenos";
+else (sí)
+  :Usa las alergias y la dieta del perfil;
+endif
+
+' ---------------- HU 4.1 ----------------
+|Usuario|
+:<b>HU 4.1</b> Abre "Despensa" y añade,
+ajusta o quita productos
+(nombre, cantidad y unidad);
+|E6 · HexaHealth (Frontend + Backend)|
+if (¿Nombre y unidad informados\ny cantidad mayor que 0?) then (no)
+  :HTTP 400 y mensaje en el formulario;
+else (sí)
+  :Guarda el cambio en mocks/mock_despensa.json
+  (POST, PUT o DELETE en /api/pantry/{userId}).
+  Si ya existe con la misma unidad, suma la cantidad;
+endif
+
+' ---------------- HU 4.2 ----------------
+|Usuario|
+:<b>HU 4.2</b> Pide sugerencias de recetas;
+|E6 · HexaHealth (Frontend + Backend)|
+:Cruza los productos de la despensa
+con el recetario de E6;
+:Descarta las recetas con alérgenos del perfil
+o incompatibles con su dieta <b>(datos de E1)</b>;
+if (¿Alguna receta aprovecha\nla despensa?) then (no)
+  :Muestra "No hay recetas con tus productos";
+else (sí)
+  :Muestra las recetas ordenadas por
+  ingredientes que ya tiene y lo que le falta;
+endif
+
+' ---------------- HU 5.1 ----------------
+|Usuario|
+:<b>HU 5.1</b> Abre "Lista de la compra";
+|E6 · HexaHealth (Frontend + Backend)|
+:GET /api/menus/{userId}/shopping-list
+agrupa los alimentos del menú semanal
+y descuenta lo que ya hay en la despensa;
+if (¿Queda algo que comprar?) then (no, menú vacío)
+  :Muestra "Tu lista está vacía:
+  añade alimentos al menú";
+else (sí)
+  :Muestra la lista agrupada por alimento
+  con las veces que aparece en el menú;
+endif
+
+' ---------------- HU 5.4 ----------------
+|Usuario|
+:<b>HU 5.4</b> Añade productos a mano
+(p. ej. "papel de cocina");
+|E6 · HexaHealth (Frontend + Backend)|
+:Los añade a la lista como productos manuales;
+
+' ---------------- HU 5.2 ----------------
+|Usuario|
+:<b>HU 5.2</b> Marca o desmarca productos
+mientras hace la compra;
+|E6 · HexaHealth (Frontend + Backend)|
+:Los muestra tachados y guarda el estado;
+
+' ---------------- HU 5.3 ----------------
+|Usuario|
+:<b>HU 5.3</b> Pulsa "Compartir"
+y elige WhatsApp o Email;
+|E6 · HexaHealth (Frontend + Backend)|
+if (¿Quedan productos sin tachar?) then (no)
+  :Avisa "No hay nada pendiente que compartir";
+  stop
+else (sí)
+  :Genera el texto con los productos pendientes
+  y abre wa.me/?text=... o mailto:...;
+endif
+|Usuario|
+#LightGreen:Envía la lista desde su WhatsApp o su correo;
+stop
+
+legend right
+  |= Color |= Significado |
+  |<#LightBlue>     | Lectura del JSON de otro equipo (E1) |
+  |<#Orange>     | Camino alternativo: el JSON falla o llega vacío |
+  |<#FFE082>     | Camino alternativo: perfil incompleto (valores por defecto) |
+  |<#LightGreen>     | Fin del ciclo: lista compartida |
+endlegend
+@enduml
