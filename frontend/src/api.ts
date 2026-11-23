@@ -7,6 +7,8 @@ import type {
   Menu,
   MenuFavorite,
   NewFood,
+  NewPantryItem,
+  PantryItem,
   ProfileChanges,
   ShoppingItem,
   UserProfile,
@@ -89,4 +91,16 @@ export const api = {
     sendJson<ShoppingItem>("POST", `/api/menus/${userId}/shopping-list/items`, { name }),
   deleteManualShoppingItem: (userId: string, itemId: string) =>
     request<void>(`/api/menus/${userId}/shopping-list/items/${itemId}`, { method: "DELETE" }),
+  getPantry: (userId: string) => request<PantryItem[]>(`/api/pantry/${userId}`),
+  addPantryItem: (userId: string, item: NewPantryItem) =>
+    sendJson<PantryItem>("POST", `/api/pantry/${userId}`, item),
+  updatePantryItem: (
+    userId: string,
+    itemId: string,
+    changes: { quantity: number; unit?: string },
+  ) => sendJson<PantryItem>("PUT", `/api/pantry/${userId}/${itemId}`, changes),
+  deletePantryItem: (userId: string, itemId: string) =>
+    request<{ deleted: boolean; id: string }>(`/api/pantry/${userId}/${itemId}`, {
+      method: "DELETE",
+    }),
 };

@@ -140,6 +140,10 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta
 | PUT    | `/api/menus/{userId}/shopping-list/items/{itemId}` | Marca o desmarca un producto de la lista como comprado `{ checked: true }` y devuelve el producto (HU 5.2, escribe en `mock_shopping_lists.json`) |
 | POST   | `/api/menus/{userId}/shopping-list/items` | Añade a mano un producto que no sale del menú `{ name: "Papel de cocina" }` y devuelve `201` con el producto. `400` si el nombre está vacío o supera 60 caracteres; `409` si ya está en la lista, sin distinguir mayúsculas ni tildes (HU 5.4, escribe en `mock_shopping_lists.json`) |
 | DELETE | `/api/menus/{userId}/shopping-list/items/{itemId}` | Quita un producto añadido a mano y su marca de comprado (`204`). `400` si el producto viene del menú; `404` si no está en la lista (HU 5.4) |
+| GET    | `/api/pantry/{userId}`                    | Lista las existencias de la despensa virtual del usuario (HU 4.1)                                                                               |
+| POST   | `/api/pantry/{userId}`                    | Añade un producto `{ name, quantity, unit }` o suma su cantidad si ya existe en la despensa (HU 4.1)                                            |
+| PUT    | `/api/pantry/{userId}/{itemId}`           | Actualiza la cantidad (`quantity`) o unidad (`unit`) de un producto de la despensa (HU 4.1)                                                     |
+| DELETE | `/api/pantry/{userId}/{itemId}`           | Elimina un producto de la despensa virtual del usuario (HU 4.1)                                                                                 |
 
 ---
 
