@@ -254,6 +254,264 @@ test.describe("HU 5.2 Marcar ingredientes de la lista", () => {
   });
 });
 
+// HU 5.3 - Compartir lista de la compra (WhatsApp/Email)
+// Cada botón copia la lista al portapapeles y abre WhatsApp o el correo para pegarla. Los tests leen el
+// portapapeles y nunca abren de verdad WhatsApp (wa.me se sirve en local) ni el cliente de correo.
+test.describe("HU 5.3 Compartir lista de la compra", () => {
+  test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+
+  const arrozId = "9017b44e-1d3f-4414-95d9-bac5d28790fc"; // Arroz integral
+  const pechugaId = "05756545-04f4-4f3f-8254-6e5d678edc93"; // Pechuga de pollo
+  const manzanaId = "d9ac1aab-7651-4acf-9d8f-9287036e5f43"; // Manzana
+
+  const shoppingListUrl = `${apiUrl}/api/menus/${userId}/shopping-list`;
+  const itemsUrl = `${shoppingListUrl}/items`;
+  const itemUrl = (itemId) => `${itemsUrl}/${itemId}`;
+
+  // Menú con Arroz integral (2 veces), Pechuga de pollo y Manzana (1 vez), sin alérgenos.
+  const weeklyMenu = {
+    lunes: { desayuno: [arrozId], comida: [pechugaId], cena: [manzanaId] },
+    martes: { desayuno: [arrozId], comida: [], cena: [] },
+  };
+
+  // Los tests comparten backend: borra los productos añadidos a mano que hayan quedado.
+  async function deleteManualItems(request) {
+    const list = await (await request.get(shoppingListUrl)).json();
+    for (const item of list.filter((entry) => entry.source === "manual")) {
+      const deleted = await request.delete(itemUrl(item.id));
+      expect(deleted.status()).toBe(204);
+    }
+  }
+
+  // Guarda el menú semanal, sin productos añadidos a mano y sin nada marcado como comprado.
+  async function givenWeeklyMenu(request) {
+    const menu = await request.put(`${apiUrl}/api/menus/${userId}`, { data: { days: weeklyMenu } });
+    expect(menu.ok()).toBe(true);
+    await deleteManualItems(request);
+    const list = await (await request.get(shoppingListUrl)).json();
+    for (const item of list.filter((entry) => entry.checked)) {
+      const reset = await request.put(itemUrl(item.id), { data: { checked: false } });
+      expect(reset.ok()).toBe(true);
+    }
+  }
+
+  async function markAsBought(request, itemIds) {
+    for (const itemId of itemIds) {
+      const marked = await request.put(itemUrl(itemId), { data: { checked: true } });
+      expect(marked.ok()).toBe(true);
+    }
+  }
+
+  // WhatsApp se sirve en local: ninguna petición sale del equipo.
+  test.beforeEach(async ({ context }) => {
+    await context.route("https://wa.me/**", (route) =>
+      route.fulfill({ status: 200, contentType: "text/html", body: "<p>WhatsApp</p>" }),
+    );
+  });
+
+  // Cada test deja la lista sin los productos manuales que haya creado.
+  test.afterEach(async ({ request }) => {
+    await deleteManualItems(request);
+  });
+
+  async function openShoppingTab(page) {
+    await page.getByRole("button", { name: "Compra" }).click();
+    await expect(page.getByRole("heading", { name: "Lista de la compra" })).toBeVisible();
+    return page.getByRole("list", { name: "Lista de la compra" });
+  }
+
+  const whatsappLink = (page) => page.getByRole("link", { name: "Copiar y abrir WhatsApp", exact: true });
+  const emailLink = (page) => page.getByRole("link", { name: "Copiar y abrir correo", exact: true });
+  const progress = (page) => page.getByRole("status").filter({ hasText: "comprados" });
+  const copiedFeedback = (page) => page.getByRole("status").filter({ hasText: "Lista copiada" });
+
+  // Texto que se espera copiar: el título, una línea en blanco y un producto pendiente por línea.
+  const sharedText = (...lines) => ["Lista de la compra (Healthy Life)", "", ...lines].join("\n");
+
+  const readClipboard = (page) =>
+    page.evaluate(async () => (await navigator.clipboard.readText()).replace(/\r\n/g, "\n"));
+
+  // Vacía el portapapeles para que lo que se lea después venga del clic.
+  const clearClipboard = (page) => page.evaluate(() => navigator.clipboard.writeText(""));
+
+  // Evita que el navegador intente abrir el cliente de correo: cancela la navegación de los enlaces
+  // mailto: en la fase de captura (el onClick de React se sigue ejecutando y copia la lista).
+  const blockMailto = (page) =>
+    page.evaluate(() => {
+      document.addEventListener(
+        "click",
+        (event) => {
+          if (event.target instanceof Element && event.target.closest('a[href^="mailto:"]')) {
+            event.preventDefault();
+          }
+        },
+        true,
+      );
+    });
+
+  // Pulsa "Copiar y abrir WhatsApp" y devuelve la pestaña de WhatsApp que se abre.
+  async function copyAndOpenWhatsapp(page, context) {
+    const opened = context.waitForEvent("page");
+    await whatsappLink(page).click();
+    const whatsapp = await opened;
+    await whatsapp.waitForLoadState();
+    return whatsapp;
+  }
+
+  test("AC1: \"Copiar y abrir WhatsApp\" copia el título y los productos pendientes y abre WhatsApp en una pestaña nueva", async ({
+    page,
+    context,
+    request,
+  }) => {
+    // Dado un menú semanal con Arroz integral (2 veces), Manzana y Pechuga de pollo, sin nada comprado
+    await givenWeeklyMenu(request);
+    await page.goto("/");
+    const lista = await openShoppingTab(page);
+    await expect(lista.getByRole("listitem")).toHaveCount(3);
+    await expect(page.getByText("Se copian los 3 productos pendientes")).toBeVisible();
+    await clearClipboard(page);
+
+    // Cuando el usuario pulsa "Copiar y abrir WhatsApp"
+    const whatsapp = await copyAndOpenWhatsapp(page, context);
+
+    // Entonces se abre WhatsApp (wa.me, sin texto) en una pestaña nueva
+    expect(whatsapp.url()).toBe("https://wa.me/");
+    await whatsapp.close();
+    await expect(whatsappLink(page)).toHaveAttribute("href", "https://wa.me/");
+    await expect(whatsappLink(page)).toHaveAttribute("target", "_blank");
+    await expect(whatsappLink(page)).toHaveAttribute("rel", /noopener/);
+    // y el portapapeles tiene el título y todos los productos pendientes en el orden de la lista,
+    // con "(x2)" en el alimento repetido
+    await expect(copiedFeedback(page)).toHaveText("Lista copiada. Pégala en el chat de WhatsApp.");
+    await expect
+      .poll(() => readClipboard(page))
+      .toBe(sharedText("- Arroz integral (x2)", "- Manzana", "- Pechuga de pollo"));
+    // y el aviso desaparece a los pocos segundos
+    await expect(copiedFeedback(page)).toHaveCount(0, { timeout: 6000 });
+  });
+
+  test("AC2: \"Copiar y abrir correo\" copia los mismos productos pendientes y abre un correo con el asunto \"Lista de la compra\"", async ({
+    page,
+    context,
+    request,
+  }) => {
+    // Dado un menú semanal en el que la Manzana ya está marcada como comprada
+    await givenWeeklyMenu(request);
+    await markAsBought(request, [manzanaId]);
+    await page.goto("/");
+    await openShoppingTab(page);
+    await expect(progress(page)).toHaveText("1 de 3 comprados");
+    await expect(page.getByText("Se copian los 2 productos pendientes")).toBeVisible();
+    await clearClipboard(page);
+    await blockMailto(page);
+
+    // Cuando el usuario pulsa "Copiar y abrir correo"
+    await emailLink(page).click();
+
+    // Entonces el enlace abre un correo nuevo (mailto: sin destinatario) solo con el asunto
+    const href = await emailLink(page).getAttribute("href");
+    expect(href).toBe("mailto:?subject=Lista%20de%20la%20compra");
+    const mailto = new URL(href);
+    expect(mailto.protocol).toBe("mailto:");
+    expect(mailto.searchParams.get("subject")).toBe("Lista de la compra");
+    expect(mailto.searchParams.has("body")).toBe(false);
+    await expect(emailLink(page)).not.toHaveAttribute("target", /.+/);
+    // y el portapapeles tiene solo los productos pendientes, para pegarlos en el correo
+    await expect(copiedFeedback(page)).toHaveText("Lista copiada. Pégala en el correo.");
+    const expected = sharedText("- Arroz integral (x2)", "- Pechuga de pollo");
+    await expect.poll(() => readClipboard(page)).toBe(expected);
+
+    // y "Copiar y abrir WhatsApp" copia exactamente el mismo texto
+    await clearClipboard(page);
+    await (await copyAndOpenWhatsapp(page, context)).close();
+    await expect.poll(() => readClipboard(page)).toBe(expected);
+  });
+
+  test("AC3: al marcar un producto y añadir otro a mano, lo que se copia cambia al momento: sin el comprado y con el manual", async ({
+    page,
+    request,
+  }) => {
+    // Dado un menú semanal sin nada comprado, con la pestaña Compra abierta y la lista ya copiada una vez
+    await givenWeeklyMenu(request);
+    await page.goto("/");
+    const lista = await openShoppingTab(page);
+    await blockMailto(page);
+    await clearClipboard(page);
+    await emailLink(page).click();
+    await expect
+      .poll(() => readClipboard(page))
+      .toBe(sharedText("- Arroz integral (x2)", "- Manzana", "- Pechuga de pollo"));
+    // (a partir de aquí no se vuelve a pedir la lista al backend)
+    const listReloads = [];
+    page.on("request", (req) => {
+      if (req.method() === "GET" && req.url().endsWith("/shopping-list")) listReloads.push(req.url());
+    });
+
+    // Cuando el usuario marca "Pechuga de pollo" como comprada
+    const saved = page.waitForResponse(
+      (response) => response.request().method() === "PUT" && response.url().endsWith(`/items/${pechugaId}`),
+    );
+    await lista.getByRole("checkbox", { name: "Pechuga de pollo" }).check();
+    expect((await saved).ok()).toBe(true);
+    // y añade a mano "Papel de cocina"
+    await page.getByRole("textbox", { name: "Añadir producto a la lista" }).fill("Papel de cocina");
+    await page.getByRole("button", { name: "Añadir", exact: true }).click();
+    await expect(lista.getByRole("listitem").filter({ hasText: "Papel de cocina" })).toBeVisible();
+    // y vuelve a copiar la lista
+    await clearClipboard(page);
+    await emailLink(page).click();
+
+    // Entonces lo copiado deja fuera "Pechuga de pollo" e incluye "Papel de cocina", sin "(xN)"
+    await expect
+      .poll(() => readClipboard(page))
+      .toBe(sharedText("- Arroz integral (x2)", "- Manzana", "- Papel de cocina"));
+    await expect(page.getByText("Se copian los 3 productos pendientes")).toBeVisible();
+    await expect(progress(page)).toHaveText("1 de 4 comprados");
+    // sin recargar la lista
+    expect(listReloads).toEqual([]);
+  });
+
+  test("AC4: sin productos pendientes no se puede compartir, y al desmarcar uno se vuelve a poder", async ({
+    page,
+    request,
+  }) => {
+    // Dado un menú semanal con todos los productos marcados como comprados
+    await givenWeeklyMenu(request);
+    await markAsBought(request, [arrozId, pechugaId, manzanaId]);
+
+    // Cuando el usuario abre la pestaña Compra
+    await page.goto("/");
+    const lista = await openShoppingTab(page);
+    await expect(progress(page)).toHaveText("3 de 3 comprados");
+
+    // Entonces los dos controles para compartir están desactivados y no hay enlaces
+    await expect(page.getByRole("button", { name: "Copiar y abrir WhatsApp", exact: true })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Copiar y abrir correo", exact: true })).toBeDisabled();
+    await expect(page.getByRole("link", { name: /^Copiar y abrir/ })).toHaveCount(0);
+    // y se avisa de que no hay nada que compartir
+    await expect(page.getByText("No hay productos pendientes que compartir")).toBeVisible();
+
+    // Cuando el usuario desmarca "Manzana"
+    const saved = page.waitForResponse(
+      (response) => response.request().method() === "PUT" && response.url().endsWith(`/items/${manzanaId}`),
+    );
+    await lista.getByRole("checkbox", { name: "Manzana" }).uncheck();
+    expect((await saved).ok()).toBe(true);
+
+    // Entonces se vuelve a poder compartir
+    await expect(whatsappLink(page)).toBeVisible();
+    await expect(emailLink(page)).toBeVisible();
+    await expect(page.getByRole("button", { name: /^Copiar y abrir/ })).toHaveCount(0);
+    await expect(page.getByText("Se copia 1 producto pendiente")).toBeVisible();
+    await expect(page.getByText("No hay productos pendientes que compartir")).toHaveCount(0);
+    // y se copia solo la Manzana
+    await blockMailto(page);
+    await clearClipboard(page);
+    await emailLink(page).click();
+    await expect.poll(() => readClipboard(page)).toBe(sharedText("- Manzana"));
+  });
+});
+
 // HU 5.4 - Añadir productos manuales a la lista de la compra
 test.describe("HU 5.4 Añadir productos manuales a la lista de la compra", () => {
   const arrozId = "9017b44e-1d3f-4414-95d9-bac5d28790fc"; // Arroz integral
