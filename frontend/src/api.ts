@@ -27,6 +27,10 @@ interface ApiErrorBody {
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${apiUrl}${path}`, options);
+  // 204 No Content (p. ej. al borrar): no hay cuerpo que leer.
+  if (response.status === 204) {
+    return undefined as T;
+  }
   const body: unknown = await response.json();
   if (!response.ok) {
     throw new Error(
@@ -75,4 +79,14 @@ export const api = {
     sendJson<MenuFavorite>("POST", "/api/menus/favorites", { userId, name, days }),
   getShoppingList: (userId: string) =>
     request<ShoppingItem[]>(`/api/menus/${userId}/shopping-list`),
+  setShoppingItemChecked: (userId: string, itemId: string, checked: boolean) =>
+    sendJson<ShoppingItem>(
+      "PUT",
+      `/api/menus/${userId}/shopping-list/items/${itemId}`,
+      { checked },
+    ),
+  addManualShoppingItem: (userId: string, name: string) =>
+    sendJson<ShoppingItem>("POST", `/api/menus/${userId}/shopping-list/items`, { name }),
+  deleteManualShoppingItem: (userId: string, itemId: string) =>
+    request<void>(`/api/menus/${userId}/shopping-list/items/${itemId}`, { method: "DELETE" }),
 };
