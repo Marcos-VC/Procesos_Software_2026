@@ -136,6 +136,8 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta
 | PUT    | `/api/menus/{userId}`                     | Guarda el menú `{ days: { lunes: { desayuno: [foodId], comida: [], cena: [] }, ... } }`                                                        |
 | GET    | `/api/menus/favorites`                    | Lista los menús favoritos con nombre                                                                                                            |
 | POST   | `/api/menus/favorites`                    | Guarda un menú favorito `{ userId, name, days }`                                                                                                |
+| GET    | `/api/menus/{userId}/shopping-list`       | Lista de la compra generada a partir del menú semanal, ordenada por nombre (HU 5.1): `[{ id, foodId, name, count, checked }]`; `checked` indica si está marcado como comprado (HU 5.2) |
+| PUT    | `/api/menus/{userId}/shopping-list/items/{itemId}` | Marca o desmarca un producto de la lista como comprado `{ checked: true }` y devuelve el producto (HU 5.2, escribe en `mock_shopping_lists.json`) |
 
 ---
 
