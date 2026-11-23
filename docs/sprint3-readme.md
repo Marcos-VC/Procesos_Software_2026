@@ -22,7 +22,7 @@ reduciendo el desperdicio de comida y el tiempo invertido en planificar la compr
 - HU 5.2 Marcar/tachar ingredientes de la lista (3)
 - HU 5.3 Compartir lista de la compra (WhatsApp/Email) (3)
 
-18 puntos en total. Pendiente de contrastar contra la velocidad real del Sprint 2 (igual que se
+19 puntos en total. Pendiente de contrastar contra la velocidad real del Sprint 2 (igual que se
 hizo con la del Sprint 1 para comprometer el Sprint 2) antes de darlo por definitivo en el Sprint
 Planning.
 
