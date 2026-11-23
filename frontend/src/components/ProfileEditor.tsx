@@ -72,7 +72,7 @@ function ProfileEditor({ user, allergens, onSaved }: ProfileEditorProps) {
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <button type="submit" className="btn">
+        <button type="submit" className="btn w-full sm:w-auto">
           Guardar cambios
         </button>
         {status && (

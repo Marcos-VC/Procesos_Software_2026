@@ -58,10 +58,10 @@ test.describe("HU 1.2 Ver iconos de alérgenos", () => {
     });
 
     // Cuando el alimento contiene alérgenos comunes
-    // Entonces se muestran sus iconos descriptivos
+    // Entonces se muestran sus iconos descriptivos (etiqueta con icono de aviso y nombre)
     const icon = pan.getByRole("button", { name: "Alérgeno: Gluten" });
     await expect(icon).toBeVisible();
-    await expect(icon).toHaveText("🌾");
+    await expect(icon).toHaveText("Gluten");
 
     // Y un alimento sin alérgenos no muestra iconos
     const arroz = page.locator("article", {

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { api } from "../api";
 import type { Allergen, Food, NewFood } from "../types";
+import { AlertIcon, CheckIcon, CloseIcon, PlusIcon } from "./icons";
 
 interface FoodFormProps {
   allergens: Allergen[];
@@ -52,33 +53,33 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
         className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border-2 border-line bg-white px-4 py-2.5 text-sm font-semibold text-primary-dark shadow-sm transition duration-200 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         onClick={() => setOpen(true)}
       >
-        <span aria-hidden="true" className="text-base leading-none">+</span>
+        <PlusIcon className="size-4" />
         Añadir alimento
       </button>
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-secondary/40 px-4 py-10"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-secondary/40 px-3 py-4 sm:px-4 sm:py-10"
           onClick={close}
         >
           <div
-            className="card w-full max-w-xl p-6 sm:p-8"
+            className="card w-full max-w-xl p-5 sm:p-8"
             role="dialog"
             aria-modal="true"
             aria-labelledby="food-form-title"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="mb-6 flex items-start justify-between gap-4">
+            <div className="mb-5 flex items-start justify-between gap-4 sm:mb-6">
               <h3 id="food-form-title" className="font-display text-xl font-bold text-secondary">
                 Añadir alimento al catálogo
               </h3>
               <button
                 type="button"
-                className="cursor-pointer rounded-lg px-2 py-1 text-xl leading-none text-muted transition hover:bg-surface"
+                className="-mt-2 -mr-2 flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg text-muted transition hover:bg-surface focus-visible:outline-2 focus-visible:outline-primary"
                 aria-label="Cerrar"
                 onClick={close}
               >
-                ×
+                <CloseIcon className="size-5" />
               </button>
             </div>
             <form className="grid gap-4 sm:grid-cols-2" onSubmit={submit}>
@@ -112,11 +113,12 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
               ))}
               <fieldset className="grid gap-2 sm:col-span-2">
                 <legend className="text-sm font-medium">Alérgenos</legend>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-x-4 gap-y-0 sm:gap-3">
                   {allergens.map((allergen) => (
-                    <label key={allergen.id} className="flex items-center gap-2 text-sm">
+                    <label key={allergen.id} className="flex min-h-11 cursor-pointer items-center gap-2 text-sm sm:min-h-0">
                       <input
                         type="checkbox"
+                        className="size-4 cursor-pointer accent-primary"
                         checked={form.allergens.includes(allergen.id)}
                         onChange={(event) =>
                           setForm((current) => ({
@@ -142,7 +144,11 @@ function FoodForm({ allergens, onCreated }: FoodFormProps) {
                       : "border border-primary/20 bg-primary-soft text-primary-dark"
                   }`}
                 >
-                  <span aria-hidden="true">{status === "Alimento añadido correctamente" ? "✓" : "!"}</span>{" "}
+                  {status === "Alimento añadido correctamente" ? (
+                    <CheckIcon className="size-4 shrink-0" />
+                  ) : (
+                    <AlertIcon className="size-4 shrink-0" />
+                  )}
                   <span>{status}</span>
                 </p>
               )}

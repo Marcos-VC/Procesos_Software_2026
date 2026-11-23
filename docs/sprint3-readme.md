@@ -75,3 +75,22 @@ añadir alimentos al menú para generarla.
 - [ ] Mover estas historias a "Historias implementadas" con su descripción, siguiendo el
       formato de `docs/sprint2-readme.md`.
 - [ ] Actualizar el recuento de tests E2E.
+- [ ] Regenerar las capturas de `docs/assets/` (`cd e2e && npm run screenshots`): todavía muestran
+      la interfaz antigua, con emojis.
+
+## Mejoras de interfaz
+
+Además de las historias, en este Sprint se ha revisado la interfaz para que sea cómoda en el
+móvil y tenga un aspecto más cuidado:
+
+- **Navegación en el móvil:** por debajo de 640 px de ancho, las pestañas pasan a una barra fija
+  en la parte inferior, con icono y nombre, que admite cinco pestañas sin cortarse. En
+  escritorio se mantiene la barra de pestañas de siempre. Al cambiar de pestaña desde abajo, la
+  página vuelve al principio de la sección.
+- **Cabecera más compacta en el móvil:** las tarjetas del perfil se muestran en dos columnas, así
+  que el contenido de cada pestaña aparece en la primera pantalla.
+- **Controles cómodos de pulsar:** botones, casillas y filas del selector de alimentos de al menos
+  44 px de alto, y sin desbordamiento horizontal en el diseñador de menús.
+- **Sin emojis:** todos los emojis y símbolos se sustituyen por iconos SVG con un mismo estilo
+  (`frontend/src/components/icons.tsx`). Los alérgenos de cada alimento se muestran como
+  etiquetas con un icono de aviso y su nombre (HU 1.2), y las dietas ya no llevan icono.

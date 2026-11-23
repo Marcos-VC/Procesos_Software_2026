@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { Allergen, Food } from "../types";
+import { WarningIcon } from "./icons";
 
-// Ficha de un alimento. Cada alérgeno se muestra como icono; al pulsarlo se
-// despliega el nombre de la alergia o intolerancia y su explicación.
+// Ficha de un alimento. Cada alérgeno se muestra como una etiqueta con icono de aviso y
+// su nombre; al pulsarla se despliega la explicación de la alergia o intolerancia.
 interface FoodItemProps {
   food: Food;
   allergenCatalog?: Record<string, Allergen | undefined>;
@@ -17,7 +18,7 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
 
   return (
     <article
-      className={`card flex flex-col p-6 ${
+      className={`card flex flex-col p-5 sm:p-6 ${
         food.blocked ? "opacity-60" : "card-hover"
       }`}
     >
@@ -28,14 +29,14 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
             {food.calories} kcal
           </span>
         </div>
-        <h3 className="mt-6 mb-5 text-xl font-bold text-secondary">{food.name}</h3>
+        <h3 className="mt-4 mb-4 text-xl font-bold text-secondary sm:mt-6 sm:mb-5">{food.name}</h3>
 
         {food.blocked && (
           <p
             className="mb-5 flex items-start gap-2 rounded-xl bg-warning-soft px-4 py-3 text-sm leading-snug text-warning"
             role="alert"
           >
-            <span aria-hidden="true">⚠️</span>
+            <WarningIcon className="mt-0.5 size-4 shrink-0" />
             <span>
               <b>Bloqueado</b>
               {blockedNames.length > 0 && `: contiene ${blockedNames.join(", ")}`}
@@ -55,7 +56,7 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
         </div>
 
         {food.allergens.length > 0 && (
-          <ul className="mt-5 flex flex-wrap gap-2" aria-label="Alérgenos">
+          <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Alérgenos">
             {food.allergens.map((allergenId) => {
               const info = allergenCatalog[allergenId];
               const name = info?.name ?? allergenId;
@@ -63,7 +64,7 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
                 <li key={allergenId}>
                   <button
                     type="button"
-                    className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-line bg-surface text-lg leading-none transition duration-200 hover:scale-110 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-expanded:border-primary aria-expanded:bg-primary-soft"
+                    className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-xs font-semibold text-secondary transition duration-200 hover:border-primary hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary aria-expanded:border-primary aria-expanded:bg-primary-soft sm:min-h-8"
                     aria-label={`Alérgeno: ${name}`}
                     aria-expanded={openAllergen === allergenId}
                     title={name}
@@ -71,7 +72,8 @@ function FoodItem({ food, allergenCatalog = {} }: FoodItemProps) {
                       setOpenAllergen(openAllergen === allergenId ? null : allergenId)
                     }
                   >
-                    {info?.icon ?? "⚠️"}
+                    <WarningIcon className="size-3.5 shrink-0 text-warning" />
+                    {name}
                   </button>
                 </li>
               );

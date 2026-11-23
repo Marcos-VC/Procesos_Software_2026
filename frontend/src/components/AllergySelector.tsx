@@ -1,4 +1,5 @@
 import type { Allergen, AllergenId } from "../types";
+import { CheckIcon, PlusIcon } from "./icons";
 
 // Selector de alergias (HU 2.2): un chip seleccionable por alérgeno del catálogo.
 interface AllergySelectorProps {
@@ -20,7 +21,7 @@ function AllergySelector({ allergenCatalog, selected, onChange }: AllergySelecto
           return (
             <label
               key={allergen.id}
-              className={`relative flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ring-1 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
+              className={`relative flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm sm:min-h-0 font-semibold ring-1 transition duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary ${
                 checked
                   ? "bg-primary text-white ring-primary"
                   : "bg-white text-secondary ring-black/20 hover:bg-primary-soft"
@@ -32,11 +33,15 @@ function AllergySelector({ allergenCatalog, selected, onChange }: AllergySelecto
                 checked={checked}
                 onChange={() => toggle(allergen.id)}
               />
-              <span aria-hidden="true">{allergen.icon}</span>
               {allergen.name}
-              <span aria-hidden="true" className="font-bold">
-                {checked ? "✓ Añadida" : "+"}
-              </span>
+              {checked ? (
+                <span aria-hidden="true" className="flex items-center gap-1 text-xs font-bold">
+                  <CheckIcon className="size-3.5" />
+                  Añadida
+                </span>
+              ) : (
+                <PlusIcon className="size-4 text-muted" />
+              )}
             </label>
           );
         })}

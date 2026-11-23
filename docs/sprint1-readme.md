@@ -32,6 +32,11 @@ Cada alimento muestra de forma visible los iconos de los alérgenos que
 contiene. Al seleccionar un icono se puede consultar el nombre del alérgeno
 para identificar rápidamente los posibles riesgos.
 
+> Desde el Sprint 3, los alérgenos ya no se muestran con emojis: cada uno es una
+> etiqueta con un icono de aviso y el nombre del alérgeno ("Gluten",
+> "Lácteos"...). Al seleccionarla se sigue viendo su explicación. Ver
+> [mejoras de interfaz del Sprint 3](sprint3-readme.md#mejoras-de-interfaz).
+
 ### HU 2.1 · Fijar objetivo calórico diario
 
 Desde el perfil nutricional se puede consultar y actualizar el objetivo
