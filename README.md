@@ -64,11 +64,11 @@ cd e2e && npm run test:ui                   # interfaz visual de Playwright
 cd e2e && npm run screenshots               # regenera docs/assets/sprint*/*.png
 ```
 
-**Tests E2E** (`e2e/tests/`, Playwright): un fichero por área (catálogo, perfil, menú) y un test por criterio de aceptación, nombrado con él (por ejemplo, `HU 1.1 › AC2`).
+**Tests E2E** (`e2e/tests/`, Playwright): un fichero por área (catálogo, alérgenos, perfil, menú, despensa y compra; 45 tests) y un test por criterio de aceptación, nombrado con él (por ejemplo, `HU 1.1 › AC2`).
 Cada test abre la app en un navegador real, hace lo que haría una persona y comprueba lo que se ve y lo que se guarda en la API; los pasos van comentados como Dado / Cuando / Entonces.
 Arrancan su propio backend (:3100) y frontend (:5174) sobre una copia temporal de `mocks/`, así que no modifican los datos del repositorio.
 
-El backend escribe en `mocks/` (perfil y menús), por eso `docker-compose.yml` monta esa carpeta como volumen.
+El backend escribe en `mocks/` (perfil, catálogo, menús, favoritos, despensa y lista de la compra), por eso `docker-compose.yml` monta esa carpeta como volumen.
 
 ---
 
@@ -128,13 +128,15 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta
 
 | Método | Ruta                                      | Descripción                                                                                                                                     |
 | ------ | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET    | `/api/foods?search=`                      | Catálogo de alimentos, con búsqueda por nombre (sin distinguir mayúsculas ni tildes)                                                            |
+| GET    | `/api/foods?search=&userId=`              | Catálogo de alimentos, con búsqueda por nombre (sin distinguir mayúsculas ni tildes); con `userId` marca `blocked`/`blockedBy` los que llevan alérgenos del perfil (HU 3.4) |
+| POST   | `/api/foods`                              | Añade un alimento al catálogo `{ name, calories, protein, carbohydrates, fat, allergens, suitableFor }` y devuelve `201`. `400` si faltan datos o un alérgeno no existe; `409` si ya hay uno con ese nombre (HU 1.3, escribe en `mock_alimentos.json`) |
 | GET    | `/api/allergens`                          | Catálogo de alérgenos (id, nombre, icono y explicación)                                                                                         |
 | PUT    | `/api/users/{userId}/nutritional-profile` | Actualiza el objetivo calórico diario (`caloricGoal`) (escribe en `mock_usuarios.json`)                                                         |
 | PUT    | `/api/users/{userId}/allergies`           | Sustituye las alergias del usuario: recibe un array de ids de alérgeno, p. ej. `["gluten", "lactosa"]` (escribe en `mock_usuarios.json`)         |
+| PUT    | `/api/users/{userId}/diet-type`           | Actualiza la preferencia dietética `{ dietType }` (HU 2.3, escribe en `mock_usuarios.json`)                                                     |
 | GET    | `/api/menus/{userId}`                     | Menú del usuario (vacío si aún no tiene)                                                                                                        |
 | PUT    | `/api/menus/{userId}`                     | Guarda el menú `{ days: { lunes: { desayuno: [foodId], comida: [], cena: [] }, ... } }`                                                        |
-| GET    | `/api/menus/favorites`                    | Lista los menús favoritos con nombre                                                                                                            |
+| GET    | `/api/menus/favorites?userId=`            | Lista los menús favoritos con nombre del usuario (HU 3.3)                                                                                       |
 | POST   | `/api/menus/favorites`                    | Guarda un menú favorito `{ userId, name, days }`                                                                                                |
 | GET    | `/api/menus/{userId}/shopping-list`       | Lista de la compra generada a partir del menú semanal, ordenada por nombre (HU 5.1): `[{ id, foodId, name, count, checked, source }]`; `checked` indica si está marcado como comprado (HU 5.2); incluye también los productos añadidos a mano, con `source: "manual"`, `foodId: null` y `count: 1` (los del menú llevan `source: "menu"`) (HU 5.4) |
 | PUT    | `/api/menus/{userId}/shopping-list/items/{itemId}` | Marca o desmarca un producto de la lista como comprado `{ checked: true }` y devuelve el producto (HU 5.2, escribe en `mock_shopping_lists.json`) |
@@ -151,7 +153,7 @@ Para alimentar el dashboard analítico y de seguimiento de hábitos, E6 presenta
 
 Una HU está terminada solo si cumple los cinco puntos; si falta alguno, no pasa a "Done" en Jira.
 
-1. **Código revisado:** rama `feature/SCRUM-<n>-<nombre>` y PR con la [plantilla](PULL_REQUEST_TEMPLATE.md) rellena, aprobado por otro miembro del equipo. Se acepta con "Create a merge commit" (sin squash).
+1. **Código revisado:** rama `feature/SCRUM-<n>-<nombre>` creada **desde `main` actualizado**, y PR **contra `main`** (nunca contra la rama de otra HU: los PR encadenados no llegan a `main` al aceptarlos) con la [plantilla](PULL_REQUEST_TEMPLATE.md) rellena, aprobado por otro miembro del equipo. Se acepta con "Create a merge commit" (sin squash). Commits en inglés y pocos: uno por parte terminada, no uno por cada cambio.
 2. **Pruebas en verde:** un test E2E por criterio de aceptación (`HU 3.4 › AC1`) y la batería completa pasando antes del merge.
 3. **Documentación al día:** README y API reflejan los endpoints y reglas nuevos.
 4. **Aceptada por el PO:** valida los criterios de aceptación; solo el PO acepta o rechaza el incremento.
