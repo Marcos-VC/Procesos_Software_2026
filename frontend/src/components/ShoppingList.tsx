@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api } from "../api";
 import type { ShoppingItem } from "../types";
 
@@ -6,16 +6,47 @@ interface ShoppingListProps {
   userId: string;
 }
 
+// Mismo límite que el backend para los productos añadidos a mano (HU 5.4).
+const MAX_MANUAL_NAME_LENGTH = 60;
+
+// Mismo orden que devuelve el backend: por nombre.
+const byName = (a: ShoppingItem, b: ShoppingItem) => a.name.localeCompare(b.name, "es");
+
+const plural = (count: number, singular: string, pluralForm: string) =>
+  `${count} ${count === 1 ? singular : pluralForm}`;
+
+// Frase resumen sobre la lista: alimentos del menú y productos añadidos a mano (HU 5.4).
+function summaryText(items: ShoppingItem[]) {
+  const menuCount = items.filter((item) => item.source === "menu").length;
+  const manualCount = items.length - menuCount;
+  const manualText = plural(manualCount, "producto añadido a mano", "productos añadidos a mano");
+
+  if (items.length === 0) {
+    return "El menú semanal está vacío. Añade alimentos al menú o productos a mano para generar la lista.";
+  }
+  if (menuCount === 0) {
+    return `El menú semanal está vacío; ${manualText}.`;
+  }
+  const menuText = `${plural(menuCount, "alimento necesario", "alimentos necesarios")} para la semana`;
+  return manualCount > 0 ? `${menuText} y ${manualText}.` : `${menuText}.`;
+}
+
 function ShoppingList({ userId }: ShoppingListProps) {
   const [items, setItems] = useState<ShoppingItem[] | null>(null);
   const [error, setError] = useState("");
-  // Error al guardar una marca (HU 5.2): se muestra sin ocultar la lista.
+  // Error al guardar una marca (HU 5.2) o al eliminar un producto (HU 5.4): se muestra sin ocultar la lista.
   const [saveError, setSaveError] = useState("");
+  // Formulario para añadir productos a mano (HU 5.4).
+  const [newName, setNewName] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const load = () => {
     setItems(null);
     setError("");
     setSaveError("");
+    setAddError("");
     api
       .getShoppingList(userId)
       .then((data) => setItems(data))
@@ -44,6 +75,35 @@ function ShoppingList({ userId }: ShoppingListProps) {
     });
   };
 
+  // Añade un producto que no sale del menú (HU 5.4); si el backend lo rechaza se muestra su mensaje.
+  const addManualItem = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const name = newName.trim();
+    if (!name || adding) return;
+    setAdding(true);
+    setAddError("");
+    try {
+      const item = await api.addManualShoppingItem(userId, name);
+      setItems((current) => (current ? [...current, item].sort(byName) : current));
+      setNewName("");
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : "No se pudo añadir el producto");
+    } finally {
+      setAdding(false);
+      inputRef.current?.focus();
+    }
+  };
+
+  // Borrado optimista (HU 5.4): se quita al momento y se vuelve a mostrar si el backend falla.
+  const removeManualItem = (item: ShoppingItem) => {
+    setSaveError("");
+    setItems((current) => current?.filter((entry) => entry.id !== item.id) ?? null);
+    api.deleteManualShoppingItem(userId, item.id).catch((err: unknown) => {
+      setItems((current) => (current ? [...current, item].sort(byName) : current));
+      setSaveError(err instanceof Error ? err.message : "No se pudo eliminar el producto");
+    });
+  };
+
   if (error) {
     return (
       <p className="rounded-xl bg-primary-soft px-4 py-3 text-primary-dark" role="alert">
@@ -62,11 +122,7 @@ function ShoppingList({ userId }: ShoppingListProps) {
     <div className="grid gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="grid gap-1">
-          <p className="text-sm text-muted">
-            {items.length === 0
-              ? "El menú semanal está vacío. Añade alimentos al menú para generar la lista."
-              : `${items.length} ${items.length === 1 ? "alimento" : "alimentos"} necesarios para la semana.`}
-          </p>
+          <p className="text-sm text-muted">{summaryText(items)}</p>
           {items.length > 0 && (
             <p className="text-sm font-semibold text-secondary" role="status">
               {checkedCount} de {items.length} comprados
@@ -82,6 +138,37 @@ function ShoppingList({ userId }: ShoppingListProps) {
           Actualizar
         </button>
       </div>
+
+      <form className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-end" onSubmit={addManualItem}>
+        <label className="grid flex-1 gap-1 text-sm font-medium">
+          Añadir producto a la lista
+          <input
+            ref={inputRef}
+            className="input"
+            value={newName}
+            maxLength={MAX_MANUAL_NAME_LENGTH}
+            placeholder="Ej.: papel de cocina"
+            onChange={(event) => {
+              setNewName(event.target.value);
+              setAddError("");
+            }}
+          />
+        </label>
+        <button
+          type="submit"
+          className="btn gap-1.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          disabled={!newName.trim() || adding}
+        >
+          <span aria-hidden="true" className="text-lg leading-none">+</span>
+          Añadir
+        </button>
+      </form>
+
+      {addError && (
+        <p className="rounded-xl bg-primary-soft px-4 py-3 text-primary-dark" role="alert">
+          {addError}
+        </p>
+      )}
 
       {saveError && (
         <p className="rounded-xl bg-primary-soft px-4 py-3 text-primary-dark" role="alert">
@@ -99,11 +186,11 @@ function ShoppingList({ userId }: ShoppingListProps) {
           {items.map((item) => (
             <li
               key={item.id}
-              className={`card flex items-center justify-between gap-4 px-5 py-4 transition duration-200 ${
+              className={`card flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 transition duration-200 ${
                 item.checked ? "bg-surface shadow-none" : ""
               }`}
             >
-              <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
+              <label className="flex min-w-40 flex-1 cursor-pointer items-center gap-3">
                 <input
                   type="checkbox"
                   className="size-5 shrink-0 cursor-pointer accent-primary"
@@ -118,12 +205,31 @@ function ShoppingList({ userId }: ShoppingListProps) {
                   {item.name}
                 </span>
               </label>
-              <span
-                className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${
-                  item.checked ? "bg-line text-muted" : "bg-primary-soft text-primary-dark"
-                }`}
-              >
-                {item.count} {item.count === 1 ? "vez" : "veces"}
+              {/* En pantallas estrechas pasa a una segunda línea para no apretar el nombre. */}
+              <span className="ml-auto flex shrink-0 items-center gap-2">
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-bold ${
+                    item.checked
+                      ? "bg-line text-muted"
+                      : item.source === "manual"
+                        ? "bg-surface text-secondary ring-1 ring-line"
+                        : "bg-primary-soft text-primary-dark"
+                  }`}
+                >
+                  {item.source === "manual"
+                    ? "Añadido a mano"
+                    : `${item.count} ${item.count === 1 ? "vez" : "veces"}`}
+                </span>
+                {item.source === "manual" && (
+                  <button
+                    type="button"
+                    className="cursor-pointer rounded-lg px-2 py-1 text-sm font-medium text-primary-dark transition hover:bg-primary-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    aria-label={`Eliminar ${item.name}`}
+                    onClick={() => removeManualItem(item)}
+                  >
+                    Eliminar
+                  </button>
+                )}
               </span>
             </li>
           ))}
